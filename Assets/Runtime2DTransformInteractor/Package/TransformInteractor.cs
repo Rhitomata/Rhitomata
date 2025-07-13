@@ -84,18 +84,29 @@ namespace Runtime2DTransformInteractor
                 new Vector2(1, ratio * TransformInteractorController.instance.defaultRotationLineLength * 100);
         }
 
+        private void CreateInteractor()
+        {
+            if (interactor != null) return;
+
+            interactor = Instantiate(spriteBoundsPrefab).GetComponent<Interactor>();
+            interactor.Settup(gameObject);
+        }
+
         private void OnMouseEnter()
         {
+            if (!TransformInteractorController.instance.enableSelecting) return;
+
             TransformInteractorController.instance.SetMoveMouseCursor();
             if (!selected)
             {
-                interactor = Instantiate(spriteBoundsPrefab).GetComponent<Interactor>();
-                interactor.Settup(gameObject);
+                CreateInteractor();
             }
         }
 
         private void OnMouseExit()
         {
+            if (!TransformInteractorController.instance.enableSelecting) return;
+
             TransformInteractorController.instance.SetDefaultMouseCursor();
             if (!selected)
             {
@@ -119,11 +130,16 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseOver()
         {
+            if (!TransformInteractorController.instance.enableSelecting) return;
+
+            CreateInteractor();
             TransformInteractorController.instance.SetMoveMouseCursor();
         }
 
         private void OnMouseUp()
         {
+            if (!TransformInteractorController.instance.enableSelecting) return;
+
             if (!selected)
             {
                 Select();
@@ -132,11 +148,17 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseDown()
         {
+            if (!TransformInteractorController.instance.enableSelecting) return;
+
             lastMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            canDrag = true;
         }
 
+        private bool canDrag = false;
         private void OnMouseDrag()
         {
+            if (!TransformInteractorController.instance.enableSelecting || !canDrag) return;
+
             if (!selected)
             {
                 Select();
@@ -153,6 +175,8 @@ namespace Runtime2DTransformInteractor
 
         public void Select()
         {
+            if (!TransformInteractorController.instance.enableSelecting) return;
+
             if (TransformInteractorController.instance.allowMultiSelection)
             {
                 bool unselect = true;
@@ -181,6 +205,7 @@ namespace Runtime2DTransformInteractor
         public void UnSelect()
         {
             selected = false;
+            canDrag = false;
             TransformInteractorController.instance.selectedElements.Remove(this);
             Destroy(interactor.gameObject);
         }

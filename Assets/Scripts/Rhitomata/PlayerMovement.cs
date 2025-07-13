@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static TheManager;
 
 namespace Rhitomata {
     public class PlayerMovement : MonoBehaviour {
@@ -33,6 +34,8 @@ namespace Rhitomata {
         }
 
         private void OnTapStarted(InputAction.CallbackContext obj) {
+            if (ManagerInstance.CurrentState != State.Play) return;
+
             Debug.Log($"Tap called in phase: {obj.phase}");
             if (!isStarted) {
                 audioSource.Play();
@@ -49,6 +52,8 @@ namespace Rhitomata {
         }
 
         void Update() {
+            if (ManagerInstance.CurrentState != State.Play) return;
+
             if (isStarted) {
                 var velocity = speed * Time.deltaTime;
                 var translation = transform.up * velocity;

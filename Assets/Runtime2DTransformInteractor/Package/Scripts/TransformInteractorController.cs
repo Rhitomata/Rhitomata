@@ -15,6 +15,8 @@ namespace Runtime2DTransformInteractor
         /// </summary>
         public static TransformInteractorController instance;
 
+        public bool enableSelecting = true;
+
         /// <summary>
         /// Enumeration of the different mouse cursor types
         /// </summary>
