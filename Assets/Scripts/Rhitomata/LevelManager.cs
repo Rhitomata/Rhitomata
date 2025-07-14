@@ -1,8 +1,8 @@
 using System;
 using Rhitomata;
+using SFB;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -17,7 +17,17 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-        state = State.Edit;
+        ChangeState(State.Edit);
+    }
+
+    private void OnEnable()
+    {
+        switchModeAction.action.performed += OnModeSwitchPerformed;
+    }
+
+    private void OnDisable()
+    {
+        switchModeAction.action.performed -= OnModeSwitchPerformed;
     }
 
     private void Update()
@@ -33,19 +43,9 @@ public class LevelManager : MonoBehaviour
     {
         references.cameraMovement.transform.localPosition = new Vector3(0, 0, -10);
         references.player.ResetAll();
-        Start();
+        ChangeState(State.Edit);
 
         // TODO: Reset decorations as well, probably only possible when we have a proper serialization system
-    }
-
-    private void OnEnable()
-    {
-        switchModeAction.action.performed += OnModeSwitchPerformed;
-    }
-
-    private void OnDisable()
-    {
-        switchModeAction.action.performed -= OnModeSwitchPerformed;
     }
 
     private void OnModeSwitchPerformed(InputAction.CallbackContext obj)
@@ -72,4 +72,57 @@ public class LevelManager : MonoBehaviour
                 break;
         }
     }
+
+    #region UI
+
+    public const string fileExtension = "rhito";// maybe change this?
+
+    public void BrowseToSaveLevel()
+    {
+        var path = StandaloneFileBrowser.SaveFilePanel("Save level", "", "New Project", fileExtension);
+        if (string.IsNullOrEmpty(path)) return; // Cancelled
+
+        SaveProject(path);
+    }
+
+    public void BrowseForLevel()
+    {
+        var result = StandaloneFileBrowser.OpenFilePanel("Load level", "", fileExtension, false);
+        if (result == null || result.Length == 0) return; // Cancelled
+
+        var path = result[0];
+
+        LoadProject(path);
+    }
+
+    public void BrowseForAudio()
+    {
+        var extesnions = new[] 
+        {
+            new ExtensionFilter("Sound Files", "ogg", "mp3", "wav" ),
+            new ExtensionFilter("All Files", "*" ),
+        };
+        var result = StandaloneFileBrowser.OpenFilePanel("Load song", "", extesnions, false);
+        if (result == null || result.Length == 0) return; // Cancelled
+
+        var path = result[0];
+
+        // Set song
+    }
+
+    #endregion UI
+
+    #region Project
+
+    void LoadProject(string path)
+    {
+
+    }
+
+    void SaveProject(string path)
+    {
+
+    }
+
+    #endregion Project
 }
