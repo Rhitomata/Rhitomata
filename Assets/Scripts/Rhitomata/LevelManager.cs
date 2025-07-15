@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Rhitomata;
 using SFB;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class LevelManager : MonoBehaviour
     public References references;
     [SerializeField] private InputActionReference switchModeAction;
     [SerializeField] private CanvasGroup editorUI;
+    [SerializeField] private ProjectList projectList;
 
     [Header("States")]
     public State state;
@@ -17,6 +19,7 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
+        projectList.Hide();
         ChangeState(State.Edit);
     }
 
@@ -84,7 +87,7 @@ public class LevelManager : MonoBehaviour
             new ExtensionFilter("Rhitomata Project", fileExtension),
             new ExtensionFilter("All Files", "*"),
         };
-        var path = StandaloneFileBrowser.SaveFilePanel("Save project", "", "New Project", extesnions);
+        var path = StandaloneFileBrowser.SaveFilePanel("Save project", ProjectList.ProjectsDir, "New Project", extesnions);
         if (string.IsNullOrEmpty(path)) return; // Cancelled
 
         SaveProject(path);
@@ -97,7 +100,7 @@ public class LevelManager : MonoBehaviour
             new ExtensionFilter("Rhitomata Project", fileExtension),
             new ExtensionFilter("All Files", "*"),
         };
-        var result = StandaloneFileBrowser.OpenFilePanel("Load project", "", extesnions, false);
+        var result = StandaloneFileBrowser.OpenFilePanel("Load project", ProjectList.ProjectsDir, extesnions, false);
         if (result == null || result.Length == 0) return; // Cancelled
 
         var path = result[0];
@@ -137,7 +140,7 @@ public class LevelManager : MonoBehaviour
 
     public void ShowProjectList()
     {
-
+        projectList.Show();
     }
 
     public void Exit()
@@ -148,6 +151,11 @@ public class LevelManager : MonoBehaviour
     #endregion UI
 
     #region Project
+
+    public void CreateProject(ProjectInfo projectInfo)
+    {
+        File.WriteAllText(projectInfo.path, "{}");
+    }
 
     void LoadProject(string path)
     {
