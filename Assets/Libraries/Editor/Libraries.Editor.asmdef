@@ -2,7 +2,8 @@
     "name": "Libraries.Editor",
     "rootNamespace": "",
     "references": [
-        "Libraries.Runtime"
+        "Libraries.Runtime",
+        "Unity.EditorCoroutines.Editor"
     ],
     "includePlatforms": [
         "Editor"

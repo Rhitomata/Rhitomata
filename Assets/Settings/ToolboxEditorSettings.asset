@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b97690dbca7025a4ebeae4ac93229110, type: 3}
+  m_Name: ToolboxEditorSettings
+  m_EditorClassIdentifier: 
+  useToolboxHierarchy: 1
+  drawHorizontalLines: 1
+  showSelectionsCount: 1
+  rowDataTypes: 010000000300000005000000
+  useToolboxFolders: 1
+  largeIconScale: 0.8
+  smallIconScale: 0.7
+  largeIconPadding: {x: 0, y: 0.15}
+  smallIconPadding: {x: 0.15, y: 0.15}
+  customFolders: []
+  useToolboxSceneView: 1
+  selectorKey: 289
+  useToolboxDrawers: 1
+  forceDefaultLists: 0
+  decoratorDrawerHandlers:
+  - typeReference: Toolbox.Editor.Drawers.BeginGroupAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.BeginHorizontalAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.BeginHorizontalGroupAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.BeginIndentAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.BeginVerticalAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.DynamicHelpAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.EditorButtonAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.EndGroupAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.EndHorizontalAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.EndHorizontalGroupAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.EndIndentAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.EndVerticalAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.GuiColorAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.HelpAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.HighlightAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.ImageAreaAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.IndentAreaAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.LabelAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.LabelWidthAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.LineAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.SpaceAreaAttributeDrawer, Libraries.Editor
+  conditionDrawerHandlers:
+  - typeReference: Toolbox.Editor.Drawers.DisableAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.DisableIfAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.DisableInEditModeAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.DisableInPlayModeAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.EnableIfAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.HideAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.HideDisabledIfAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.HideIfAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.ShowDisabledIfAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.ShowIfAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.ShowWarningIfAttributeDrawer, Libraries.Editor
+  selfPropertyDrawerHandlers:
+  - typeReference: Toolbox.Editor.Drawers.DynamicMinMaxSliderAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.DynamicRangeAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.IgnoreParentAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.InLineEditorAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.ReferencePickerAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.RegexValueAttributeDrawer, Libraries.Editor
+  listPropertyDrawerHandlers:
+  - typeReference: Toolbox.Editor.Drawers.ReorderableListAttributeDrawer, Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.ReorderableListExposedAttributeDrawer,
+      Libraries.Editor
+  - typeReference: Toolbox.Editor.Drawers.ScrollableItemsAttributeDrawer, Libraries.Editor
+  targetTypeDrawerHandlers:
+  - typeReference: Toolbox.Editor.Drawers.SerializedDictionaryDrawer, Libraries.Editor
