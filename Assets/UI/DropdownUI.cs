@@ -1,11 +1,12 @@
 using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(VerticalLayoutGroup))]
 [RequireComponent(typeof(RectTransform))]
-public class DropdownUI : MonoBehaviour
+public class DropdownUI : MonoBehaviour, IDeselectHandler
 {
     [SerializeField] private bool dynamicHeight;
     private const float transitionTime = 0.05f;
@@ -67,6 +68,7 @@ public class DropdownUI : MonoBehaviour
 
     public void HideInstant()
     {
+        Initialize();
         isShown = false;
         canvasGroup.interactable = false;
 
@@ -77,6 +79,7 @@ public class DropdownUI : MonoBehaviour
 
     public void Hide()
     {
+        Initialize();
         isShown = false;
         canvasGroup.interactable = false;
 
@@ -96,5 +99,25 @@ public class DropdownUI : MonoBehaviour
         }
         height -= verticalLayoutGroup.spacing;
         return height;
+    }
+
+    public void OnDeselect(BaseEventData eventData)
+    {
+        StartCoroutine(OnDeselectIE());
+    }
+
+    private IEnumerator OnDeselectIE()
+    {
+        yield return new WaitForEndOfFrame();
+
+        var selected = EventSystem.current.currentSelectedGameObject;
+        if (selected != null && selected.transform.IsChildOf(transform.parent)) yield break;// note that we're checking transform.parent instead of transform
+
+        Hide();
+    }
+
+    private void OnDisable()
+    {
+        HideInstant();
     }
 }
