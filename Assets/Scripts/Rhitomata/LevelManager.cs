@@ -77,17 +77,27 @@ public class LevelManager : MonoBehaviour
 
     public const string fileExtension = "rhito";// maybe change this?
 
-    public void BrowseToSaveLevel()
+    public void BrowseToSaveProject()
     {
-        var path = StandaloneFileBrowser.SaveFilePanel("Save level", "", "New Project", fileExtension);
+        var extesnions = new[]
+        {
+            new ExtensionFilter("Rhitomata Project", fileExtension),
+            new ExtensionFilter("All Files", "*"),
+        };
+        var path = StandaloneFileBrowser.SaveFilePanel("Save project", "", "New Project", extesnions);
         if (string.IsNullOrEmpty(path)) return; // Cancelled
 
         SaveProject(path);
     }
 
-    public void BrowseForLevel()
+    public void BrowseForProject()
     {
-        var result = StandaloneFileBrowser.OpenFilePanel("Load level", "", fileExtension, false);
+        var extesnions = new[]
+        {
+            new ExtensionFilter("Rhitomata Project", fileExtension),
+            new ExtensionFilter("All Files", "*"),
+        };
+        var result = StandaloneFileBrowser.OpenFilePanel("Load project", "", extesnions, false);
         if (result == null || result.Length == 0) return; // Cancelled
 
         var path = result[0];
@@ -95,19 +105,44 @@ public class LevelManager : MonoBehaviour
         LoadProject(path);
     }
 
-    public void BrowseForAudio()
+    public void BrowseForSong()
     {
-        var extesnions = new[] 
+        var extesnions = new[]
         {
-            new ExtensionFilter("Sound Files", "ogg", "mp3", "wav" ),
-            new ExtensionFilter("All Files", "*" ),
+            new ExtensionFilter("Sound Files", "ogg", "mp3", "wav"),
+            new ExtensionFilter("All Files", "*"),
         };
-        var result = StandaloneFileBrowser.OpenFilePanel("Load song", "", extesnions, false);
+        var result = StandaloneFileBrowser.OpenFilePanel("Import song", "", extesnions, false);
         if (result == null || result.Length == 0) return; // Cancelled
 
         var path = result[0];
 
         // Set song
+    }
+
+    public void BrowseForBeatmap()
+    {
+        var extesnions = new[]
+        {
+            new ExtensionFilter("Text Files", "txt"),
+            new ExtensionFilter("All Files", "*"),
+        };
+        var result = StandaloneFileBrowser.OpenFilePanel("Import beatmap", "", extesnions, false);
+        if (result == null || result.Length == 0) return; // Cancelled
+
+        var path = result[0];
+
+        // Set beatmap
+    }
+
+    public void ShowProjectList()
+    {
+
+    }
+
+    public void Exit()
+    {
+        Application.Quit();
     }
 
     #endregion UI
@@ -125,4 +160,5 @@ public class LevelManager : MonoBehaviour
     }
 
     #endregion Project
+
 }
