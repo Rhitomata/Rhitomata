@@ -17,7 +17,6 @@ namespace Rhitomata
             if (transformController.enableSelecting == isOverUI) {
                 if (isOverUI) {
                     transformController.DehoverAll();
-                    Debug.Log("Attempt at deselecting all");
                 }
                 transformController.enableSelecting = !isOverUI;
             }
