@@ -11,6 +11,7 @@ namespace Runtime2DTransformInteractor
         
         private Vector2 lastMousePosition;
         private Vector2 rotationPoint;
+        private float angle;
 
         private void OnMouseEnter()
         {
@@ -45,6 +46,7 @@ namespace Runtime2DTransformInteractor
             }
             canDrag = true;
 
+            angle = spriteBounds.transform.localEulerAngles.z;
             Vector2 mousePixelsCoordinates = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             lastMousePosition = new Vector3(mousePixelsCoordinates.x, mousePixelsCoordinates.y, transform.position.z);
 
@@ -61,18 +63,19 @@ namespace Runtime2DTransformInteractor
             Vector2 mousePixelsCoordinates = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 newPosition = new Vector3(mousePixelsCoordinates.x, mousePixelsCoordinates.y, transform.position.z);
 
-            float angle = Vector2.SignedAngle((lastMousePosition - new Vector2(rotationPoint.x, rotationPoint.y)),
-                newPosition - new Vector2(rotationPoint.x, rotationPoint.y));
+            angle += Vector2.SignedAngle(
+                lastMousePosition - new Vector2(rotationPoint.x, rotationPoint.y), newPosition - new Vector2(rotationPoint.x, rotationPoint.y));
 
-            RotateObjects(angle);
+            RotateObjects();
 
             lastMousePosition = newPosition;
         }
 
-        private void RotateObjects(float angle)
+        private const float snappingIncrement = 45f;
+        private void RotateObjects()
         {
-            spriteBounds.transform.RotateAround(rotationPoint, Vector3.forward, angle);
-
+            bool snap = Input.GetKey(KeyCode.LeftControl);
+            spriteBounds.transform.localEulerAngles = new Vector3(0, 0, snap ? (int)(angle / snappingIncrement) * snappingIncrement : angle);
             spriteBounds.interactor.AdaptTransform();
         }
     }
