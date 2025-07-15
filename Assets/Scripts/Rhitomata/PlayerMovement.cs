@@ -103,6 +103,16 @@ namespace Rhitomata
             tails.Add(currentTail);
         }
 
+        void ClearTails()
+        {
+            currentTail = null;
+            foreach (var tail in tails)
+            {
+                Destroy(tail.gameObject);
+            }
+            tails.Clear();
+        }
+
         public void RotateToIndex(int index)
         {
             rotationIndex = index;
@@ -114,7 +124,7 @@ namespace Rhitomata
         public void ResetAll()
         {
             isStarted = false;
-            currentTail = null;
+            ClearTails();
             rotationIndex = 0;
             transform.localPosition = Vector3.zero;
             references.music.Stop();
