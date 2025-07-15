@@ -36,9 +36,10 @@ namespace Rhitomata
         private GameObject currentTail;
         private readonly List<GameObject> tails = new();
 
-        void Update()
-        {
+        void Update() {
             if (references.manager.state != State.Play) return;
+            UpdateInputQueue();
+            InputUpdate();
 
             if (isStarted)
             {
@@ -56,8 +57,6 @@ namespace Rhitomata
 
         public void InputUpdate() {
             if (inputQueue > 0) {
-                if (references.manager.state != State.Play) return;
-
                 if (!isStarted) {
                     references.music.Play();
                     isStarted = true;
@@ -67,6 +66,7 @@ namespace Rhitomata
                 else {
                     Turn();
                 }
+                inputQueue--;
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Runtime2DTransformInteractor
 {
@@ -96,7 +97,7 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseEnter()
         {
-            if (!TransformInteractorController.instance.enableSelecting) return;
+            if (!TransformInteractorController.instance.enableSelecting || EventSystem.current.IsPointerOverGameObject()) return;
 
             TransformInteractorController.instance.SetMoveMouseCursor();
             if (!TransformInteractorController.instance.hoveredElements.Contains(this))
@@ -135,7 +136,7 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseOver()
         {
-            if (!TransformInteractorController.instance.enableSelecting) return;
+            if (!TransformInteractorController.instance.enableSelecting || EventSystem.current.IsPointerOverGameObject()) return;
 
             CreateInteractor();
             TransformInteractorController.instance.SetMoveMouseCursor();
@@ -211,7 +212,7 @@ namespace Runtime2DTransformInteractor
         {
             selected = false;
             canDrag = false;
-            if (interactor.gameObject)
+            if (interactor)
                 Destroy(interactor.gameObject);
             if (TransformInteractorController.instance.selectedElements.Contains(this))
                 TransformInteractorController.instance.selectedElements.Remove(this);

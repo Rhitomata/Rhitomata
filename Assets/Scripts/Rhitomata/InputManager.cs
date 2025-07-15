@@ -11,14 +11,15 @@ namespace Rhitomata
     /// </summary>
     public class InputManager : MonoBehaviour {
         public TransformInteractorController transformController;
+        private bool wasHovering;
 
         private void Update() {
             bool isOverUI = EventSystem.current.IsPointerOverGameObject();
-            if (transformController.enableSelecting == isOverUI) {
+            if (wasHovering == isOverUI) {
                 if (isOverUI) {
                     transformController.DehoverAll();
                 }
-                transformController.enableSelecting = !isOverUI;
+                wasHovering = !isOverUI;
             }
         }
 

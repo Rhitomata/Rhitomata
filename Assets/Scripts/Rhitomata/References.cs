@@ -1,3 +1,4 @@
+using Runtime2DTransformInteractor;
 using UnityEngine;
 
 namespace Rhitomata
@@ -8,5 +9,6 @@ namespace Rhitomata
         public CameraMovement cameraMovement;
         public LevelManager manager;
         public AudioSource music;
+        public TransformInteractorController transformController;
     }
 }
