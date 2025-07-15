@@ -204,7 +204,7 @@ namespace Runtime2DTransformInteractor
             if (unselectWhenClickingOutside)
             {
                 // Detects if the user clicked outside of the selected objects and deselects them if it is the case
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) && !isOverUI)
                 {
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
