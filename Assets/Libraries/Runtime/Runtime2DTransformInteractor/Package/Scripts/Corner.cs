@@ -25,6 +25,8 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseEnter()
         {
+            if (!TransformInteractorController.instance.enableSelecting || TransformInteractorController.isOverUI) return;
+
             TransformInteractorController.instance.SetCornerMouseCursor(position, spriteBounds.interactor.targetGameObject.transform.rotation.eulerAngles.z);
         }
 
@@ -51,6 +53,8 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseOver()
         {
+            if (!TransformInteractorController.instance.enableSelecting || TransformInteractorController.isOverUI) return;
+
             TransformInteractorController.instance.SetCornerMouseCursor(position, spriteBounds.interactor.targetGameObject.transform.rotation.eulerAngles.z);
         }
 
@@ -61,6 +65,13 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseDown()
         {
+            if (!TransformInteractorController.instance.enableSelecting || TransformInteractorController.isOverUI)
+            {
+                canDrag = false;
+                return;
+            }
+            canDrag = true;
+
             lastMousePosition = transform.position;
 
             TransformInteractor transformInteractor = spriteBounds.interactor.targetGameObject.GetComponent<TransformInteractor>();
@@ -70,8 +81,11 @@ namespace Runtime2DTransformInteractor
             }
         }
 
+        bool canDrag;
         private void OnMouseDrag()
         {
+            if (!TransformInteractorController.instance.enableSelecting || !canDrag) return;
+
             Vector3 newPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             TransformInteractorController.instance.AdaptNewMousePosition(ref newPosition, lastMousePosition, spriteBounds.interactor, position);

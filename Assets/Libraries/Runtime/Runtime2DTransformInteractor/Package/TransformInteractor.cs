@@ -97,7 +97,7 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseEnter()
         {
-            if (!TransformInteractorController.instance.enableSelecting || EventSystem.current.IsPointerOverGameObject()) return;
+            if (!TransformInteractorController.instance.enableSelecting || TransformInteractorController.isOverUI) return;
 
             TransformInteractorController.instance.SetMoveMouseCursor();
             if (!TransformInteractorController.instance.hoveredElements.Contains(this))
@@ -119,7 +119,7 @@ namespace Runtime2DTransformInteractor
             {
                 // Cast a ray to check if one of the bounding rectangle elements is hit
                 Collider2D colliderHit = Physics2D.OverlapPoint(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-                if (!colliderHit ||
+                if (!colliderHit || !interactor ||
                     (colliderHit.gameObject != interactor.spriteBounds.leftLine.gameObject
                     && colliderHit.gameObject != interactor.spriteBounds.rightLine.gameObject
                     && colliderHit.gameObject != interactor.spriteBounds.topLine.gameObject
@@ -136,7 +136,7 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseOver()
         {
-            if (!TransformInteractorController.instance.enableSelecting || EventSystem.current.IsPointerOverGameObject()) return;
+            if (!TransformInteractorController.instance.enableSelecting || TransformInteractorController.isOverUI) return;
 
             CreateInteractor();
             TransformInteractorController.instance.SetMoveMouseCursor();
@@ -154,10 +154,14 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseDown()
         {
-            if (!TransformInteractorController.instance.enableSelecting) return;
+            if (!TransformInteractorController.instance.enableSelecting || TransformInteractorController.isOverUI)
+            {
+                canDrag = false;
+                return;
+            }
+            canDrag = true;
 
             lastMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            canDrag = true;
         }
 
         private bool canDrag = false;

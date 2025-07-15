@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Runtime2DTransformInteractor
 {
@@ -16,6 +17,7 @@ namespace Runtime2DTransformInteractor
         public static TransformInteractorController instance;
 
         public bool enableSelecting = true;
+        public static bool isOverUI;
 
         /// <summary>
         /// Enumeration of the different mouse cursor types
@@ -197,6 +199,8 @@ namespace Runtime2DTransformInteractor
 
         private void Update()
         {
+            isOverUI = EventSystem.current.IsPointerOverGameObject();
+
             if (unselectWhenClickingOutside)
             {
                 // Detects if the user clicked outside of the selected objects and deselects them if it is the case

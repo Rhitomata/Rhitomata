@@ -18,6 +18,7 @@ namespace Rhitomata
             if (wasHovering == isOverUI) {
                 if (isOverUI) {
                     transformController.DehoverAll();
+                    TransformInteractorController.instance.SetDefaultMouseCursor();
                 }
                 wasHovering = !isOverUI;
             }

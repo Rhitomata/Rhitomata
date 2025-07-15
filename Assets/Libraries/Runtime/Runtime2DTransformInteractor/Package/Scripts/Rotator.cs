@@ -14,6 +14,8 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseEnter()
         {
+            if (!TransformInteractorController.instance.enableSelecting || !canDrag) return;
+            
             TransformInteractorController.instance.SetRotatorMouseCursor();
         }
 
@@ -24,6 +26,8 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseOver()
         {
+            if (!TransformInteractorController.instance.enableSelecting || !canDrag) return;
+
             TransformInteractorController.instance.SetRotatorMouseCursor();
         }
 
@@ -34,14 +38,24 @@ namespace Runtime2DTransformInteractor
 
         private void OnMouseDown()
         {
+            if (!TransformInteractorController.instance.enableSelecting || TransformInteractorController.isOverUI)
+            {
+                canDrag = false;
+                return;
+            }
+            canDrag = true;
+
             Vector2 mousePixelsCoordinates = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             lastMousePosition = new Vector3(mousePixelsCoordinates.x, mousePixelsCoordinates.y, transform.position.z);
 
             rotationPoint = (spriteBounds.topLeftCorner.transform.position + spriteBounds.bottomRightCorner.transform.position) / 2;
         }
 
+        private bool canDrag;
         private void OnMouseDrag()
         {
+            if (!TransformInteractorController.instance.enableSelecting || !canDrag) return;
+            
             TransformInteractorController.instance.SetRotatorMouseCursor();
             
             Vector2 mousePixelsCoordinates = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -57,7 +71,6 @@ namespace Runtime2DTransformInteractor
 
         private void RotateObjects(float angle)
         {
-
             spriteBounds.transform.RotateAround(rotationPoint, Vector3.forward, angle);
 
             spriteBounds.interactor.AdaptTransform();
