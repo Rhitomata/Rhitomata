@@ -37,7 +37,7 @@ namespace Runtime2DTransformInteractor
 
         public void ResetBoundingRectangle()
         {
-            interactor.Settup(interactor.targetGameObject);
+            interactor.Setup(interactor.targetGameObject);
         }
 
         private void ChangeSizeOnZoom()
@@ -88,8 +88,10 @@ namespace Runtime2DTransformInteractor
         {
             if (interactor != null) return;
 
+            if (!TransformInteractorController.instance.hoveredElements.Contains(this))
+                TransformInteractorController.instance.hoveredElements.Add(this);
             interactor = Instantiate(spriteBoundsPrefab).GetComponent<Interactor>();
-            interactor.Settup(gameObject);
+            interactor.Setup(gameObject);
         }
 
         private void OnMouseEnter()
@@ -97,6 +99,8 @@ namespace Runtime2DTransformInteractor
             if (!TransformInteractorController.instance.enableSelecting) return;
 
             TransformInteractorController.instance.SetMoveMouseCursor();
+            if (!TransformInteractorController.instance.hoveredElements.Contains(this))
+                TransformInteractorController.instance.hoveredElements.Add(this);
             if (!selected)
             {
                 CreateInteractor();
@@ -107,6 +111,8 @@ namespace Runtime2DTransformInteractor
         {
             if (!TransformInteractorController.instance.enableSelecting) return;
 
+            if (TransformInteractorController.instance.hoveredElements.Contains(this))
+                TransformInteractorController.instance.hoveredElements.Remove(this);
             TransformInteractorController.instance.SetDefaultMouseCursor();
             if (!selected)
             {
@@ -121,9 +127,8 @@ namespace Runtime2DTransformInteractor
                     && colliderHit.gameObject != interactor.spriteBounds.topRightCorner.gameObject
                     && colliderHit.gameObject != interactor.spriteBounds.bottomLeftCorner.gameObject
                     && colliderHit.gameObject != interactor.spriteBounds.bottomRightCorner.gameObject)
-                    )
-                {
-                    UnSelect();
+                    ) {
+                    Deselect();
                 }
             }
         }
@@ -190,24 +195,28 @@ namespace Runtime2DTransformInteractor
 
                 if (unselect)
                 {
-                    TransformInteractorController.instance.UnSelectEverything();
+                    TransformInteractorController.instance.DeselectAll();
                 }
             }
             else
             {
-                TransformInteractorController.instance.UnSelectEverything();
+                TransformInteractorController.instance.DeselectAll();
             }
             selected = true;
             TransformInteractorController.instance.selectedElements.Add(this);
             TransformInteractorController.instance.SetMoveMouseCursor();
         }
 
-        public void UnSelect()
+        public void Deselect()
         {
             selected = false;
             canDrag = false;
-            TransformInteractorController.instance.selectedElements.Remove(this);
-            Destroy(interactor.gameObject);
+            if (interactor.gameObject)
+                Destroy(interactor.gameObject);
+            if (TransformInteractorController.instance.selectedElements.Contains(this))
+                TransformInteractorController.instance.selectedElements.Remove(this);
+            if (TransformInteractorController.instance.hoveredElements.Contains(this))
+                TransformInteractorController.instance.hoveredElements.Remove(this);
         }
     }
 }

@@ -1,17 +1,18 @@
-using System;
 using System.IO;
 using Rhitomata;
 using SFB;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class LevelManager : MonoBehaviour
 {
     [Header("References")]
     public References references;
-    [SerializeField] private InputActionReference switchModeAction;
+    [SerializeField] private KeyCode switchStateKey = KeyCode.Tab;
     [SerializeField] private CanvasGroup editorUI;
     [SerializeField] private ProjectList projectList;
+
+    [Header("Project")]
+    public ProjectInfo project = new();
 
     [Header("States")]
     public State state;
@@ -23,16 +24,6 @@ public class LevelManager : MonoBehaviour
         ChangeState(State.Edit);
     }
 
-    private void OnEnable()
-    {
-        switchModeAction.action.performed += OnModeSwitchPerformed;
-    }
-
-    private void OnDisable()
-    {
-        switchModeAction.action.performed -= OnModeSwitchPerformed;
-    }
-
     private void Update()
     {
         if (debug)
@@ -40,6 +31,10 @@ public class LevelManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.R))
                 Restart();
         }
+
+        if (Input.GetKeyDown(switchStateKey))
+            ChangeState(state == State.Play ? State.Edit : State.Play);
+
     }
 
     public void Restart()
@@ -51,11 +46,6 @@ public class LevelManager : MonoBehaviour
         // TODO: Reset decorations as well, probably only possible when we have a proper serialization system
     }
 
-    private void OnModeSwitchPerformed(InputAction.CallbackContext obj)
-    {
-        ChangeState(state == State.Play ? State.Edit : State.Play);
-    }
-
     public void ChangeState(State state)
     {
         this.state = state;
@@ -63,7 +53,7 @@ public class LevelManager : MonoBehaviour
         {
             case State.Play:
                 references.music.UnPause();
-                Runtime2DTransformInteractor.TransformInteractorController.instance.UnSelectEverything();
+                Runtime2DTransformInteractor.TransformInteractorController.instance.DeselectAll();
                 Runtime2DTransformInteractor.TransformInteractorController.instance.enableSelecting = false;
                 editorUI.gameObject.SetActive(false);
                 break;
@@ -151,10 +141,9 @@ public class LevelManager : MonoBehaviour
     #endregion UI
 
     #region Project
-
     public void CreateProject(ProjectInfo projectInfo)
     {
-        File.WriteAllText(projectInfo.path, "{}");
+        File.WriteAllText(projectInfo.path, RhitomataSerializer.Serialize(projectInfo));
     }
 
     void LoadProject(string path)
@@ -166,7 +155,6 @@ public class LevelManager : MonoBehaviour
     {
 
     }
-
     #endregion Project
 
 }

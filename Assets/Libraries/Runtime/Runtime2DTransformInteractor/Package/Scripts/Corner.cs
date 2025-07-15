@@ -44,7 +44,7 @@ namespace Runtime2DTransformInteractor
                     && colliderHit.gameObject != spriteBounds.bottomLine.gameObject)
                     )
                 {
-                    spriteBounds.interactor.targetGameObject.GetComponent<TransformInteractor>().UnSelect();
+                    spriteBounds.interactor.targetGameObject.GetComponent<TransformInteractor>().Deselect();
                 }
             }
         }

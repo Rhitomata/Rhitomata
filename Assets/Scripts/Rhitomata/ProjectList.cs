@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using TMPro;
@@ -52,7 +53,10 @@ public class ProjectList : MonoBehaviour
         var projectFilePaths = Directory.GetFiles(ProjectsDir);
         foreach (var projectPath in projectFilePaths)
         {
-            var projectInfo = new ProjectInfo(Path.GetFileName(projectPath), path: projectPath);// temp
+            var projectInfo = new ProjectInfo() {
+                name = Path.GetFileName(projectPath),
+                path = projectPath
+            };
 
             var projectUI = Instantiate(projectUIPrefab, projectUIHolder).GetComponent<ProjectUI>();
             projectUI.Initialize(projectInfo);
@@ -61,18 +65,24 @@ public class ProjectList : MonoBehaviour
 
     public void CreateProject()
     {
+        var name = projectNameInputField.text;
+
         var projectInfo = new ProjectInfo(projectNameInputField.text, authorInputField.text, Path.Combine(ProjectsDir, $"{projectNameInputField.text}.rhito"));
         levelManager.CreateProject(projectInfo);
     }
 }
 
-public struct ProjectInfo
+public class ProjectInfo
 {
-    public string name;
-    public string author;
-    public string path;
+    public string name = "New Project";
+    public string author = "Unknown";
 
-    public ProjectInfo(string name = "New Project", string author = "Unknown", string path = "")
+    [JsonIgnore]
+    public string path { get; set; }
+    public string infoPath => Path.Combine(); 
+
+    public ProjectInfo() { }
+    public ProjectInfo(string name, string author, string path)
     {
         this.name = name;
         this.author = author;

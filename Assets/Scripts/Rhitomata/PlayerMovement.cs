@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 namespace Rhitomata
 {
@@ -13,7 +14,11 @@ namespace Rhitomata
         [SerializeField] private GameObject tailPrefab;
         [SerializeField] private Transform tailParent;
 
-        [SerializeField] private InputActionReference tapAction;
+        [SerializeField] private KeyCode[] tapKeys = {
+            KeyCode.Mouse0,
+            KeyCode.UpArrow,
+            KeyCode.Space
+        };
 
         [Header("Properties")]
         public float speed = 15;
@@ -27,49 +32,9 @@ namespace Rhitomata
         public int rotationIndex;
         public bool isStarted;
 
+        private int inputQueue;
         private GameObject currentTail;
         private readonly List<GameObject> tails = new();
-
-        private void OnEnable()
-        {
-            tapAction.action.performed += OnTapStarted;
-            tapAction.action.canceled += OnTapCancelled;
-        }
-
-        private void OnDisable()
-        {
-            tapAction.action.performed -= OnTapStarted;
-            tapAction.action.canceled -= OnTapCancelled;
-        }
-
-        private void OnTapStarted(InputAction.CallbackContext obj)
-        {
-            if (references.manager.state != State.Play) return;
-
-#if UNITY_EDITOR
-            if (debug)
-                Debug.Log($"Tap called in phase: {obj.phase}");
-#endif
-            if (!isStarted)
-            {
-                references.music.Play();
-                isStarted = true;
-                RotateToIndex(0);
-                CreateTail();
-            }
-            else
-            {
-                Turn();
-            }
-        }
-
-        private void OnTapCancelled(InputAction.CallbackContext obj)
-        {
-#if UNITY_EDITOR
-            if (debug)
-                Debug.Log($"Tap called in phase: {obj.phase}");
-#endif
-        }
 
         void Update()
         {
@@ -88,6 +53,41 @@ namespace Rhitomata
                 }
             }
         }
+
+        public void InputUpdate() {
+            if (inputQueue > 0) {
+                if (references.manager.state != State.Play) return;
+
+                if (!isStarted) {
+                    references.music.Play();
+                    isStarted = true;
+                    RotateToIndex(0);
+                    CreateTail();
+                }
+                else {
+                    Turn();
+                }
+            }
+        }
+
+        public void UpdateInputQueue() {
+            if (Application.isMobilePlatform) {
+                foreach (var touch in Input.touches) {
+                    if (touch.phase == TouchPhase.Began)
+                        if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                            inputQueue++;
+                }
+            }
+            else {
+                foreach (var key in tapKeys) {
+                    if (Input.GetKeyDown(key))
+                        if (!InputManager.IsMouseOverUI((int)key))
+                            inputQueue++;
+                }
+            }
+        }
+
+        public void ResetInputQueue() => inputQueue = 0;
 
         public void Turn()
         {

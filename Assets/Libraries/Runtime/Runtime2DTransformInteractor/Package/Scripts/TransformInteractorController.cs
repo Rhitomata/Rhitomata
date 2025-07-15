@@ -177,8 +177,9 @@ namespace Runtime2DTransformInteractor
         /// </summary>
         public List<KeyCode> aspectRatioKeys;
 
-        [HideInInspector]
-        public List<TransformInteractor> selectedElements;
+        [Header("Selection")]
+        public List<TransformInteractor> hoveredElements = new();
+        public List<TransformInteractor> selectedElements = new();
 
         [HideInInspector]
         public MouseCursor mouseCursor;
@@ -209,7 +210,7 @@ namespace Runtime2DTransformInteractor
                         List<TransformInteractor> copy = new List<TransformInteractor>(selectedElements);
                         foreach (TransformInteractor elt in copy)
                         {
-                            elt.UnSelect();
+                            elt.Deselect();
                         }
                     }
                 }
@@ -376,12 +377,18 @@ namespace Runtime2DTransformInteractor
         /// <summary>
         /// Unselects every selected transform.
         /// </summary>
-        public void UnSelectEverything()
+        public void DeselectAll()
         {
-            List<TransformInteractor> copy = new List<TransformInteractor>(selectedElements);
-            foreach (TransformInteractor elt in copy)
-            {
-                elt.UnSelect();
+            List<TransformInteractor> copy = new(selectedElements);
+            foreach (TransformInteractor element in copy)
+                element.Deselect();
+        }
+
+        public void DehoverAll() {
+            List<TransformInteractor> copy2 = new(hoveredElements);
+            foreach (TransformInteractor element in copy2) {
+                if (!element.selected)
+                    element.Deselect();
             }
         }
 
