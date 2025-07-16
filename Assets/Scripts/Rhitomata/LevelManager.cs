@@ -70,24 +70,24 @@ public class LevelManager : MonoBehaviour {
     public const string fileExtension = "rhito";// maybe change this?
 
     public void BrowseToSaveProject() {
-        var extesnions = new[]
+        var extensions = new[]
         {
             new ExtensionFilter("Rhitomata Project", fileExtension),
             new ExtensionFilter("All Files", "*"),
         };
-        var path = StandaloneFileBrowser.SaveFilePanel("Save project", ProjectList.ProjectsDir, "New Project", extesnions);
+        var path = StandaloneFileBrowser.SaveFilePanel("Save project", ProjectList.ProjectsDir, "New Project", extensions);
         if (string.IsNullOrEmpty(path)) return; // Cancelled
 
         SaveProject(path);
     }
 
     public void BrowseForProject() {
-        var extesnions = new[]
+        var extensions = new[]
         {
             new ExtensionFilter("Rhitomata Project", fileExtension),
             new ExtensionFilter("All Files", "*"),
         };
-        var result = StandaloneFileBrowser.OpenFilePanel("Load project", ProjectList.ProjectsDir, extesnions, false);
+        var result = StandaloneFileBrowser.OpenFilePanel("Load project", ProjectList.ProjectsDir, extensions, false);
         if (result == null || result.Length == 0) return; // Cancelled
 
         var path = result[0];
@@ -96,12 +96,12 @@ public class LevelManager : MonoBehaviour {
     }
 
     public void BrowseForSong() {
-        var extesnions = new[]
+        var extensions = new[]
         {
             new ExtensionFilter("Sound Files", "ogg", "mp3", "wav"),
             new ExtensionFilter("All Files", "*"),
         };
-        var result = StandaloneFileBrowser.OpenFilePanel("Import song", "", extesnions, false);
+        var result = StandaloneFileBrowser.OpenFilePanel("Import song", "", extensions, false);
         if (result == null || result.Length == 0) return; // Cancelled
 
         var path = result[0];
@@ -110,12 +110,12 @@ public class LevelManager : MonoBehaviour {
     }
 
     public void BrowseForBeatmap() {
-        var extesnions = new[]
+        var extensions = new[]
         {
             new ExtensionFilter("Text Files", "txt"),
             new ExtensionFilter("All Files", "*"),
         };
-        var result = StandaloneFileBrowser.OpenFilePanel("Import beatmap", "", extesnions, false);
+        var result = StandaloneFileBrowser.OpenFilePanel("Import beatmap", "", extensions, false);
         if (result == null || result.Length == 0) return; // Cancelled
 
         var path = result[0];
