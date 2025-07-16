@@ -3,8 +3,7 @@ using Rhitomata;
 using SFB;
 using UnityEngine;
 
-public class LevelManager : MonoBehaviour
-{
+public class LevelManager : MonoBehaviour {
     [Header("References")]
     public References references;
     [SerializeField] private KeyCode switchStateKey = KeyCode.Tab;
@@ -18,16 +17,14 @@ public class LevelManager : MonoBehaviour
     public State state;
     public bool debug;
 
-    private void Start()
-    {
-        projectList.Hide();
+    private void Start() {
+        // We'll make a Window class for showing and hiding these properly
+        projectList.gameObject.SetActive(false);
         ChangeState(State.Edit);
     }
 
-    private void Update()
-    {
-        if (debug)
-        {
+    private void Update() {
+        if (debug) {
             if (Input.GetKeyDown(KeyCode.R))
                 Restart();
         }
@@ -37,8 +34,7 @@ public class LevelManager : MonoBehaviour
 
     }
 
-    public void Restart()
-    {
+    public void Restart() {
         references.cameraMovement.transform.localPosition = new Vector3(0, 0, -10);
         references.player.ResetAll();
         ChangeState(State.Edit);
@@ -46,11 +42,9 @@ public class LevelManager : MonoBehaviour
         // TODO: Reset decorations as well, probably only possible when we have a proper serialization system
     }
 
-    public void ChangeState(State state)
-    {
+    public void ChangeState(State state) {
         this.state = state;
-        switch (state)
-        {
+        switch (state) {
             case State.Play:
                 references.transformController.DehoverAll();
                 // TODO: Save selection and restore it when going back to edit mode
@@ -75,8 +69,7 @@ public class LevelManager : MonoBehaviour
 
     public const string fileExtension = "rhito";// maybe change this?
 
-    public void BrowseToSaveProject()
-    {
+    public void BrowseToSaveProject() {
         var extesnions = new[]
         {
             new ExtensionFilter("Rhitomata Project", fileExtension),
@@ -88,8 +81,7 @@ public class LevelManager : MonoBehaviour
         SaveProject(path);
     }
 
-    public void BrowseForProject()
-    {
+    public void BrowseForProject() {
         var extesnions = new[]
         {
             new ExtensionFilter("Rhitomata Project", fileExtension),
@@ -103,8 +95,7 @@ public class LevelManager : MonoBehaviour
         LoadProject(path);
     }
 
-    public void BrowseForSong()
-    {
+    public void BrowseForSong() {
         var extesnions = new[]
         {
             new ExtensionFilter("Sound Files", "ogg", "mp3", "wav"),
@@ -118,8 +109,7 @@ public class LevelManager : MonoBehaviour
         // Set song
     }
 
-    public void BrowseForBeatmap()
-    {
+    public void BrowseForBeatmap() {
         var extesnions = new[]
         {
             new ExtensionFilter("Text Files", "txt"),
@@ -133,33 +123,28 @@ public class LevelManager : MonoBehaviour
         // Set beatmap
     }
 
-    public void ShowProjectList()
-    {
-        projectList.Show();
+    public void ShowProjectList() {
+        // We'll make a Window class for showing and hiding these properly
+        projectList.gameObject.SetActive(true);
     }
 
-    public void Exit()
-    {
+    public void Exit() {
         Application.Quit();
     }
 
     #endregion UI
 
     #region Project
-    public void CreateProject(ProjectInfo projectInfo)
-    {
+    public void CreateProject(ProjectInfo projectInfo) {
         File.WriteAllText(projectInfo.path, RhitomataSerializer.Serialize(projectInfo));
     }
 
-    void LoadProject(string path)
-    {
+    void LoadProject(string path) {
 
     }
 
-    void SaveProject(string path)
-    {
+    void SaveProject(string path) {
 
     }
     #endregion Project
-
 }

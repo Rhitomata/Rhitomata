@@ -12,6 +12,86 @@ PrefabInstance:
       propertyPath: m_Name
       value: ButtonDropdownUI
       objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_NormalColor.b
+      value: 0.08627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_NormalColor.g
+      value: 0.08627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_NormalColor.r
+      value: 0.08627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_PressedColor.b
+      value: 0.3490566
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_PressedColor.g
+      value: 0.3490566
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_PressedColor.r
+      value: 0.3490566
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_DisabledColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_DisabledColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_DisabledColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_DisabledColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_SelectedColor.b
+      value: 0.16981131
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_SelectedColor.g
+      value: 0.16981131
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_SelectedColor.r
+      value: 0.16981131
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.254717
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.254717
+      objectReference: {fileID: 0}
+    - target: {fileID: 5359894555155515270, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.254717
+      objectReference: {fileID: 0}
+    - target: {fileID: 5563262056551347240, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5563262056551347240, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5563262056551347240, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5563262056551347240, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6046545226176861869, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
       propertyPath: m_Pivot.x
       value: 0

@@ -26,16 +26,6 @@ public class ProjectList : MonoBehaviour
         //authorInputField.text = Environment.UserName;
     }
 
-    public void Show()
-    {
-        gameObject.SetActive(true);
-    }
-
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-    }
-
     private void OnEnable()
     {
         UpdateProjectListUI();
