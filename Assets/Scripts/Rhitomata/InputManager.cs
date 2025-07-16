@@ -4,8 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Rhitomata
-{
+namespace Rhitomata {
     /// <summary>
     /// Having new input system mixed with old input system is very confusing actually
     /// </summary>

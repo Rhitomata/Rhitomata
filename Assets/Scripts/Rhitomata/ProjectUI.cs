@@ -4,16 +4,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ProjectUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
-{
+public class ProjectUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
     [SerializeField] private TMP_Text projectNameText;
     [SerializeField] private TMP_Text projectPathText;
     [SerializeField] private Button closeButton;
 
     private ProjectInfo projectInfo;
 
-    public void Initialize(ProjectInfo projectInfo)
-    {
+    public void Initialize(ProjectInfo projectInfo) {
         this.projectInfo = projectInfo;
 
         projectNameText.text = projectInfo.name;
@@ -21,19 +19,16 @@ public class ProjectUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         closeButton.gameObject.SetActive(false);
     }
 
-    public void Delete()
-    {
+    public void Delete() {
         //FileSystem.DeleteFile(projectInfo.path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         Destroy(gameObject);
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
+    public void OnPointerEnter(PointerEventData eventData) {
         closeButton.gameObject.SetActive(true);
     }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
+    public void OnPointerExit(PointerEventData eventData) {
         closeButton.gameObject.SetActive(false);
     }
 }

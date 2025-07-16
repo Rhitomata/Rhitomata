@@ -5,10 +5,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ProjectList : MonoBehaviour
-{
+public class ProjectList : MonoBehaviour {
     public static string ProjectsDir => Path.Combine(Application.persistentDataPath, @"Projects");
-    
+
     [SerializeField] private LevelManager levelManager;
 
     // New project
@@ -19,30 +18,25 @@ public class ProjectList : MonoBehaviour
     [SerializeField] private Transform projectUIHolder;
     [SerializeField] private GameObject projectUIPrefab;
 
-    private void Awake()
-    {
+    private void Awake() {
         projectNameInputField.text = "Untitled";
         authorInputField.text = "Unknown";
         //authorInputField.text = Environment.UserName;
     }
 
-    private void OnEnable()
-    {
+    private void OnEnable() {
         UpdateProjectListUI();
     }
 
-    private void UpdateProjectListUI()
-    {
+    private void UpdateProjectListUI() {
         if (!Directory.Exists(ProjectsDir)) Directory.CreateDirectory(ProjectsDir);
 
-        foreach (Transform t in projectUIHolder)
-        {
+        foreach (Transform t in projectUIHolder) {
             Destroy(t.gameObject);
         }
 
         var projectFilePaths = Directory.GetFiles(ProjectsDir);
-        foreach (var projectPath in projectFilePaths)
-        {
+        foreach (var projectPath in projectFilePaths) {
             var projectInfo = new ProjectInfo() {
                 name = Path.GetFileName(projectPath),
                 path = projectPath
@@ -53,8 +47,7 @@ public class ProjectList : MonoBehaviour
         }
     }
 
-    public void CreateProject()
-    {
+    public void CreateProject() {
         var name = projectNameInputField.text;
 
         var projectInfo = new ProjectInfo(projectNameInputField.text, authorInputField.text, Path.Combine(ProjectsDir, $"{projectNameInputField.text}.rhito"));
@@ -62,8 +55,7 @@ public class ProjectList : MonoBehaviour
     }
 }
 
-public class ProjectInfo
-{
+public class ProjectInfo {
     /// <summary>
     /// This project name can possibly mismatch with the folder name
     /// </summary>
@@ -90,11 +82,10 @@ public class ProjectInfo
     [JsonIgnore]
     public string path { get; set; }
     [JsonIgnore]
-    public string infoPath => Path.Combine(); 
+    public string infoPath => Path.Combine();
 
     public ProjectInfo() { }
-    public ProjectInfo(string name, string author, string path)
-    {
+    public ProjectInfo(string name, string author, string path) {
         this.name = name;
         this.author = author;
         this.path = path;
