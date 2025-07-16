@@ -19,6 +19,21 @@ public class LevelManager : MonoBehaviour {
     public State state;
     public bool debug;
 
+    private float desyncThreshold = 0.3f;
+    private float _time;
+    public float Time {
+        get {
+            return _time;
+        }
+        set {
+            _time = value;
+
+            // Syncs music player when it gets too off-sync
+            var musicPlayer = references.music;
+            if (musicPlayer.clip != null && (musicPlayer.time > _time + desyncThreshold || musicPlayer.time < _time - desyncThreshold)) musicPlayer.time = Mathf.Clamp(_time, 0, musicPlayer.clip.length);// TODO: Maybe cache clip length for better performance?
+        }
+    }
+
     private void Start() {
         // We'll make a Window class for showing and hiding these properly
         projectList.gameObject.SetActive(false);
@@ -26,6 +41,13 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void Update() {
+        if (references.manager.state == State.Play) {
+            if (!references.music.isPlaying) references.music.Play();
+            Time += UnityEngine.Time.deltaTime;
+        } else {
+            if (references.music.isPlaying) references.music.Stop();
+        }
+
         if (debug) {
             if (Input.GetKeyDown(KeyCode.R))
                 Restart();
@@ -37,6 +59,7 @@ public class LevelManager : MonoBehaviour {
     }
 
     public void Restart() {
+        Time = 0;
         references.cameraMovement.transform.localPosition = new Vector3(0, 0, -10);
         references.player.ResetAll();
         ChangeState(State.Edit);
@@ -52,7 +75,6 @@ public class LevelManager : MonoBehaviour {
                 // TODO: Save selection and restore it when going back to edit mode
                 references.transformController.DeselectAll();
                 references.transformController.enableSelecting = false;
-                references.music.UnPause();
                 Runtime2DTransformInteractor.TransformInteractorController.instance.DeselectAll();
                 Runtime2DTransformInteractor.TransformInteractorController.instance.enableSelecting = false;
                 editorUI.gameObject.SetActive(false);
@@ -60,7 +82,6 @@ public class LevelManager : MonoBehaviour {
 
             case State.Edit:
                 references.transformController.enableSelecting = true;
-                references.music.Pause();
                 Runtime2DTransformInteractor.TransformInteractorController.instance.enableSelecting = true;
                 editorUI.gameObject.SetActive(true);
                 break;

@@ -4,17 +4,16 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Rhitomata
-{
-    public class PlayerMovement : MonoBehaviour
-    {
+namespace Rhitomata {
+    public class PlayerMovement : MonoBehaviour {
         [Header("References")]
         public References references;
 
         [SerializeField] private GameObject tailPrefab;
         [SerializeField] private Transform tailParent;
 
-        [SerializeField] private KeyCode[] tapKeys = {
+        [SerializeField]
+        private KeyCode[] tapKeys = {
             KeyCode.Mouse0,
             KeyCode.UpArrow,
             KeyCode.Space
@@ -38,17 +37,16 @@ namespace Rhitomata
 
         void Update() {
             if (references.manager.state != State.Play) return;
+
             UpdateInputQueue();
             InputUpdate();
 
-            if (isStarted)
-            {
+            if (isStarted) {
                 var velocity = speed * Time.deltaTime;
                 var translation = transform.up * velocity;
                 transform.localPosition += translation;
 
-                if (currentTail != null)
-                {
+                if (currentTail != null) {
                     currentTail.transform.localPosition += translation / 2f;
                     currentTail.transform.localScale += Vector3.up * velocity;
                 }
@@ -65,8 +63,7 @@ namespace Rhitomata
                         if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId))
                             inputQueue++;
                 }
-            }
-            else {
+            } else {
                 foreach (var key in tapKeys) {
                     if (Input.GetKeyDown(key))
                         if (!InputManager.IsMouseOverUI((int)key))
@@ -86,8 +83,7 @@ namespace Rhitomata
                     isStarted = true;
                     RotateToIndex(0);
                     CreateTail();
-                }
-                else {
+                } else {
                     Turn();
                 }
                 inputQueue--;
@@ -102,8 +98,7 @@ namespace Rhitomata
         /// <summary>
         /// Rotates the player and creates a tail along with it
         /// </summary>
-        public void Turn()
-        {
+        public void Turn() {
             RotateToIndex((rotationIndex + 1) % rotations.Count);
             CreateTail();
         }
@@ -113,8 +108,7 @@ namespace Rhitomata
         /// this also registers the tail on the tail list
         /// </summary>
         /// <returns>The produced tail</returns>
-        private GameObject CreateTail()
-        {
+        private GameObject CreateTail() {
             currentTail = Instantiate(tailPrefab, tailParent);
             currentTail.transform.localPosition = transform.localPosition;
             currentTail.transform.localEulerAngles = transform.localEulerAngles;
@@ -125,8 +119,7 @@ namespace Rhitomata
         /// <summary>
         /// Clear the tail list and destroys them
         /// </summary>
-        void ClearTails()
-        {
+        void ClearTails() {
             currentTail = null;
             foreach (var tail in tails)
                 Destroy(tail);
@@ -137,8 +130,7 @@ namespace Rhitomata
         /// Rotate to angles defined in <see cref="rotations"/>
         /// </summary>
         /// <param name="index">The <see cref="rotations"/> index</param>
-        public void RotateToIndex(int index)
-        {
+        public void RotateToIndex(int index) {
             rotationIndex = index;
 
             var rotation = rotations[index];
@@ -148,8 +140,7 @@ namespace Rhitomata
         /// <summary>
         /// Resets the position, tail, rotation, and other player states
         /// </summary>
-        public void ResetAll()
-        {
+        public void ResetAll() {
             isStarted = false;
             ClearTails();
             rotationIndex = 0;
