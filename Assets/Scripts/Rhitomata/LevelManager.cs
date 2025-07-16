@@ -1,7 +1,9 @@
-using System.IO;
 using Rhitomata;
 using SFB;
+using System.Collections;
+using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class LevelManager : MonoBehaviour {
     [Header("References")]
@@ -106,7 +108,7 @@ public class LevelManager : MonoBehaviour {
 
         var path = result[0];
 
-        // Set song
+        StartCoroutine(ImportSong(path));
     }
 
     public void BrowseForBeatmap() {
@@ -131,19 +133,6 @@ public class LevelManager : MonoBehaviour {
     public void Exit() {
         Application.Quit();
     }
-
-    /// <summary>
-    /// This does not copy the song to the proper path
-    /// </summary>
-    /// <param name="path">Absolute path of the song</param>
-    public void ImportSong(string path) {
-        if (project != null) {
-            if (path == project.audioPath)
-                return;
-        } else {
-            Debug.LogWarning("There's no project open yet but a song is trying to be imported anyway...");
-        }
-    }
     #endregion UI
 
     #region Project
@@ -160,4 +149,37 @@ public class LevelManager : MonoBehaviour {
 
     }
     #endregion Project
+
+    /// <summary>
+    /// This does not copy the song to the proper path
+    /// </summary>
+    /// <param name="path">Absolute path of the song</param>
+    private IEnumerator ImportSong(string path) {
+        if (project == null) {
+            Debug.LogWarning("There's no project open yet, but a song is trying to be imported anyway!");
+            yield break;
+        }
+        if (string.IsNullOrEmpty(path)) {
+            Debug.LogWarning("An error occurred while importing the song: Empty path");
+            yield break;
+        }
+
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.UNKNOWN)) {
+            yield return www.SendWebRequest();
+            if (www.result != UnityWebRequest.Result.Success) {
+                Debug.LogWarning($"An error occurred while importing the song: {www.error}");
+                yield break;
+            }
+
+            AudioClip myClip = DownloadHandlerAudioClip.GetContent(www);
+            if (myClip == null) {
+                Debug.LogWarning($"An error occurred while importing the song: Unknown file type?");
+                yield break;
+            }
+
+            project.audioPath = path;// TODO: Should be relative!
+            references.music.clip = myClip;
+            Debug.Log("Loaded song!");
+        }
+    }
 }
