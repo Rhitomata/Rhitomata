@@ -64,11 +64,32 @@ public class ProjectList : MonoBehaviour
 
 public class ProjectInfo
 {
+    /// <summary>
+    /// This project name can possibly mismatch with the folder name
+    /// </summary>
     public string name = "New Project";
+    /// <summary>
+    /// The creator's username
+    /// </summary>
     public string author = "Unknown";
+
+    /// <summary>
+    /// The name of the music
+    /// </summary>
+    public string musicTitle = "None";
+    /// <summary>
+    /// The author/creator of the music
+    /// </summary>
+    public string musicAuthor = "Unknown";
+
+    /// <summary>
+    /// Relative audio path from the project
+    /// </summary>
+    public string audioPath;
 
     [JsonIgnore]
     public string path { get; set; }
+    [JsonIgnore]
     public string infoPath => Path.Combine(); 
 
     public ProjectInfo() { }

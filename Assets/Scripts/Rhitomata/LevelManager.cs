@@ -132,11 +132,24 @@ public class LevelManager : MonoBehaviour {
         Application.Quit();
     }
 
+    /// <summary>
+    /// This does not copy the song to the proper path
+    /// </summary>
+    /// <param name="path">Absolute path of the song</param>
+    public void ImportSong(string path) {
+        if (project != null) {
+            if (path == project.audioPath)
+                return;
+        } else {
+            Debug.LogWarning("There's no project open yet but a song is trying to be imported anyway...");
+        }
+    }
     #endregion UI
 
     #region Project
     public void CreateProject(ProjectInfo projectInfo) {
         File.WriteAllText(projectInfo.path, RhitomataSerializer.Serialize(projectInfo));
+        LoadProject(projectInfo.path);
     }
 
     void LoadProject(string path) {
