@@ -1,5 +1,5 @@
 # Rhitomata
-A rhythm game 👍.
+A rhythm game 👍
 
 ## What is this?
 
@@ -11,7 +11,7 @@ You won't see much even if you cloned it, we'll be building this out when we hav
 
 Still prototyping.
 
-[Contact us (Discord)](https://discord.gg/Jg7ECbxttm) if you have any suggestion, feedback, or additional ideas that you think might be cool to include in this game!
+[Contact us (Discord)](https://discord.gg/Jg7ECbxttm) if you have any suggestions, feedback, or additional ideas that you think might be cool to include in this game!
 
 ## Requirements
 
@@ -40,7 +40,7 @@ The project will become open-source under the following conditions:
 When this happens, the code will be **relicensed**:
 
 - **By default, under the [MIT License](https://opensource.org/licenses/MIT)**
-- However, the original developer [**Rhitomaic**](https://github.com/ReDarkTechnology) reserves the right to relicense it under either the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) or the [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.html) instead, based on what best serves the project and its contributors at that time.
+- However, the original developer [**Rhitomaic**](https://github.com/Rhitomaic) reserves the right to relicense it under either the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) or the [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.html) instead, based on what best serves the project and its contributors at that time.
 
 All changes will apply retroactively to the codebase and will be announced publicly.
 
