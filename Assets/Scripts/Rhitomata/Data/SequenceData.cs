@@ -209,9 +209,7 @@ namespace Rhitomata.Data {
                     point.tail.AdjustStretch(Vector3.zero, point.position);
 
                 if (points.Count > 1)
-                {
                     AdjustAllPointFromIndex(1);
-                }
             }
             else
             {
@@ -249,6 +247,7 @@ namespace Rhitomata.Data {
         #endregion
     }
 
+    [System.Serializable]
     public class ModifyPoint {
         public float time { get; set; }
         public Vector3 position { get; set; }
