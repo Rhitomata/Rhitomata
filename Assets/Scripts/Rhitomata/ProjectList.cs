@@ -1,5 +1,4 @@
-using Newtonsoft.Json;
-using System;
+using Rhitomata.Data;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -35,12 +34,10 @@ public class ProjectList : MonoBehaviour {
             Destroy(t.gameObject);
         }
 
+        // TODO: Read project data from json file?
         var projectFilePaths = Directory.GetFiles(ProjectsDir);
         foreach (var projectPath in projectFilePaths) {
-            var projectInfo = new ProjectInfo() {
-                name = Path.GetFileName(projectPath),
-                path = projectPath
-            };
+            var projectInfo = new ProjectData(Path.GetFileName(projectPath), "Unknown", "Unknown", projectPath);
 
             var projectUI = Instantiate(projectUIPrefab, projectUIHolder).GetComponent<ProjectUI>();
             projectUI.Initialize(projectInfo);
@@ -49,45 +46,11 @@ public class ProjectList : MonoBehaviour {
 
     public void CreateProject() {
         var name = projectNameInputField.text;
+        var author = authorInputField.text;
+        var songArtist = "Unknown Artist";// TODO?
+        var path = Path.Combine(ProjectsDir, $"{projectNameInputField.text}.rhito");
 
-        var projectInfo = new ProjectInfo(projectNameInputField.text, authorInputField.text, Path.Combine(ProjectsDir, $"{projectNameInputField.text}.rhito"));
+        var projectInfo = new ProjectData(name, author, songArtist, path);
         levelManager.CreateProject(projectInfo);
-    }
-}
-
-public class ProjectInfo {
-    /// <summary>
-    /// This project name can possibly mismatch with the folder name
-    /// </summary>
-    public string name = "New Project";
-    /// <summary>
-    /// The creator's username
-    /// </summary>
-    public string author = "Unknown";
-
-    /// <summary>
-    /// The name of the music
-    /// </summary>
-    public string musicTitle = "None";
-    /// <summary>
-    /// The author/creator of the music
-    /// </summary>
-    public string musicAuthor = "Unknown";
-
-    /// <summary>
-    /// Relative audio path from the project
-    /// </summary>
-    public string audioPath;
-
-    [JsonIgnore]
-    public string path { get; set; }
-    [JsonIgnore]
-    public string infoPath => Path.Combine();
-
-    public ProjectInfo() { }
-    public ProjectInfo(string name, string author, string path) {
-        this.name = name;
-        this.author = author;
-        this.path = path;
     }
 }

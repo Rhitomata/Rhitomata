@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: f9a94598bc7aaf24a9d411a7b1eff1a0
+guid: a9f82c32070d6ec42bb8a549e0a03748
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5248415023898783801
-    second: Close_0
+      213: -9115816540745682749
+    second: light-bulb-7862849_1280_0
+  - first:
+      213: 2486457069169743606
+    second: light-bulb-7862849_1280_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -52,7 +55,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 52, y: 52, z: 52, w: 52}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -72,7 +75,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 512
+    maxTextureSize: 256
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -113,23 +116,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Close_0
+      name: light-bulb-7862849_1280_0
       rect:
         serializedVersion: 2
-        x: 53
-        y: 52
-        width: 111
-        height: 111
+        x: 0
+        y: 297
+        width: 765
+        height: 983
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9307f4d28ad16d840800000000000000
-      internalID: 5248415023898783801
+      spriteID: 3c03933672d1e7180800000000000000
+      internalID: -9115816540745682749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: light-bulb-7862849_1280_1
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 0
+        width: 423
+        height: 263
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f61f15d78ba18220800000000000000
+      internalID: 2486457069169743606
       vertices: []
       indices: 
       edges: []
@@ -139,7 +164,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    internalID: 0
     vertices: []
     indices: 
     edges: []
@@ -148,7 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Close_0: 5248415023898783801
+      light-bulb-7862849_1280_0: -9115816540745682749
+      light-bulb-7862849_1280_1: 2486457069169743606
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

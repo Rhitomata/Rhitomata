@@ -1,13 +1,10 @@
-using Runtime2DTransformInteractor;
 using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Runtime2DTransformInteractor;
 
 namespace Rhitomata {
-    /// <summary>
-    /// Having new input system mixed with old input system is very confusing actually
-    /// </summary>
     public class InputManager : MonoBehaviour {
         public TransformInteractorController transformController;
         private bool wasHovering;

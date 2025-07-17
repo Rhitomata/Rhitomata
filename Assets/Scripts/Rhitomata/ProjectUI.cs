@@ -3,15 +3,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Rhitomata.Data;
 
 public class ProjectUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
     [SerializeField] private TMP_Text projectNameText;
     [SerializeField] private TMP_Text projectPathText;
     [SerializeField] private Button closeButton;
 
-    private ProjectInfo projectInfo;
+    private ProjectData projectInfo;
 
-    public void Initialize(ProjectInfo projectInfo) {
+    public void Initialize(ProjectData projectInfo) {
         this.projectInfo = projectInfo;
 
         projectNameText.text = projectInfo.name;
@@ -20,6 +21,7 @@ public class ProjectUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     }
 
     public void Delete() {
+        // i think deleting, should move the project to the recycling bin instead of deleting the project completely
         //FileSystem.DeleteFile(projectInfo.path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         Destroy(gameObject);
     }

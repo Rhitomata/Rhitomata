@@ -3,7 +3,10 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 
-// This doesn't work I think
+/// <summary>
+/// Scans all scripts and shows a warning if JsonUtility is used instead of RhitomataSerializer.
+/// Requires Clear on Recompiple to be disabled in the Console settings, otherwise the warning won't show up!
+/// </summary>
 public class JsonUtilityScanner : AssetPostprocessor {
     static List<string> forbiddenCodes = new() {
         "JsonUtility.ToJson",

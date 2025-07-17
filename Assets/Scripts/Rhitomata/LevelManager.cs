@@ -1,10 +1,12 @@
 using Rhitomata;
+using Rhitomata.Data;
 using SFB;
 using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
+using static Useful;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Rhitomata.Editor")]
 public class LevelManager : MonoBehaviour {
@@ -15,14 +17,14 @@ public class LevelManager : MonoBehaviour {
     [SerializeField] private ProjectList projectList;
 
     [Header("Project")]
-    public ProjectInfo project = new();
+    public ProjectData project = new();
 
     [Header("States")]
     public State state;
     public bool debug;
 
-    private float desyncThreshold = 0.3f;
-    private float time;
+    private float desyncThreshold = 0.3f;// TODO: Make customizable from UI maybe?
+    public float time;
 
     private void Start() {
         // TODO: We'll make a Window class for showing and hiding these properly
@@ -152,7 +154,7 @@ public class LevelManager : MonoBehaviour {
     #endregion UI
 
     #region Project
-    public void CreateProject(ProjectInfo projectInfo) {
+    public void CreateProject(ProjectData projectInfo) {
         File.WriteAllText(projectInfo.path, RhitomataSerializer.Serialize(projectInfo));
         LoadProject(projectInfo.path);
     }
@@ -194,19 +196,9 @@ public class LevelManager : MonoBehaviour {
             yield break;
         }
 
-        project.audioPath = GetRelativePath(path, project.path);
+        if (!string.IsNullOrEmpty(project.path))// HACK
+            project.musicPath = GetRelativePath(path, project.path);
         references.music.clip = myClip;
         Debug.Log("Loaded song!");
-    }
-
-    string GetRelativePath(string filespec, string folder) {
-        var pathUri = new Uri(filespec);
-        // Folders must end in a slash
-        if (!folder.EndsWith(Path.DirectorySeparatorChar.ToString())) {
-            folder += Path.DirectorySeparatorChar;
-        }
-
-        var folderUri = new Uri(folder);
-        return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar)).Replace('\\', '/');
     }
 }
