@@ -1,10 +1,12 @@
 using Rhitomata;
 using SFB;
+using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Rhitomata.Editor")]
 public class LevelManager : MonoBehaviour {
     [Header("References")]
     public References references;
@@ -20,22 +22,10 @@ public class LevelManager : MonoBehaviour {
     public bool debug;
 
     private float desyncThreshold = 0.3f;
-    private float _time;
-    public float Time {
-        get {
-            return _time;
-        }
-        set {
-            _time = value;
-
-            // Syncs music player when it gets too off-sync
-            var musicPlayer = references.music;
-            if (musicPlayer.clip != null && (musicPlayer.time > _time + desyncThreshold || musicPlayer.time < _time - desyncThreshold)) musicPlayer.time = Mathf.Clamp(_time, 0, musicPlayer.clip.length);// TODO: Maybe cache clip length for better performance?
-        }
-    }
+    private float time;
 
     private void Start() {
-        // We'll make a Window class for showing and hiding these properly
+        // TODO: We'll make a Window class for showing and hiding these properly
         projectList.gameObject.SetActive(false);
         ChangeState(State.Edit);
     }
@@ -43,7 +33,13 @@ public class LevelManager : MonoBehaviour {
     private void Update() {
         if (references.manager.state == State.Play) {
             if (!references.music.isPlaying) references.music.Play();
-            Time += UnityEngine.Time.deltaTime;
+            time += Time.deltaTime;
+
+            // Syncs music player when it gets too off-sync
+            // I don't know if it's better for the music player to resync or for the time to resync
+            // TODO: Maybe cache clip length for better performance?
+            var musicPlayer = references.music;
+            if (musicPlayer.clip != null && (musicPlayer.time > time + desyncThreshold || musicPlayer.time < time - desyncThreshold)) musicPlayer.time = Mathf.Clamp(time, 0, musicPlayer.clip.length);
         } else {
             if (references.music.isPlaying) references.music.Stop();
         }
@@ -55,11 +51,10 @@ public class LevelManager : MonoBehaviour {
 
         if (Input.GetKeyDown(switchStateKey))
             ChangeState(state == State.Play ? State.Edit : State.Play);
-
     }
 
     public void Restart() {
-        Time = 0;
+        time = 0;
         references.cameraMovement.transform.localPosition = new Vector3(0, 0, -10);
         references.player.ResetAll();
         ChangeState(State.Edit);
@@ -185,22 +180,33 @@ public class LevelManager : MonoBehaviour {
             yield break;
         }
 
-        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.UNKNOWN)) {
-            yield return www.SendWebRequest();
-            if (www.result != UnityWebRequest.Result.Success) {
-                Debug.LogWarning($"An error occurred while importing the song: {www.error}");
-                yield break;
-            }
+        using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.UNKNOWN);
 
-            AudioClip myClip = DownloadHandlerAudioClip.GetContent(www);
-            if (myClip == null) {
-                Debug.LogWarning($"An error occurred while importing the song: Unknown file type?");
-                yield break;
-            }
-
-            project.audioPath = path;// TODO: Should be relative!
-            references.music.clip = myClip;
-            Debug.Log("Loaded song!");
+        yield return www.SendWebRequest();
+        if (www.result != UnityWebRequest.Result.Success) {
+            Debug.LogWarning($"An error occurred while importing the song: {www.error}");
+            yield break;
         }
+
+        var myClip = DownloadHandlerAudioClip.GetContent(www);
+        if (myClip == null) {
+            Debug.LogWarning($"An error occurred while importing the song: Unknown file type?");
+            yield break;
+        }
+
+        project.audioPath = GetRelativePath(path, project.path);
+        references.music.clip = myClip;
+        Debug.Log("Loaded song!");
+    }
+
+    string GetRelativePath(string filespec, string folder) {
+        var pathUri = new Uri(filespec);
+        // Folders must end in a slash
+        if (!folder.EndsWith(Path.DirectorySeparatorChar.ToString())) {
+            folder += Path.DirectorySeparatorChar;
+        }
+
+        var folderUri = new Uri(folder);
+        return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar)).Replace('\\', '/');
     }
 }
