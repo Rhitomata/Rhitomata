@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 
 namespace Rhitomata.Data {
-
     public class ProjectData {
         // Information
         public string name { get; set; } = "Untitled";

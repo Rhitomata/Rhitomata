@@ -3,6 +3,7 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 
+// This doesn't work I think
 public class JsonUtilityScanner : AssetPostprocessor {
     static List<string> forbiddenCodes = new() {
         "JsonUtility.ToJson",
