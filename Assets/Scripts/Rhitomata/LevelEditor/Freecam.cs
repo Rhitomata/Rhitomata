@@ -11,18 +11,29 @@ namespace Rhitomata
         public float zMin = -50f;
         public float zMax = -10f;
         public float scrollIntensity = 15f;
+        public bool naturalScrolling;
 
         private bool _isDraggingCamera;
         private Vector3 _dragStartWorldPos;
 
         void Update()
         {
-            float scroll = Input.GetAxis("Mouse ScrollWheel") * scrollIntensity;
+            float scroll = Input.GetAxis("Mouse ScrollWheel") * (naturalScrolling ? 1f : -1f);
             if (Mathf.Abs(scroll) > 0.01f)
             {
-                Vector3 position = transform.position;
-                position.z = Mathf.Clamp(position.z - scroll, zMin, zMax);
-                transform.position = position;
+                Vector3 screenPos = Input.mousePosition;
+                screenPos.z = -targetCamera.transform.position.z;
+                Vector3 worldBeforeZoom = targetCamera.ScreenToWorldPoint(screenPos);
+
+                Vector3 camPos = transform.position;
+                camPos.z = Mathf.Clamp(camPos.z - scroll * scrollIntensity, zMin, zMax);
+                transform.position = camPos;
+
+                screenPos.z = -targetCamera.transform.position.z;
+                Vector3 worldAfterZoom = targetCamera.ScreenToWorldPoint(screenPos);
+
+                Vector3 offset = worldBeforeZoom - worldAfterZoom;
+                transform.position += offset;
             }
 
             if (_isDraggingCamera)
