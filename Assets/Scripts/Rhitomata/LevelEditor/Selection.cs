@@ -9,8 +9,9 @@ namespace Rhitomata
         private ISelectable currentHovered;
 
         private bool isDragging = false;
-        private Vector3 dragOffset;
+        private Vector3 dragStartWorldPoint;
         private Plane dragPlane;
+        private Dictionary<ISelectable, Vector3> dragStartPositions = new();
 
         void Update()
         {
@@ -53,13 +54,28 @@ namespace Rhitomata
                         SelectSingle(hovered);
                     }
 
-                    if (SelectedObject != null)
+                    if (SelectedObjects.Count > 0)
                     {
-                        dragPlane = new Plane(Vector3.back, SelectedObjectTransform().position);
-                        dragPlane.Raycast(ray, out float enter);
-                        dragOffset = SelectedObjectTransform().position - ray.GetPoint(enter);
-                        isDragging = true;
+                        var transform = SelectedObjectTransform();
+                        dragPlane = new Plane(Vector3.back, transform.position);
+
+                        if (dragPlane.Raycast(ray, out float enter))
+                        {
+                            dragStartWorldPoint = ray.GetPoint(enter);
+                            dragStartPositions.Clear();
+
+                            foreach (var obj in SelectedObjects)
+                            {
+                                if (obj is MonoBehaviour mb)
+                                {
+                                    dragStartPositions[obj] = mb.transform.position;
+                                }
+                            }
+
+                            isDragging = true;
+                        }
                     }
+
                 }
                 else
                 {
@@ -70,18 +86,25 @@ namespace Rhitomata
             if (Input.GetMouseButtonUp(0))
             {
                 isDragging = false;
+                dragStartPositions.Clear();
             }
 
-            if (isDragging && SelectedObject != null)
+            if (isDragging)
             {
-                dragPlane.Raycast(ray, out float enter);
-                Vector3 targetPos = ray.GetPoint(enter) + dragOffset;
-
-                foreach (var obj in SelectedObjects)
+                if (dragPlane.Raycast(ray, out float enter))
                 {
-                    if (obj is MonoBehaviour mb)
+                    Vector3 currentWorldPoint = ray.GetPoint(enter);
+                    Vector3 delta = currentWorldPoint - dragStartWorldPoint;
+
+                    foreach (var kvp in dragStartPositions)
                     {
-                        mb.transform.position = targetPos;
+                        ISelectable obj = kvp.Key;
+                        Vector3 startPos = kvp.Value;
+
+                        if (obj is MonoBehaviour mb)
+                        {
+                            mb.transform.position = startPos + delta;
+                        }
                     }
                 }
             }
