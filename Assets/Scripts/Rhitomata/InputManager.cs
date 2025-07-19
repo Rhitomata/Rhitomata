@@ -6,19 +6,6 @@ using Runtime2DTransformInteractor;
 
 namespace Rhitomata {
     public class InputManager : MonoBehaviour {
-        public TransformInteractorController transformController;
-        private bool wasHovering;
-
-        private void Update() {
-            bool isOverUI = EventSystem.current.IsPointerOverGameObject();
-            if (wasHovering == isOverUI) {
-                if (isOverUI) {
-                    transformController.DehoverAll();
-                    TransformInteractorController.instance.SetDefaultMouseCursor();
-                }
-                wasHovering = !isOverUI;
-            }
-        }
 
         /// <summary>
         /// Checks if mouse is over UI

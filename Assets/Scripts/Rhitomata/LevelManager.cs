@@ -68,17 +68,12 @@ public class LevelManager : MonoBehaviour {
         this.state = state;
         switch (state) {
             case State.Play:
-                references.transformController.DehoverAll();
-                // TODO: Save selection and restore it when going back to edit mode
-                references.transformController.DeselectAll();
-                references.transformController.enableSelecting = false;
                 Runtime2DTransformInteractor.TransformInteractorController.instance.DeselectAll();
                 Runtime2DTransformInteractor.TransformInteractorController.instance.enableSelecting = false;
                 editorUI.gameObject.SetActive(false);
                 break;
 
             case State.Edit:
-                references.transformController.enableSelecting = true;
                 Runtime2DTransformInteractor.TransformInteractorController.instance.enableSelecting = true;
                 editorUI.gameObject.SetActive(true);
                 break;

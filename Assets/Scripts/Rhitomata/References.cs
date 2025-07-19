@@ -7,6 +7,5 @@ namespace Rhitomata {
         public CameraMovement cameraMovement;
         public LevelManager manager;
         public AudioSource music;
-        public TransformInteractorController transformController;
     }
 }
