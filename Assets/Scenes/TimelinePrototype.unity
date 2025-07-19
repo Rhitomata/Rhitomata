@@ -598,8 +598,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a3887f38286df4f8ceac165f777be9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewportCanvas: {fileID: 0}
-  viewportCamera: {fileID: 0}
   rectToMove: {fileID: 0}
   image: {fileID: 1543998900}
   hoveredColor: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}
@@ -799,8 +797,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a3887f38286df4f8ceac165f777be9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewportCanvas: {fileID: 0}
-  viewportCamera: {fileID: 0}
   rectToMove: {fileID: 0}
   image: {fileID: 424916843}
   hoveredColor: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}
@@ -1355,8 +1351,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a3887f38286df4f8ceac165f777be9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewportCanvas: {fileID: 1372593418}
-  viewportCamera: {fileID: 519420031}
   rectToMove: {fileID: 2056367969}
   image: {fileID: 312020915}
   hoveredColor: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}
