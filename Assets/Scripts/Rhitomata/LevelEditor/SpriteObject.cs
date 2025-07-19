@@ -11,11 +11,17 @@ namespace Rhitomata
         private SpriteRenderer spriteRenderer;
         private bool isHovered = false;
 
-        void Awake()
+        private void Awake()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
             ApplyColor();
         }
+
+        public void Initialize(SpriteUI spriteUI) {
+            spriteRenderer.sprite = spriteUI.GetSprite();
+        }
+
+        #region Selection
 
         public bool IsSelected() => selected;
 
@@ -61,5 +67,7 @@ namespace Rhitomata
                 spriteRenderer.color = baseColor;
             }
         }
+
+        #endregion Selection
     }
 }

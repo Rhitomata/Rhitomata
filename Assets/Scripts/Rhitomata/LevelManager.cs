@@ -3,6 +3,7 @@ using Rhitomata.Data;
 using SFB;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -30,6 +31,7 @@ public class LevelManager : MonoBehaviour {
         // TODO: We'll make a Window class for showing and hiding these properly
         projectList.gameObject.SetActive(false);
         ChangeState(State.Edit);
+        DeleteSpritesUI();
     }
 
     private void Update() {
@@ -68,13 +70,10 @@ public class LevelManager : MonoBehaviour {
         this.state = state;
         switch (state) {
             case State.Play:
-                Runtime2DTransformInteractor.TransformInteractorController.instance.DeselectAll();
-                Runtime2DTransformInteractor.TransformInteractorController.instance.enableSelecting = false;
                 editorUI.gameObject.SetActive(false);
                 break;
 
             case State.Edit:
-                Runtime2DTransformInteractor.TransformInteractorController.instance.enableSelecting = true;
                 editorUI.gameObject.SetActive(true);
                 break;
         }
@@ -196,4 +195,55 @@ public class LevelManager : MonoBehaviour {
         references.music.clip = myClip;
         Debug.Log("Loaded song!");
     }
+
+    #region Sprites
+
+    public List<SpriteUI> sprites = new();
+
+    public void BrowseForSprite() {
+        var extensions = new[]
+        {
+            new ExtensionFilter("Image Files", "png", "jpg", "jpeg"),
+            new ExtensionFilter("All Files", "*"),
+        };
+        var result = StandaloneFileBrowser.OpenFilePanel("Import sprite", ProjectList.ProjectsDir, extensions, false);
+        if (result == null || result.Length == 0) return; // Cancelled
+
+        var path = result[0];
+
+        CreateSpriteObject(path);
+    }
+
+    public void DeleteSpritesUI() {
+        foreach (Transform t in references.spriteUIHolder) {
+            Destroy(t.gameObject);
+        }
+    }
+
+    public void CreateSpriteObject(string texturePath) {
+        var sprite = CreateSpriteFromPath(texturePath);
+        CreateSpriteObject(sprite, Path.GetFileNameWithoutExtension(texturePath));
+    }
+
+    public void CreateSpriteObject(Sprite sprite, string name) {
+        var spriteUI = Instantiate(references.spriteUIPrefab, references.spriteUIHolder).GetComponent<SpriteUI>();
+        spriteUI.Initialize(sprite, name);
+        sprites.Add(spriteUI);
+    }
+
+    private Sprite CreateSpriteFromPath(string path) {
+        byte[] fileData = File.ReadAllBytes(path);
+        Texture2D texture = new Texture2D(2, 2);
+        if (texture.LoadImage(fileData)) {
+            Rect rect = new Rect(0, 0, texture.width, texture.height);
+            Vector2 pivot = new Vector2(0.5f, 0.5f);
+            Sprite sprite = Sprite.Create(texture, rect, pivot);
+            return sprite;
+        }
+
+        Debug.LogError("Failed to create sprite!");
+        return null;
+    }
+
+    #endregion Sprites
 }
