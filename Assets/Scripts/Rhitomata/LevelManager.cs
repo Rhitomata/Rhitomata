@@ -206,12 +206,12 @@ public class LevelManager : MonoBehaviour {
             new ExtensionFilter("Image Files", "png", "jpg", "jpeg"),
             new ExtensionFilter("All Files", "*"),
         };
-        var result = StandaloneFileBrowser.OpenFilePanel("Import sprite", ProjectList.ProjectsDir, extensions, false);
+        var result = StandaloneFileBrowser.OpenFilePanel("Import sprites", ProjectList.ProjectsDir, extensions, true);
         if (result == null || result.Length == 0) return; // Cancelled
 
-        var path = result[0];
-
-        CreateSpriteObject(path);
+        foreach (var path in result) {
+            CreateSpriteObject(path);
+        }
     }
 
     public void DeleteSpritesUI() {
