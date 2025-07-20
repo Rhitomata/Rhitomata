@@ -58,7 +58,7 @@ namespace Rhitomata {
             peekEnd.onDragDelta.AddListener(OnEndRangeMoved);
         }
 
-        private void OnStartRangeMoved(Vector2 delta) {
+        public void OnStartRangeMoved(Vector2 delta) {
             float totalWidth = bounds.rect.width;
 
             float rangeStartPx = _value * (totalWidth - _size * totalWidth);
@@ -77,7 +77,7 @@ namespace Rhitomata {
             onAnyChanged?.Invoke();
         }
 
-        private void OnRangeMoved(Vector2 delta) {
+        public void OnRangeMoved(Vector2 delta) {
             var deltaXLocal = delta.x / (bounds.rect.width - peekRange.rectTransform.rect.width);
             _value += deltaXLocal;
             _value = Mathf.Clamp01(_value);
@@ -87,7 +87,7 @@ namespace Rhitomata {
             onAnyChanged?.Invoke();
         }
 
-        private void OnEndRangeMoved(Vector2 delta) {
+        public void OnEndRangeMoved(Vector2 delta) {
             float totalWidth = bounds.rect.width;
 
             float start = _value * (totalWidth - _size * totalWidth);

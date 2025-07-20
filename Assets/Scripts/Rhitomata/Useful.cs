@@ -15,11 +15,11 @@ public static class Useful {
         return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar)).Replace('\\', '/');
     }
 
-    public static Vector2 GetLocalDelta(Transform relativeTo, PointerEventData data) =>
-        GetLocalDelta(relativeTo as RectTransform, data);
+    public static Vector2 GetLocalDelta(Transform relativeTo, PointerEventData eventData) =>
+        GetLocalDelta(relativeTo as RectTransform, eventData);
 
-    public static Vector2 GetLocalDelta(RectTransform relativeTo, PointerEventData data) =>
-        GetLocalPoint(relativeTo, data.position) - GetLocalPoint(relativeTo, data.position - data.delta);
+    public static Vector2 GetLocalDelta(RectTransform relativeTo, PointerEventData eventData) =>
+        GetLocalPoint(relativeTo, eventData.position) - GetLocalPoint(relativeTo, eventData.position - eventData.delta);
 
     public static Vector2 GetLocalPoint(Transform relativeTo, Vector2 screenPosition) =>
         GetLocalPoint(relativeTo as RectTransform, screenPosition);
