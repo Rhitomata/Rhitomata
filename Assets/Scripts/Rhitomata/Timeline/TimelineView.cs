@@ -15,7 +15,7 @@ namespace Rhitomata.Timeline {
         public AudioSource source;
 
         [Header("Peek")]
-        public float time;
+        public float cursorTime;
         public DraggableHandle currentTimeHandle;
         public RectTransform[] currentTimeCursors;
         /// <summary>
@@ -37,11 +37,10 @@ namespace Rhitomata.Timeline {
         public Scrollbar verticalScrollbar;
         public HorizontalAdjustableScrollbar horizontalScrollbar;
 
-        [Header("Debug")]
         /// <summary>
         /// Limit on the current scrollbar range of what's on the screen (in seconds)
         /// </summary>
-        [SerializeField]
+        [Header("Debug")]
         public Limit visibleRange;
         public Rect rect;
         public Vector2 sizeDelta;
@@ -49,7 +48,7 @@ namespace Rhitomata.Timeline {
         public Vector2 anchorMax;
         public Vector2 anchoredPosition;
 
-        public const float laneHeight = 50f;
+        public const float LANE_HEIGHT = 50f;
 
         private void Start() {
             DeleteAllKeyframes();
@@ -57,6 +56,7 @@ namespace Rhitomata.Timeline {
             verticalScrollbar.onValueChanged.AddListener(OnVerticalChanged);
             horizontalScrollbar.onValueChanged.AddListener(OnHorizontalChanged);
             horizontalScrollbar.onSizeChanged.AddListener(OnZoomLevelChanged);
+            horizontalScrollbar.onAnyChanged.AddListener(OnAnyHorizontalChanged);
             currentTimeHandle.onDragDelta.AddListener(OnCurrentTimeDragged);
 
             UpdatePeekLimit();
@@ -68,16 +68,16 @@ namespace Rhitomata.Timeline {
 
         public void CreateKeyframeAtCursor() {
             var mousePosRelative = GetLocalPoint(scrollingRect, Input.mousePosition);
-            int rowIndex = (int)(-mousePosRelative.y / laneHeight);
-            float time = GetTime(mousePosRelative.x);
+            var rowIndex = (int)(-mousePosRelative.y / LANE_HEIGHT);
+            var time = GetTime(mousePosRelative.x);
             //print($"{rowIndex}, {time} : {mousePosRelative}");
 
             CreateKeyframe(time, rowIndex);
         }
 
-        private void CreateKeyframe(float time, int rowIndex) {
+        private void CreateKeyframe(float toTime, int rowIndex) {
             var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<KeyframeUI>();
-            keyframe.Initialize(time, rowIndex);
+            keyframe.Initialize(toTime, rowIndex);
             // TODO: Add to a list that hasn't been made yet
         }
 
@@ -95,9 +95,8 @@ namespace Rhitomata.Timeline {
         /// <summary>
         /// Get the X position of a time based on the current zoom level.
         /// </summary>
-        /// <param name="time"></param>
-        public float GetX(float targetTime) {
-            return targetTime * (laneHolder.rect.width / visibleRange.length);
+        public float GetX(float time) {
+            return time * (laneHolder.rect.width / visibleRange.length);
         }
 
         /// <summary>
@@ -129,24 +128,32 @@ namespace Rhitomata.Timeline {
             visibleRange.min = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.minRange);
             visibleRange.max = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.maxRange);
 
-            // Move keyframe holder (scrollingRect)
-            var posSeconds = -visibleRange.min;
-            float x = posSeconds * (laneHolder.rect.width / visibleRange.length);
-            scrollingRect.anchoredPosition = new Vector2(x, scrollingRect.anchoredPosition.y);
-
             UpdateCurrentTimeCursor();
         }
 
+        private void OnAnyHorizontalChanged()
+        {
+            UpdateKeyframeHolder();
+        }
+
+        public void UpdateKeyframeHolder()
+        {
+            // Move keyframe holder (scrollingRect)
+            var posSeconds = -visibleRange.min;
+            var x = posSeconds * (viewportBounds.rect.width / visibleRange.length);
+            scrollingRect.anchoredPosition = new Vector2(x, scrollingRect.anchoredPosition.y);
+        }
+
         private void OnCurrentTimeDragged(Vector2 delta) {
-            var deltaSeconds = delta.x * (visibleRange.length / laneHolder.rect.width);
-            time += deltaSeconds;
-            time = Mathf.Clamp(time, peekLimit.min, peekLimit.max);
+            var deltaSeconds = delta.x * (visibleRange.length / viewportBounds.rect.width);
+            cursorTime += deltaSeconds;
+            cursorTime = Mathf.Clamp(cursorTime, peekLimit.min, peekLimit.max);
             UpdateCurrentTimeCursor();
         }
 
         public void UpdateCurrentTimeCursor() {
             var pos = currentTimeHandle.rectTransform.anchoredPosition;
-            var posSeconds = time - visibleRange.min;
+            var posSeconds = cursorTime - visibleRange.min;
             pos.x = posSeconds * (laneHolder.rect.width / visibleRange.length);
 
             ChangeCursorsX(pos.x);
@@ -200,11 +207,11 @@ namespace Rhitomata.Timeline {
     /// </summary>
     [CustomPropertyDrawer(typeof(Limit))]
     public class LimitDrawer : PropertyDrawer {
-        private const float SubLabelSpacing = 4f;
-        private const float BottomSpacing = 2f;
+        private const float SUB_LABEL_SPACING = 4f;
+        private const float BOTTOM_SPACING = 2f;
 
         public override void OnGUI(Rect pos, SerializedProperty prop, GUIContent label) {
-            pos.height -= BottomSpacing;
+            pos.height -= BOTTOM_SPACING;
 
             label = EditorGUI.BeginProperty(pos, label, prop);
             Rect contentRect = EditorGUI.PrefixLabel(pos, GUIUtility.GetControlID(FocusType.Passive), label);
@@ -225,12 +232,12 @@ namespace Rhitomata.Timeline {
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-            return EditorGUIUtility.singleLineHeight + BottomSpacing;
+            return EditorGUIUtility.singleLineHeight + BOTTOM_SPACING;
         }
 
         private static void DrawMultipleDoubleFields(Rect pos, GUIContent[] subLabels, SerializedProperty[] props) {
             int propCount = props.Length;
-            float totalSpacing = (propCount - 1) * SubLabelSpacing;
+            float totalSpacing = (propCount - 1) * SUB_LABEL_SPACING;
             float fieldWidth = (pos.width - totalSpacing) / propCount;
 
             float originalLabelWidth = EditorGUIUtility.labelWidth;
@@ -242,7 +249,7 @@ namespace Rhitomata.Timeline {
             for (int i = 0; i < propCount; i++) {
                 EditorGUIUtility.labelWidth = EditorStyles.label.CalcSize(subLabels[i]).x;
                 EditorGUI.PropertyField(fieldRect, props[i], subLabels[i]);
-                fieldRect.x += fieldWidth + SubLabelSpacing;
+                fieldRect.x += fieldWidth + SUB_LABEL_SPACING;
             }
 
             EditorGUIUtility.labelWidth = originalLabelWidth;

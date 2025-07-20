@@ -10,14 +10,14 @@ public class SeekView : MonoBehaviour, IPointerDownHandler, IDragHandler {
     public void OnPointerDown(PointerEventData eventData) {
         if (eventData.button != PointerEventData.InputButton.Left && eventData.button != PointerEventData.InputButton.Right) return;
 
-        timeline.time = Mathf.Clamp(timeline.GetTime(GetLocalPoint(timeline.scrollingRect, eventData.position).x), timeline.peekLimit.min, timeline.peekLimit.max);
+        timeline.cursorTime = Mathf.Clamp(timeline.GetTime(GetLocalPoint(timeline.scrollingRect, eventData.position).x), timeline.peekLimit.min, timeline.peekLimit.max);
         timeline.UpdateCurrentTimeCursor();
     }
 
     public void OnDrag(PointerEventData eventData) {
         if (eventData.button != PointerEventData.InputButton.Left && eventData.button != PointerEventData.InputButton.Right) return;
 
-        timeline.time = Mathf.Clamp(timeline.GetTime(GetLocalPoint(timeline.scrollingRect, eventData.position).x), timeline.peekLimit.min, timeline.peekLimit.max);
+        timeline.cursorTime = Mathf.Clamp(timeline.GetTime(GetLocalPoint(timeline.scrollingRect, eventData.position).x), timeline.peekLimit.min, timeline.peekLimit.max);
         timeline.UpdateCurrentTimeCursor();
     }
 }

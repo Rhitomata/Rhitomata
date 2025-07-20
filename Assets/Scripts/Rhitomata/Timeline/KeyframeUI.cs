@@ -30,7 +30,7 @@ public class KeyframeUI : MonoBehaviour, IPointerClickHandler, IDragHandler, ISc
 
     public void SetRowIndex(int rowIndex) {
         rowIndex = Mathf.Clamp(rowIndex, 0, timeline.laneHolder.childCount - 1);
-        rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, -(rowIndex * TimelineView.laneHeight) - (TimelineView.laneHeight / 2f));
+        rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, -(rowIndex * TimelineView.LANE_HEIGHT) - (TimelineView.LANE_HEIGHT / 2f));
     }
 
     public void Delete() {

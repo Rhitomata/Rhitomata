@@ -20,14 +20,14 @@ public class LaneView : MonoBehaviour, IPointerClickHandler, IDragHandler, IScro
     public void OnPointerDown(PointerEventData eventData) {
         if (eventData.button != PointerEventData.InputButton.Right) return;
 
-        timeline.time = timeline.GetTime(GetLocalPoint(timeline.scrollingRect, eventData.position).x);
+        timeline.cursorTime = timeline.GetTime(GetLocalPoint(timeline.scrollingRect, eventData.position).x);
         timeline.UpdateCurrentTimeCursor();
     }
 
     public void OnDrag(PointerEventData eventData) {
         switch (eventData.button) {
             case PointerEventData.InputButton.Right:
-                timeline.time = timeline.GetTime(GetLocalPoint(timeline.scrollingRect, eventData.position).x);
+                timeline.cursorTime = timeline.GetTime(GetLocalPoint(timeline.scrollingRect, eventData.position).x);
                 timeline.UpdateCurrentTimeCursor();
                 break;
 
