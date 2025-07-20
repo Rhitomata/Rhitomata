@@ -1,6 +1,6 @@
 using UnityEngine;
 using System;
-
+using UnityEngine.Events;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,6 +16,11 @@ namespace Rhitomata {
         [SerializeField] private DraggableHandle peekRange;
         [SerializeField] private DraggableHandle peekEnd;
 
+        [Header("Events")]
+        public UnityEvent onAnyChanged;
+        public AdjustableEvent onValueChanged;
+        public AdjustableEvent onSizeChanged;
+
         [Header("Properties")]
         [SerializeField, Range(0f, 1f)] private float _value;
         [SerializeField, Range(0f, 1f)] private float _size = 0.2f;
@@ -27,6 +32,8 @@ namespace Rhitomata {
 
                 _value = value;
                 UpdateValue();
+                onValueChanged?.Invoke(value);
+                onAnyChanged?.Invoke();
             }
         }
 
@@ -37,6 +44,8 @@ namespace Rhitomata {
 
                 _size = value;
                 UpdateSize();
+                onSizeChanged?.Invoke(value);
+                onAnyChanged?.Invoke();
             }
         }
 
@@ -60,6 +69,9 @@ namespace Rhitomata {
             _value = newStartPx / (totalWidth - newWidthPx);
 
             UpdateSize();
+            onSizeChanged?.Invoke(_size);
+            onValueChanged?.Invoke(_value);
+            onAnyChanged?.Invoke();
         }
 
         private void OnRangeMoved(Vector2 delta) {
@@ -67,6 +79,9 @@ namespace Rhitomata {
             _value += deltaXLocal;
             _value = Mathf.Clamp01(_value);
             UpdateValue();
+
+            onValueChanged?.Invoke(_value);
+            onAnyChanged?.Invoke();
         }
 
         private void OnEndRangeMoved(Vector2 delta) {
@@ -84,6 +99,9 @@ namespace Rhitomata {
             _value = Mathf.Clamp01(newValue);
 
             UpdateSize();
+            onSizeChanged?.Invoke(_size);
+            onValueChanged?.Invoke(_value);
+            onAnyChanged?.Invoke();
         }
 
         public void UpdateValue() {
@@ -110,6 +128,9 @@ namespace Rhitomata {
             peekRange.rectTransform.sizeDelta = size;
             UpdateValue();
         }
+
+        [Serializable]
+        public class AdjustableEvent : UnityEvent<float> { }
     }
 
 #if UNITY_EDITOR
@@ -132,6 +153,8 @@ namespace Rhitomata {
             float oldValue = _valueProp.floatValue;
             float oldSize = _sizeProp.floatValue;
 
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Properties", EditorStyles.boldLabel);
             EditorGUILayout.Slider(_valueProp, 0f, 1f, new GUIContent("Value"));
             EditorGUILayout.Slider(_sizeProp, 0f, 1f, new GUIContent("Size"));
 
