@@ -24,8 +24,12 @@ namespace Rhitomata.Timeline {
 
         [Header("Viewport")]
         public RectTransform viewportBounds;
-        public RectTransform timelineParentContent;
-        public RectTransform timelineHeaderContent;
+        public RectTransform headerHolder;
+        public RectTransform laneHolder;
+        public RectTransform scrollingRect;// Holds keyframes & stuff
+
+        [Header("Keyframes")]
+        public GameObject keyframePrefab;
 
         [Header("Scrollbar")]
         public Scrollbar verticalScrollbar;
@@ -43,9 +47,14 @@ namespace Rhitomata.Timeline {
         public Vector2 anchorMax;
         public Vector2 anchoredPosition;
 
+        public const float laneHeight = 50f;
+
         private void Start() {
+            DeleteAllKeyframes();
+
             verticalScrollbar.onValueChanged.AddListener(OnVerticalChanged);
-            horizontalScrollbar.onAnyChanged.AddListener(OnHorizontalChanged);
+            horizontalScrollbar.onValueChanged.AddListener(OnHorizontalChanged);
+            horizontalScrollbar.onSizeChanged.AddListener(OnZoomLevelChanged);
             currentTimeHandle.onDragDelta.AddListener(OnCurrentTimeDragged);
 
             UpdatePeekLimit();
@@ -55,8 +64,58 @@ namespace Rhitomata.Timeline {
             UpdateCurrentTimeCursor();
         }
 
+        // Also gets called from UI on Click
+        public void CreateKeyframeAtCursor() {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(scrollingRect, Input.mousePosition, null, out var mousePosRelative);
+            int rowIndex = (int)(-mousePosRelative.y / laneHeight);
+            float time = GetTime(mousePosRelative.x);
+            //print($"{rowIndex}, {time} : {mousePosRelative}");
+
+            CreateKeyframe(time, rowIndex);
+        }
+
+        private void CreateKeyframe(float time, int rowIndex) {
+            var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<KeyframeUI>();
+            keyframe.Initialize(time, rowIndex);
+        }
+
+        private void DeleteAllKeyframes() {
+            foreach (Transform t in scrollingRect) {
+                Destroy(t.gameObject);
+            }
+        }
+
+        private void Update() {
+            if (Input.GetKeyDown(KeyCode.R)) DeleteAllKeyframes();
+            if (Input.GetKeyDown(KeyCode.I)) CreateKeyframeAtCursor();
+        }
+
+        /// <summary>
+        /// Get the X position of a time based on the current zoom level.
+        /// </summary>
+        /// <param name="time"></param>
+        public float GetX(float time) {
+            return time * (headerHolder.rect.width / visibleRange.length);
+        }
+
+        /// <summary>
+        /// Get the time of an X position based on the current zoom level.
+        /// </summary>
+        /// <param name="x"></param>
+        public float GetTime(float x) {
+            return x * visibleRange.length / headerHolder.rect.width;
+        }
+
+        private void OnZoomLevelChanged(float size = 0) {
+            var keyframes = GetComponentsInChildren<KeyframeUI>();// TODO: Use lists instead of GetComponentsInChildren
+            foreach (var keyframe in keyframes) {
+                float x = GetX(keyframe.time);
+                keyframe.SetX(x);
+            }
+        }
+
         private void OnCurrentTimeDragged(Vector2 delta) {
-            var deltaSeconds = delta.x * (visibleRange.length / timelineParentContent.rect.width);
+            var deltaSeconds = delta.x * (visibleRange.length / headerHolder.rect.width);
             time += deltaSeconds;
             time = Mathf.Clamp(time, peekLimit.min, peekLimit.max);
             UpdateCurrentTimeCursor();
@@ -65,7 +124,7 @@ namespace Rhitomata.Timeline {
         public void UpdateCurrentTimeCursor() {
             var pos = currentTimeHandle.rectTransform.anchoredPosition;
             var posSeconds = time - visibleRange.min;
-            pos.x = posSeconds * (timelineParentContent.rect.width / visibleRange.length);
+            pos.x = posSeconds * (headerHolder.rect.width / visibleRange.length);
 
             ChangeCursorsX(pos.x);
         }
@@ -79,34 +138,39 @@ namespace Rhitomata.Timeline {
         }
 
         private void OnVerticalChanged(float value) {
-            var pos = timelineParentContent.anchoredPosition;
-            pos.y = Mathf.Lerp(0, timelineParentContent.rect.height - viewportBounds.rect.height, value);
-            timelineParentContent.anchoredPosition = pos;
+            var pos = headerHolder.anchoredPosition;
+            pos.y = Mathf.Lerp(0, headerHolder.rect.height - viewportBounds.rect.height, value);
+            headerHolder.anchoredPosition = pos;
 
-            pos.x = timelineHeaderContent.anchoredPosition.x;
-            timelineHeaderContent.anchoredPosition = pos;
+            pos.x = laneHolder.anchoredPosition.x;
+            laneHolder.anchoredPosition = pos;
+
+            pos.x = scrollingRect.anchoredPosition.x;
+            scrollingRect.anchoredPosition = pos;
         }
 
         public void UpdateVerticalSlider() {
-            if (timelineParentContent.rect.height < viewportBounds.rect.height) {
+            if (headerHolder.rect.height < viewportBounds.rect.height) {
                 verticalScrollbar.size = 1f;
                 verticalScrollbar.SetValueWithoutNotify(0);
 
                 return;
             }
 
-            verticalScrollbar.size = viewportBounds.rect.height / timelineParentContent.rect.height;
-            verticalScrollbar.SetValueWithoutNotify(Mathf.InverseLerp(0, timelineParentContent.rect.height - viewportBounds.rect.height, timelineParentContent.anchoredPosition.y));
+            verticalScrollbar.size = viewportBounds.rect.height / headerHolder.rect.height;
+            verticalScrollbar.SetValueWithoutNotify(Mathf.InverseLerp(0, headerHolder.rect.height - viewportBounds.rect.height, headerHolder.anchoredPosition.y));
         }
 
-        private void OnHorizontalChanged() {
+        private void OnHorizontalChanged(float value = 0) {
             visibleRange.min = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.minRange);
             visibleRange.max = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.maxRange);
+
+            // Move keyframe holder (scrollingRect)
+            var posSeconds = time - visibleRange.min;
+            float x = posSeconds * (headerHolder.rect.width / visibleRange.length);
+            scrollingRect.anchoredPosition = new Vector2(x, scrollingRect.anchoredPosition.y);
+
             UpdateCurrentTimeCursor();
-        }
-
-        public void UpdateTimelineView() {
-
         }
 
         public void UpdatePeekLimit() {

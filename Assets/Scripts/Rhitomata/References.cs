@@ -1,3 +1,4 @@
+using Rhitomata.Timeline;
 using UnityEngine;
 
 namespace Rhitomata {
@@ -21,6 +22,8 @@ namespace Rhitomata {
         public CameraMovement cameraMovement;
         public LevelManager manager;
         public AudioSource music;
+        public TimelineView timeline;
+        public Canvas canvas;
 
         public Transform gameHolder;
         public GameObject spriteObjectPrefab;

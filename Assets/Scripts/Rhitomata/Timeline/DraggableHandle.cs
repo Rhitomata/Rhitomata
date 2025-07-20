@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static Useful;
 
 namespace Rhitomata {
     public class DraggableHandle : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, IEndDragHandler {
@@ -56,7 +57,7 @@ namespace Rhitomata {
         public void OnDrag(PointerEventData eventData) {
             _isDragging = true;
             onDrag?.Invoke(eventData);
-            onDragDelta?.Invoke(GetLocalDelta(eventData));
+            onDragDelta?.Invoke(GetLocalDelta(transform, eventData));
         }
 
         public void FinishDrag(PointerEventData eventData) {
@@ -64,16 +65,6 @@ namespace Rhitomata {
             _isDragging = false;
 
             onEndDrag?.Invoke(eventData);
-        }
-
-        public Vector2 GetLocalDelta(PointerEventData data) {
-            return GetLocalPoint(data.position) - GetLocalPoint(data.position - data.delta);
-        }
-
-        public Vector2 GetLocalPoint(Vector2 screenPosition) {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                transform as RectTransform, screenPosition, null, out var localPoint);
-            return localPoint;
         }
 
         public void UpdateColor() {
