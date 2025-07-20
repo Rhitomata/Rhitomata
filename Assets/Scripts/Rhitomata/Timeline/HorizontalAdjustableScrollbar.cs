@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -53,60 +54,111 @@ namespace Rhitomata {
         public float maxRange => peekEnd.rectTransform.anchoredPosition.x / bounds.rect.width;
 
         private void Start() {
-            peekStart.onDragDelta.AddListener(OnStartRangeMoved);
-            peekRange.onDragDelta.AddListener(OnRangeMoved);
-            peekEnd.onDragDelta.AddListener(OnEndRangeMoved);
+            peekStart.onStartDrag.AddListener(OnStartRangeBegin);
+            peekRange.onStartDrag.AddListener(OnRangeBegin);
+            peekEnd.onStartDrag.AddListener(OnEndRangeBegin);
+            
+            peekStart.onDrag.AddListener(OnStartRangeDragged);
+            peekRange.onDrag.AddListener(OnRangeDragged);
+            peekEnd.onDrag.AddListener(OnEndRangeDragged);
+            
+            UpdateSize();
+        }
+        
+        #region New Coordinate Implementation
+        // --- INITIAL STATE ---
+        private Vector2 _initialCursorPosition; // Already relative to the bounds
+        private Vector2 _initialDraggablePosition;
+        
+        private void OnStartRangeBegin(PointerEventData eventData)
+        {
+            _initialCursorPosition = GetMousePositionLocally();
+            _initialDraggablePosition = peekStart.rectTransform.anchoredPosition;
         }
 
-        public void OnStartRangeMoved(Vector2 delta) {
-            float totalWidth = bounds.rect.width;
+        private void OnRangeBegin(PointerEventData eventData)
+        {
+            _initialCursorPosition = GetMousePositionLocally();
+            _initialDraggablePosition = peekRange.rectTransform.anchoredPosition;
+        }
 
-            float rangeStartPx = _value * (totalWidth - _size * totalWidth);
-            float rangeWidthPx = _size * totalWidth;
-            float rangeEndPx = rangeStartPx + rangeWidthPx;
+        private void OnEndRangeBegin(PointerEventData arg0)
+        {
+            _initialCursorPosition = GetMousePositionLocally();
+            _initialDraggablePosition = peekEnd.rectTransform.anchoredPosition;
+        }
+        
+        // --- WHEN DRAGGED ---
+        private void OnStartRangeDragged(PointerEventData eventData)
+        {
+            var pixelsDifference = GetMousePositionLocally() - _initialCursorPosition;
 
-            float newStartPx = Mathf.Clamp(rangeStartPx + delta.x, 0f, rangeEndPx - 1f);
-            float newWidthPx = rangeEndPx - newStartPx;
-
-            _size = newWidthPx / totalWidth;
-            _value = newStartPx / (totalWidth - newWidthPx);
-
+            // So we're keeping the peek end but changing the value and the size
+            var rangeEndPx = valuePx + sizePx;
+            var newStartPx = Mathf.Clamp(_initialDraggablePosition.x + pixelsDifference.x, 0f, rangeEndPx - 1f);
+            var newWidthPx = rangeEndPx - newStartPx;
+            
+            _size = newWidthPx / pixelWidth;
+            _value = newStartPx / (pixelWidth - newWidthPx);
+            
             UpdateSize();
             onSizeChanged?.Invoke(_size);
             onValueChanged?.Invoke(_value);
             onAnyChanged?.Invoke();
         }
-
-        public void OnRangeMoved(Vector2 delta) {
-            var deltaXLocal = delta.x / (bounds.rect.width - peekRange.rectTransform.rect.width);
-            _value += deltaXLocal;
+        
+        private void OnRangeDragged(PointerEventData eventData)
+        {
+            if (size >= 1f)
+            {
+                _value = 0f;
+                return;
+            }
+            
+            var pixelsDifference = GetMousePositionLocally() - _initialCursorPosition;
+            
+            _value = (_initialDraggablePosition.x + pixelsDifference.x) / valuePixelWidth;
             _value = Mathf.Clamp01(_value);
+            
             UpdateValue();
-
             onValueChanged?.Invoke(_value);
             onAnyChanged?.Invoke();
         }
 
-        public void OnEndRangeMoved(Vector2 delta) {
-            float totalWidth = bounds.rect.width;
-
-            float start = _value * (totalWidth - _size * totalWidth);
-            float end = start + _size * totalWidth + delta.x;
-
-            end = Mathf.Clamp(end, start + 1f, totalWidth);
-
-            float newSize = (end - start) / totalWidth;
-            float newValue = start / (totalWidth - newSize * totalWidth);
+        private void OnEndRangeDragged(PointerEventData eventData)
+        {
+            var pixelsDifference = GetMousePositionLocally() - _initialCursorPosition;
+            
+            var newEndPx = Mathf.Clamp(_initialDraggablePosition.x + pixelsDifference.x, valuePx + 1f, pixelWidth);
+            var newSize = (newEndPx - valuePx) / pixelWidth;
+            var newValue = valuePx / (pixelWidth - newSize * pixelWidth);
 
             _size = Mathf.Clamp01(newSize);
             _value = Mathf.Clamp01(newValue);
-
+            
             UpdateSize();
             onSizeChanged?.Invoke(_size);
             onValueChanged?.Invoke(_value);
             onAnyChanged?.Invoke();
         }
+        #endregion
 
+        #region Helpers
+        private float sizePx => _size * pixelWidth;
+        private float valuePx => _value * valuePixelWidth;
+
+        private float valuePixelWidth => bounds.rect.width - peekRange.rectTransform.rect.width;
+        private float pixelWidth => bounds.rect.width;
+
+        private Vector2 GetMousePositionLocally()
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(bounds, Input.mousePosition, null, out var mousePosRelative);
+            mousePosRelative.y = bounds.rect.height - mousePosRelative.y; // Invert down - top to top - down
+            return mousePosRelative;
+        }
+        #endregion
+
+        #region UI Updates
         public void UpdateValue() {
             if (_size >= 1) {
                 _value = 0f;
@@ -126,11 +178,63 @@ namespace Rhitomata {
                 _value = 0f;
             }
 
-            var size = peekRange.rectTransform.sizeDelta;
-            size.x = Mathf.Lerp(0, bounds.rect.width, _size);
-            peekRange.rectTransform.sizeDelta = size;
+            var newSize = peekRange.rectTransform.sizeDelta;
+            newSize.x = Mathf.Lerp(0, bounds.rect.width, _size);
+            peekRange.rectTransform.sizeDelta = newSize;
             UpdateValue();
         }
+        #endregion
+        
+        #region Old Relative Implementation
+        public void OnEndRangeMoved(Vector2 delta)
+        {   
+            var totalWidth = bounds.rect.width;
+
+            var startPx = _value * (totalWidth - _size * totalWidth);
+            var endPx = startPx + _size * totalWidth + delta.x;
+
+            endPx = Mathf.Clamp(endPx, startPx + 1f, totalWidth);
+
+            var newSize = (endPx - startPx) / totalWidth;
+            var newValue = startPx / (totalWidth - newSize * totalWidth);
+
+            _size = Mathf.Clamp01(newSize);
+            _value = Mathf.Clamp01(newValue);
+
+            UpdateSize();
+            onSizeChanged?.Invoke(_size);
+            onValueChanged?.Invoke(_value);
+            onAnyChanged?.Invoke();
+        }
+        public void OnStartRangeMoved(Vector2 delta) {
+            var totalWidth = bounds.rect.width;
+
+            var rangeStartPx = _value * (totalWidth - _size * totalWidth);
+            var rangeWidthPx = _size * totalWidth;
+            var rangeEndPx = rangeStartPx + rangeWidthPx;
+
+            var newStartPx = Mathf.Clamp(rangeStartPx + delta.x, 0f, rangeEndPx - 1f);
+            var newWidthPx = rangeEndPx - newStartPx;
+
+            _size = newWidthPx / totalWidth;
+            _value = newStartPx / (totalWidth - newWidthPx);
+
+            UpdateSize();
+            onSizeChanged?.Invoke(_size);
+            onValueChanged?.Invoke(_value);
+            onAnyChanged?.Invoke();
+        }
+
+        public void OnRangeMoved(Vector2 delta) {
+            var deltaXLocal = delta.x / (bounds.rect.width - peekRange.rectTransform.rect.width);
+            _value += deltaXLocal;
+            _value = Mathf.Clamp01(_value);
+            UpdateValue();
+
+            onValueChanged?.Invoke(_value);
+            onAnyChanged?.Invoke();
+        }
+        #endregion
 
         [Serializable]
         public class AdjustableEvent : UnityEvent<float> { }
