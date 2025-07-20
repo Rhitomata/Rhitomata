@@ -28,7 +28,7 @@ It is licensed under the [Business Source License 1.1 (BSL 1.1)](https://mariadb
 
 You are **not permitted** to:
 - Distribute modified or unmodified versions of this game
-- Use this code to create derivative games or projects outside of the official repository
+- Use this code to create derivative games or projects outside of the official repository, small parts are fine as long as you credited this repository
 
 ### 🔓 License Change
 
