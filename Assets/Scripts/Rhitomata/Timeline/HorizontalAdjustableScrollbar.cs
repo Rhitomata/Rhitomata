@@ -49,6 +49,9 @@ namespace Rhitomata {
             }
         }
 
+        public float minRange => peekStart.rectTransform.anchoredPosition.x / bounds.rect.width;
+        public float maxRange => peekEnd.rectTransform.anchoredPosition.x / bounds.rect.width;
+
         private void Start() {
             peekStart.onDragDelta.AddListener(OnStartRangeMoved);
             peekRange.onDragDelta.AddListener(OnRangeMoved);
