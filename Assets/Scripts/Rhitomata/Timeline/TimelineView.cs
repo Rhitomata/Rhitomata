@@ -54,6 +54,8 @@ namespace Rhitomata.Timeline {
             DeleteAllKeyframes();
 
             verticalScrollbar.onValueChanged.AddListener(OnVerticalChanged);
+            
+            // TODO: Let's just change everything after any changed
             horizontalScrollbar.onValueChanged.AddListener(OnHorizontalChanged);
             horizontalScrollbar.onSizeChanged.AddListener(OnZoomLevelChanged);
             horizontalScrollbar.onAnyChanged.AddListener(OnAnyHorizontalChanged);

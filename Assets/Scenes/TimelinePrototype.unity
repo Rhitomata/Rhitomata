@@ -568,6 +568,9 @@ MonoBehaviour:
   onDrag:
     m_PersistentCalls:
       m_Calls: []
+  onMoved:
+    m_PersistentCalls:
+      m_Calls: []
   onEndDrag:
     m_PersistentCalls:
       m_Calls: []
@@ -1231,7 +1234,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 92.49999, y: 0}
+  m_AnchoredPosition: {x: 77.5, y: 0}
   m_SizeDelta: {x: 15, y: 25}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &789327857
@@ -1255,6 +1258,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onDrag:
+    m_PersistentCalls:
+      m_Calls: []
+  onMoved:
     m_PersistentCalls:
       m_Calls: []
   onEndDrag:
@@ -1356,7 +1362,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   source: {fileID: 1257065140}
-  time: 0
+  cursorTime: 0
   currentTimeHandle: {fileID: 386301481}
   currentTimeCursors:
   - {fileID: 386301478}
@@ -1812,6 +1818,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onDrag:
+    m_PersistentCalls:
+      m_Calls: []
+  onMoved:
     m_PersistentCalls:
       m_Calls: []
   onEndDrag:
@@ -3044,7 +3053,6 @@ MonoBehaviour:
       m_Calls: []
   _value: 0
   _size: 0.05
-  localMousePosition: {x: 0, y: 0}
 --- !u!114 &1863500281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3375,7 +3383,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 92.49999, y: 25}
+  m_SizeDelta: {x: 77.5, y: 25}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &2056367971
 CanvasRenderer:
@@ -3406,6 +3414,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onDrag:
+    m_PersistentCalls:
+      m_Calls: []
+  onMoved:
     m_PersistentCalls:
       m_Calls: []
   onEndDrag:

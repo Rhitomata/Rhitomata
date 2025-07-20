@@ -272,10 +272,14 @@ namespace Rhitomata {
 
             if (!Mathf.Approximately(oldValue, _valueProp.floatValue)) {
                 scrollbar.UpdateValue();
+                scrollbar.onValueChanged?.Invoke(scrollbar.value);
+                scrollbar.onAnyChanged?.Invoke();
             }
 
             if (!Mathf.Approximately(oldSize, _sizeProp.floatValue)) {
                 scrollbar.UpdateSize();
+                scrollbar.onSizeChanged?.Invoke(scrollbar.size);
+                scrollbar.onAnyChanged?.Invoke();
             }
         }
     }
