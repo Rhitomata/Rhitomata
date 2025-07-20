@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using static Useful;
 
 namespace Rhitomata {
-    public class DraggableHandle : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, IEndDragHandler {
+    public class DraggableHandle : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
         public Image image;
         public bool changeBasedOnMaterial = true;
         public Color hoveredColor = Color.gray;
@@ -16,6 +16,7 @@ namespace Rhitomata {
         public RectTransform rectTransform => _rectTransform ? _rectTransform : transform as RectTransform;
         public DraggableEvent onStartDrag;
         public DraggableEvent onDrag;
+        public DraggableEvent onMoved;
         public DraggableEvent onEndDrag;
         public DraggableDeltaEvent onDragDelta;
 
@@ -44,13 +45,26 @@ namespace Rhitomata {
         public void OnPointerDown(PointerEventData eventData) {
             _isPressed = true;
             UpdateColor();
-            onStartDrag?.Invoke(eventData);
         }
 
         public void OnPointerUp(PointerEventData eventData) {
             _isPressed = false;
             UpdateColor();
             FinishDrag(eventData);
+        }
+
+        public void OnPointerMove(PointerEventData eventData)
+        {
+            if (_isPressed)
+            {
+                onMoved?.Invoke(eventData);
+            }
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            _isDragging = true;
+            onStartDrag?.Invoke(eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData) => FinishDrag(eventData);

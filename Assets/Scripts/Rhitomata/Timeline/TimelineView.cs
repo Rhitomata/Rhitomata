@@ -96,8 +96,8 @@ namespace Rhitomata.Timeline {
         /// Get the X position of a time based on the current zoom level.
         /// </summary>
         /// <param name="time"></param>
-        public float GetX(float time) {
-            return time * (laneHolder.rect.width / visibleRange.length);
+        public float GetX(float targetTime) {
+            return targetTime * (laneHolder.rect.width / visibleRange.length);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Rhitomata.Timeline {
         private void OnZoomLevelChanged(float size = 0) {
             var keyframes = GetComponentsInChildren<KeyframeUI>();// TODO: Use lists instead of GetComponentsInChildren
             foreach (var keyframe in keyframes) {
-                float x = GetX(keyframe.time);
+                var x = GetX(keyframe.time);
                 keyframe.SetX(x);
             }
         }
