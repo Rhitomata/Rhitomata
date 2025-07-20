@@ -986,7 +986,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.427451, g: 0.77647066, b: 0.9960785, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1541,7 +1541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e99e76f92cb568488e544721e9d5a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panSensitivity: 0.0238
+  panSensitivity: 0.00445
   zoomSensitivity: 0.2
 --- !u!1 &1076627244
 GameObject:

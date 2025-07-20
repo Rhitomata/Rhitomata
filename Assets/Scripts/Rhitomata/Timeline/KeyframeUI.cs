@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using static Useful;
 
 [RequireComponent(typeof(RectTransform))]
-public class KeyframeUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IScrollHandler {
+public class KeyframeUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IScrollHandler, IPointerDownHandler {
     public float time;
 
     private TimelineView timeline => References.Instance.timeline;
@@ -34,7 +34,7 @@ public class KeyframeUI : MonoBehaviour, IPointerClickHandler, IDragHandler, ISc
     }
 
     public void Delete() {
-        // TODO: remove from list that hasn't been made yet
+        // TODO: Remove from a list that hasn't been made yet
         Destroy(gameObject);
     }
 
@@ -51,8 +51,10 @@ public class KeyframeUI : MonoBehaviour, IPointerClickHandler, IDragHandler, ISc
     }
 
     public void OnDrag(PointerEventData eventData) {
-        if (eventData.button == PointerEventData.InputButton.Right) timeline.laneView.OnDrag(eventData);// Passthrough
-        if (eventData.button != PointerEventData.InputButton.Left) return;
+        if (eventData.button != PointerEventData.InputButton.Left) {
+            timeline.laneView.OnDrag(eventData);// Passthrough
+            return;
+        }
 
         var localDelta = GetLocalDelta(timeline.scrollingRect, eventData);
         rectTransform.anchoredPosition += new Vector2(localDelta.x, 0);
@@ -61,5 +63,9 @@ public class KeyframeUI : MonoBehaviour, IPointerClickHandler, IDragHandler, ISc
 
     public void OnScroll(PointerEventData eventData) {
         timeline.laneView.OnScroll(eventData);// Passthrough
+    }
+
+    public void OnPointerDown(PointerEventData eventData) {
+        // This method is needed, even if its empty, otherwise LaneView handles it
     }
 }
