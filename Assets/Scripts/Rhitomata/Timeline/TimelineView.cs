@@ -14,6 +14,9 @@ namespace Rhitomata.Timeline {
         public AudioSource source;
 
         [Header("Peek")]
+        public float time;
+        public DraggableHandle currentTimeHandle;
+        public RectTransform[] currentTimeCursors;
         /// <summary>
         /// Limit on how far the user is supposed to be able to view in the timeline (in seconds)
         /// </summary>
@@ -43,9 +46,36 @@ namespace Rhitomata.Timeline {
         private void Start() {
             verticalScrollbar.onValueChanged.AddListener(OnVerticalChanged);
             horizontalScrollbar.onAnyChanged.AddListener(OnHorizontalChanged);
+            currentTimeHandle.onDragDelta.AddListener(OnCurrentTimeDragged);
 
             UpdatePeekLimit();
             UpdateVerticalSlider();
+            OnHorizontalChanged();
+
+            UpdateCurrentTimeCursor();
+        }
+
+        private void OnCurrentTimeDragged(Vector2 delta) {
+            var deltaSeconds = delta.x * (visibleRange.length / timelineParentContent.rect.width);
+            time += deltaSeconds;
+            time = Mathf.Clamp(time, peekLimit.min, peekLimit.max);
+            UpdateCurrentTimeCursor();
+        }
+
+        public void UpdateCurrentTimeCursor() {
+            var pos = currentTimeHandle.rectTransform.anchoredPosition;
+            var posSeconds = time - visibleRange.min;
+            pos.x = posSeconds * (timelineParentContent.rect.width / visibleRange.length);
+
+            ChangeCursorsX(pos.x);
+        }
+
+        public void ChangeCursorsX(float to) {
+            foreach (var cursor in currentTimeCursors) {
+                var pos = cursor.anchoredPosition;
+                pos.x = to;
+                cursor.anchoredPosition = pos;
+            }
         }
 
         private void OnVerticalChanged(float value) {
@@ -72,6 +102,7 @@ namespace Rhitomata.Timeline {
         private void OnHorizontalChanged() {
             visibleRange.min = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.minRange);
             visibleRange.max = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.maxRange);
+            UpdateCurrentTimeCursor();
         }
 
         public void UpdateTimelineView() {
@@ -88,6 +119,7 @@ namespace Rhitomata.Timeline {
     public struct Limit {
         public float min;
         public float max;
+        public float length => Mathf.Abs(max - min);
 
         public Limit(float min, float max) {
             this.min = min;

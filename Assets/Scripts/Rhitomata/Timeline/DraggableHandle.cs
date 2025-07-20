@@ -6,6 +6,7 @@ using UnityEngine.UI;
 namespace Rhitomata {
     public class DraggableHandle : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, IEndDragHandler {
         public Image image;
+        public bool changeBasedOnMaterial = true;
         public Color hoveredColor = Color.gray;
         public Color pressedColor = Color.white;
         public Color normalColor = Color.black;
@@ -22,6 +23,8 @@ namespace Rhitomata {
         private bool _isDragging;
 
         private void Start() {
+            if (!changeBasedOnMaterial) return;
+
             normalColor = image.material.color;
             image.material = null;
             image.color = normalColor;
