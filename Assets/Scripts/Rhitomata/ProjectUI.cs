@@ -10,20 +10,23 @@ public class ProjectUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     [SerializeField] private TMP_Text projectPathText;
     [SerializeField] private Button closeButton;
 
-    private ProjectData projectInfo;
+    private ProjectData _projectInfo;
 
     public void Initialize(ProjectData projectInfo) {
-        this.projectInfo = projectInfo;
+        _projectInfo = projectInfo;
 
         projectNameText.text = projectInfo.name;
-        projectPathText.text = projectInfo.path;
+        projectPathText.text = projectInfo.directoryPath;
         closeButton.gameObject.SetActive(false);
     }
 
     public void Delete() {
+        // TODO: Implement a custom storage system that's cross-platform and add this feature 
+        
         // i think deleting, should move the project to the recycling bin instead of deleting the project completely
         //FileSystem.DeleteFile(projectInfo.path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         Destroy(gameObject);
+        Directory.Delete(_projectInfo.directoryPath, true);
     }
 
     public void OnPointerEnter(PointerEventData eventData) {

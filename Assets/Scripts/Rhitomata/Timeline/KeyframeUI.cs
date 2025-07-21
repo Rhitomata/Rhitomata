@@ -1,3 +1,4 @@
+using System;
 using Rhitomata;
 using Rhitomata.Timeline;
 using UnityEngine;
@@ -9,17 +10,15 @@ public class KeyframeUI : MonoBehaviour, IPointerClickHandler, IDragHandler, ISc
     public float time;
 
     private TimelineView timeline => References.Instance.timeline;
-    private RectTransform rectTransform;
+    private RectTransform rectTransform => transform as RectTransform;
 
-    public void Initialize(float time, int rowIndex) {
-        this.time = time;
-        rectTransform = GetComponent<RectTransform>();
-
-        Set(time, rowIndex);
+    public void Initialize(float targetTime, int rowIndex) {
+        time = targetTime;
+        Set(targetTime, rowIndex);
     }
 
-    public void Set(float time, int rowIndex) {
-        var x = timeline.GetX(time);
+    public void Set(float targetTime, int rowIndex) {
+        var x = timeline.GetX(targetTime);
         SetX(x);
         SetRowIndex(rowIndex);
     }
@@ -43,7 +42,6 @@ public class KeyframeUI : MonoBehaviour, IPointerClickHandler, IDragHandler, ISc
             case PointerEventData.InputButton.Right:
                 Delete();
                 break;
-
             case PointerEventData.InputButton.Middle:
                 timeline.laneView.OnDrag(eventData);// Passthrough
                 break;
@@ -67,5 +65,6 @@ public class KeyframeUI : MonoBehaviour, IPointerClickHandler, IDragHandler, ISc
 
     public void OnPointerDown(PointerEventData eventData) {
         // This method is needed, even if its empty, otherwise LaneView handles it
+        // Why does it work like that   
     }
 }

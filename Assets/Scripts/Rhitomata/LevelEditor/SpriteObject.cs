@@ -8,17 +8,23 @@ namespace Rhitomata
         public bool selected = false;
         public Color baseColor = Color.white;
 
-        private SpriteRenderer spriteRenderer;
-        private bool isHovered = false;
+        private BoxCollider m_boxCollider;
+        private BoxCollider boxCollider => m_boxCollider ?? GetComponent<BoxCollider>();
+        private SpriteRenderer _spriteRenderer;
+        private bool _isHovered = false;
 
         private void Awake()
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
             ApplyColor();
         }
 
         public void Initialize(SpriteUI spriteUI) {
-            spriteRenderer.sprite = spriteUI.GetSprite();
+            _spriteRenderer.sprite = spriteUI.GetSprite();
+            var bounds = _spriteRenderer.sprite.bounds.size;
+            bounds.z = 0.2f;
+            boxCollider.size = bounds;
+            Debug.Log("Collider updated");
         }
 
         #region Selection
@@ -41,13 +47,13 @@ namespace Rhitomata
 
         public void OnEnter()
         {
-            isHovered = true;
+            _isHovered = true;
             ApplyColor();
         }
 
         public void OnExit()
         {
-            isHovered = false;
+            _isHovered = false;
             ApplyColor();
         }
 
@@ -55,16 +61,16 @@ namespace Rhitomata
         {
             if (selected)
             {
-                spriteRenderer.color = new Color(1f, 0.5f, 0f); // Orange
+                _spriteRenderer.color = new Color(1f, 0.5f, 0f); // Orange
             }
-            else if (isHovered)
+            else if (_isHovered)
             {
                 Color blueTint = Color.Lerp(baseColor, Color.cyan, 0.3f);
-                spriteRenderer.color = blueTint;
+                _spriteRenderer.color = blueTint;
             }
             else
             {
-                spriteRenderer.color = baseColor;
+                _spriteRenderer.color = baseColor;
             }
         }
 

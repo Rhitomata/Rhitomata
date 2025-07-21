@@ -37,8 +37,13 @@ public class ProjectList : MonoBehaviour {
 
         // TODO: Read project data from json file?
         var projectFilePaths = Directory.GetFiles(ProjectsDir);
-        foreach (var projectPath in projectFilePaths) {
-            var projectInfo = new ProjectData(Path.GetFileName(projectPath), "Unknown", "Unknown", projectPath);
+        foreach (var projectPath in projectFilePaths)
+        {
+            var projectName = Path.GetFileName(projectPath);
+            var projectInfo = new ProjectData(projectName, "Unknown", "Unknown", "Untitled")
+            {
+                directoryPath = projectPath
+            };
 
             var projectUI = Instantiate(projectUIPrefab, projectUIHolder).GetComponent<ProjectUI>();
             projectUI.Initialize(projectInfo);
@@ -46,12 +51,15 @@ public class ProjectList : MonoBehaviour {
     }
 
     public void CreateProject() {
-        var name = projectNameInputField.text;
+        var pName = projectNameInputField.text;
         var author = authorInputField.text;
         var songArtist = "Unknown Artist";// TODO?
-        var path = Path.Combine(ProjectsDir, $"{projectNameInputField.text}.rhito");
+        var directoryPath = Path.Combine(ProjectsDir, pName);
 
-        var projectInfo = new ProjectData(name, author, songArtist, path);
+        var projectInfo = new ProjectData(pName, author, songArtist, "Untitled")
+        {
+            directoryPath = directoryPath
+        };
         levelManager.CreateProject(projectInfo);
     }
 }

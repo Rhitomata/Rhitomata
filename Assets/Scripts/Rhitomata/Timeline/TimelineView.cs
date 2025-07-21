@@ -27,7 +27,7 @@ namespace Rhitomata.Timeline {
         public RectTransform viewportBounds;
         public RectTransform headerHolder;
         public RectTransform laneHolder;
-        public RectTransform scrollingRect;// Holds keyframes & stuff
+        public RectTransform scrollingRect; // Holds keyframes & stuff
         public LaneView laneView;
 
         [Header("Keyframes")]
@@ -42,11 +42,6 @@ namespace Rhitomata.Timeline {
         /// </summary>
         [Header("Debug")]
         public Limit visibleRange;
-        public Rect rect;
-        public Vector2 sizeDelta;
-        public Vector2 anchorMin;
-        public Vector2 anchorMax;
-        public Vector2 anchoredPosition;
 
         public const float LANE_HEIGHT = 50f;
 
@@ -56,14 +51,12 @@ namespace Rhitomata.Timeline {
             verticalScrollbar.onValueChanged.AddListener(OnVerticalChanged);
             
             // TODO: Let's just change everything after any changed
-            horizontalScrollbar.onValueChanged.AddListener(OnHorizontalChanged);
-            horizontalScrollbar.onSizeChanged.AddListener(OnZoomLevelChanged);
             horizontalScrollbar.onAnyChanged.AddListener(OnAnyHorizontalChanged);
             currentTimeHandle.onDragDelta.AddListener(OnCurrentTimeDragged);
 
             UpdatePeekLimit();
             UpdateVerticalSlider();
-            OnHorizontalChanged();
+            OnAnyHorizontalChanged();
 
             UpdateCurrentTimeCursor();
         }
@@ -72,7 +65,6 @@ namespace Rhitomata.Timeline {
             var mousePosRelative = GetLocalPoint(scrollingRect, Input.mousePosition);
             var rowIndex = (int)(-mousePosRelative.y / LANE_HEIGHT);
             var time = GetTime(mousePosRelative.x);
-            //print($"{rowIndex}, {time} : {mousePosRelative}");
 
             CreateKeyframe(time, rowIndex);
         }
@@ -80,6 +72,7 @@ namespace Rhitomata.Timeline {
         private void CreateKeyframe(float toTime, int rowIndex) {
             var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<KeyframeUI>();
             keyframe.Initialize(toTime, rowIndex);
+            
             // TODO: Add to a list that hasn't been made yet
         }
 
@@ -109,14 +102,6 @@ namespace Rhitomata.Timeline {
             return x * visibleRange.length / laneHolder.rect.width;
         }
 
-        private void OnZoomLevelChanged(float size = 0) {
-            var keyframes = GetComponentsInChildren<KeyframeUI>();// TODO: Use lists instead of GetComponentsInChildren
-            foreach (var keyframe in keyframes) {
-                var x = GetX(keyframe.time);
-                keyframe.SetX(x);
-            }
-        }
-
         private void OnVerticalChanged(float value) {
             var pos = laneHolder.anchoredPosition;
             pos.y = Mathf.Lerp(0, laneHolder.rect.height - viewportBounds.rect.height, value);
@@ -126,15 +111,18 @@ namespace Rhitomata.Timeline {
             scrollingRect.anchoredPosition = pos;
         }
 
-        private void OnHorizontalChanged(float value = 0) {
-            visibleRange.min = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.minRange);
-            visibleRange.max = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.maxRange);
-
-            UpdateCurrentTimeCursor();
-        }
-
         private void OnAnyHorizontalChanged()
         {
+            visibleRange.min = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.minRange);
+            visibleRange.max = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.maxRange);
+            
+            var keyframes = GetComponentsInChildren<KeyframeUI>();// TODO: Use lists instead of GetComponentsInChildren
+            foreach (var keyframe in keyframes) {
+                var x = GetX(keyframe.time);
+                keyframe.SetX(x);
+            }
+
+            UpdateCurrentTimeCursor();
             UpdateKeyframeHolder();
         }
 
@@ -238,17 +226,17 @@ namespace Rhitomata.Timeline {
         }
 
         private static void DrawMultipleDoubleFields(Rect pos, GUIContent[] subLabels, SerializedProperty[] props) {
-            int propCount = props.Length;
-            float totalSpacing = (propCount - 1) * SUB_LABEL_SPACING;
-            float fieldWidth = (pos.width - totalSpacing) / propCount;
+            var propCount = props.Length;
+            var totalSpacing = (propCount - 1) * SUB_LABEL_SPACING;
+            var fieldWidth = (pos.width - totalSpacing) / propCount;
 
-            float originalLabelWidth = EditorGUIUtility.labelWidth;
-            int originalIndent = EditorGUI.indentLevel;
+            var originalLabelWidth = EditorGUIUtility.labelWidth;
+            var originalIndent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
 
-            Rect fieldRect = new Rect(pos.x, pos.y, fieldWidth, pos.height);
+            var fieldRect = new Rect(pos.x, pos.y, fieldWidth, pos.height);
 
-            for (int i = 0; i < propCount; i++) {
+            for (var i = 0; i < propCount; i++) {
                 EditorGUIUtility.labelWidth = EditorStyles.label.CalcSize(subLabels[i]).x;
                 EditorGUI.PropertyField(fieldRect, props[i], subLabels[i]);
                 fieldRect.x += fieldWidth + SUB_LABEL_SPACING;

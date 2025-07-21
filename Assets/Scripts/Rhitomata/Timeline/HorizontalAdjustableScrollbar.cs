@@ -65,6 +65,26 @@ namespace Rhitomata {
             UpdateSize();
         }
         
+        public void OnBackgroundDown(BaseEventData eventData)
+        {
+            AdjustValueBasedOnMouse();
+        }
+
+        public void OnBackgroundDrag(BaseEventData eventData)
+        {
+            AdjustValueBasedOnMouse();
+        }
+
+        private void AdjustValueBasedOnMouse()
+        {
+            var pos = GetLocalMousePosition();
+            _value = Mathf.Clamp01((pos.x - (sizePx / 2f)) / valuePixelWidth);
+            
+            UpdateValue();
+            onValueChanged?.Invoke(_value);
+            onAnyChanged?.Invoke();
+        }
+        
         #region New Coordinate Implementation
         // --- INITIAL STATE ---
         private Vector2 _initialCursorPosition; // Already relative to the bounds
@@ -72,26 +92,26 @@ namespace Rhitomata {
         
         private void OnStartRangeBegin(PointerEventData eventData)
         {
-            _initialCursorPosition = GetMousePositionLocally();
+            _initialCursorPosition = GetLocalMousePosition();
             _initialDraggablePosition = peekStart.rectTransform.anchoredPosition;
         }
 
         private void OnRangeBegin(PointerEventData eventData)
         {
-            _initialCursorPosition = GetMousePositionLocally();
+            _initialCursorPosition = GetLocalMousePosition();
             _initialDraggablePosition = peekRange.rectTransform.anchoredPosition;
         }
 
         private void OnEndRangeBegin(PointerEventData arg0)
         {
-            _initialCursorPosition = GetMousePositionLocally();
+            _initialCursorPosition = GetLocalMousePosition();
             _initialDraggablePosition = peekEnd.rectTransform.anchoredPosition;
         }
         
         // --- WHEN DRAGGED ---
         private void OnStartRangeDragged(PointerEventData eventData)
         {
-            var pixelsDifference = GetMousePositionLocally() - _initialCursorPosition;
+            var pixelsDifference = GetLocalMousePosition() - _initialCursorPosition;
 
             // So we're keeping the peek end but changing the value and the size
             var rangeEndPx = valuePx + sizePx;
@@ -115,7 +135,7 @@ namespace Rhitomata {
                 return;
             }
             
-            var pixelsDifference = GetMousePositionLocally() - _initialCursorPosition;
+            var pixelsDifference = GetLocalMousePosition() - _initialCursorPosition;
             
             _value = (_initialDraggablePosition.x + pixelsDifference.x) / valuePixelWidth;
             _value = Mathf.Clamp01(_value);
@@ -127,7 +147,7 @@ namespace Rhitomata {
 
         private void OnEndRangeDragged(PointerEventData eventData)
         {
-            var pixelsDifference = GetMousePositionLocally() - _initialCursorPosition;
+            var pixelsDifference = GetLocalMousePosition() - _initialCursorPosition;
             
             var newEndPx = Mathf.Clamp(_initialDraggablePosition.x + pixelsDifference.x, valuePx + 1f, pixelWidth);
             var newSize = (newEndPx - valuePx) / pixelWidth;
@@ -150,7 +170,7 @@ namespace Rhitomata {
         private float valuePixelWidth => bounds.rect.width - peekRange.rectTransform.rect.width;
         private float pixelWidth => bounds.rect.width;
 
-        private Vector2 GetMousePositionLocally()
+        private Vector2 GetLocalMousePosition()
         {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(bounds, Input.mousePosition, null, out var mousePosRelative);
             mousePosRelative.y = bounds.rect.height - mousePosRelative.y; // Invert down - top to top - down
@@ -235,7 +255,6 @@ namespace Rhitomata {
             onAnyChanged?.Invoke();
         }
         #endregion
-
         [Serializable]
         public class AdjustableEvent : UnityEvent<float> { }
     }

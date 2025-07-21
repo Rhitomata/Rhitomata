@@ -9,24 +9,24 @@ public class SpriteUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] private Image spriteImage;
     [SerializeField] private Button deleteButton;
 
-    private Sprite sprite;
-    private string spriteName;
+    private Sprite _sprite;
+    private string _spriteName;
 
-    public void Initialize(Sprite sprite, string name) {
-        this.sprite = sprite;
-        spriteName = name;
-        spriteNameText.text = name;
-        spriteImage.sprite = sprite;
+    public void Initialize(Sprite targetSprite, string targetName) {
+        _sprite = targetSprite;
+        _spriteName = targetName;
+        spriteNameText.text = targetName;
+        spriteImage.sprite = targetSprite;
 
         deleteButton.gameObject.SetActive(false);
     }
 
     public Sprite GetSprite() {
-        return sprite;
+        return _sprite;
     }
 
     public string GetName() {
-        return spriteName;
+        return _spriteName;
     }
 
     public void SpawnSpriteObjectUI() {// for UI ref

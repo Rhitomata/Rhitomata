@@ -34,22 +34,22 @@ namespace Rhitomata {
 
         public void OnPointerEnter(PointerEventData eventData) {
             _isHovered = true;
-            UpdateColor();
+            UpdateColor(eventData);
         }
 
         public void OnPointerExit(PointerEventData eventData) {
             _isHovered = false;
-            UpdateColor();
+            UpdateColor(eventData);
         }
 
         public void OnPointerDown(PointerEventData eventData) {
             _isPressed = true;
-            UpdateColor();
+            UpdateColor(eventData);
         }
 
         public void OnPointerUp(PointerEventData eventData) {
             _isPressed = false;
-            UpdateColor();
+            UpdateColor(eventData);
             FinishDrag(eventData);
         }
 
@@ -81,7 +81,14 @@ namespace Rhitomata {
             onEndDrag?.Invoke(eventData);
         }
 
-        public void UpdateColor() {
+        private void UpdateColor(PointerEventData eventData)
+        {
+            if (eventData.dragging && eventData.pointerDrag != gameObject)
+            {
+                image.color = normalColor;
+                return;
+            }
+
             if (_isPressed) {
                 image.color = pressedColor;
             }

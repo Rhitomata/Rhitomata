@@ -149,13 +149,35 @@ namespace Rhitomata
         #endregion UI
 
         #region Project
-        public void CreateProject(ProjectData projectInfo) {
-            File.WriteAllText(projectInfo.path, RhitomataSerializer.Serialize(projectInfo));
-            LoadProject(projectInfo.path);
+        public void CreateProject(ProjectData data) {
+            File.WriteAllText(data.directoryPath, RhitomataSerializer.Serialize(data));
+            LoadProject(data.directoryPath);
         }
 
-        void LoadProject(string path) {
+        void LoadProject(string directoryPath)
+        {
+            var content = File.ReadAllText(directoryPath);
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                Debug.LogWarning("The project file has no data, cancel loading the project");
+                return;
+            }
 
+            try
+            {
+                var projectData = RhitomataSerializer.Deserialize<ProjectData>(content);
+                if (projectData == null)
+                {
+                    Debug.LogWarning("The project failed to load while reading the data, unspecified error.");
+                    return;
+                }
+
+                project = projectData;
+            }
+            catch (System.Exception exception)
+            {
+                Debug.LogException(exception);
+            }
         }
 
         void SaveProject(string path) {
@@ -191,8 +213,8 @@ namespace Rhitomata
                 yield break;
             }
 
-            if (!string.IsNullOrEmpty(project.path))// HACK
-                project.musicPath = GetRelativePath(path, project.path);
+            if (!string.IsNullOrEmpty(project.directoryPath))// HACK
+                project.musicPath = GetRelativePath(path, project.directoryPath);
             references.music.clip = myClip;
             Debug.Log("Loaded song!");
         }
@@ -216,7 +238,12 @@ namespace Rhitomata
         }
 
         public void DeleteSpritesUI() {
-            foreach (Transform t in references.spriteUIHolder) {
+            foreach (Transform t in references.spriteUIHolder)
+            {
+                var spriteUI = t.GetComponent<SpriteUI>();
+                // Free up the memory used by the texture and sprites
+                Destroy(spriteUI.GetSprite().texture);
+                Destroy(spriteUI.GetSprite());
                 Destroy(t.gameObject);
             }
         }
@@ -226,19 +253,20 @@ namespace Rhitomata
             CreateSpriteObject(sprite, Path.GetFileNameWithoutExtension(texturePath));
         }
 
-        public void CreateSpriteObject(Sprite sprite, string name) {
+        public void CreateSpriteObject(Sprite sprite, string spriteName) {
             var spriteUI = Instantiate(references.spriteUIPrefab, references.spriteUIHolder).GetComponent<SpriteUI>();
-            spriteUI.Initialize(sprite, name);
+            spriteUI.Initialize(sprite, spriteName);
             sprites.Add(spriteUI);
         }
 
-        private Sprite CreateSpriteFromPath(string path) {
-            byte[] fileData = File.ReadAllBytes(path);
-            Texture2D texture = new Texture2D(2, 2);
+        private static Sprite CreateSpriteFromPath(string path) {
+            // TODO: Add a place to manage these creations and destroy the sprites and textures if necessary
+            var fileData = File.ReadAllBytes(path);
+            var texture = new Texture2D(2, 2);
             if (texture.LoadImage(fileData)) {
-                Rect rect = new Rect(0, 0, texture.width, texture.height);
-                Vector2 pivot = new Vector2(0.5f, 0.5f);
-                Sprite sprite = Sprite.Create(texture, rect, pivot);
+                var rect = new Rect(0, 0, texture.width, texture.height);
+                var pivot = new Vector2(0.5f, 0.5f);
+                var sprite = Sprite.Create(texture, rect, pivot);
                 return sprite;
             }
 

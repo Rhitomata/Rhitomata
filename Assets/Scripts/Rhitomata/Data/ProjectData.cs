@@ -27,7 +27,11 @@ namespace Rhitomata.Data {
         /// <summary>
         /// Absolute path of the project directory
         /// </summary>
-        [JsonIgnore] public string path { get; set; }
+        [JsonIgnore] public string directoryPath { get; set; }
+        /// <summary>
+        /// Absolute path of the project file
+        /// </summary>
+        [JsonIgnore] public string filePath { get; set; }
 
         public ProjectData() { }
         public ProjectData(string name, string author, string musicAuthor, string musicName) {
