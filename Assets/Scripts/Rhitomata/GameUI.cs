@@ -6,20 +6,36 @@ namespace Rhitomata
 {
     public class GameUI : MonoBehaviour
     {
-        public RectTransform timelinePanel;
+        [Header("References")] 
+        public References references;
         public DynamicPanelsCanvas dynamicCanvas;
-        [HideInInspector]
-        public Panel dynamicTimelinePanel;
-        public Vector2 dynamicTimelineMinSize = new Vector2(200f, 300f);
+        
+        [Header("Timeline")]
+        public RectTransform timelinePanel;
+        public Vector2 timelineMinSize = new(200f, 300f);
+        [HideInInspector] public Panel dynamicTimelinePanel;
+        [HideInInspector] public PanelTab dynamicTimelinePanelTab;
+
+        [Header("Sprites")] 
+        public RectTransform spritePanel;
+        public Vector2 spriteMinSize = new(200f, 200f);
+        [HideInInspector] public Panel dynamicSpritePanel;
+        [HideInInspector] public PanelTab dynamicSpritePanelTab;
 
         private void Awake()
         {
-            dynamicTimelinePanel = PanelUtils.CreatePanelFor(timelinePanel, dynamicCanvas);
-            dynamicTimelinePanel.DockToRoot(Direction.Bottom);
+            // Sprite
+            dynamicSpritePanel = PanelUtils.CreatePanelFor(spritePanel, dynamicCanvas);
+            dynamicSpritePanel.DockToRoot(Direction.Right);
+            dynamicSpritePanelTab = PanelUtils.GetAssociatedTab(spritePanel);
+            dynamicSpritePanelTab.MinSize = spriteMinSize;
             
-            var panelTab = PanelUtils.GetAssociatedTab(timelinePanel);
-            panelTab.MinSize = dynamicTimelineMinSize;
+            // Timeline
+            dynamicTimelinePanel = PanelUtils.CreatePanelFor(timelinePanel, dynamicCanvas);
             dynamicTimelinePanel.OnResized.AddListener(OnTimelinePanelResized);
+            dynamicTimelinePanel.DockToRoot(Direction.Bottom);
+            dynamicTimelinePanelTab = PanelUtils.GetAssociatedTab(timelinePanel);
+            dynamicTimelinePanelTab.MinSize = timelineMinSize;
         }
 
         private void OnTimelinePanelResized()
