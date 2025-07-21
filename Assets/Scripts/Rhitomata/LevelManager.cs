@@ -245,8 +245,8 @@ namespace Rhitomata
                 var sprite = spriteUI.GetSprite();
                 if (sprite)
                 {
-                    Destroy(spriteUI.GetSprite().texture);
-                    Destroy(spriteUI.GetSprite());
+                    Destroy(sprite.texture);
+                    Destroy(sprite);
                 }
 
                 Destroy(t.gameObject);

@@ -1,10 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Rhitomata
-{
-    public class Freecam : MonoBehaviour
-    {
+namespace Rhitomata {
+    public class Freecam : MonoBehaviour {
         [SerializeField]
         private Camera targetCamera;
 
@@ -17,13 +15,10 @@ namespace Rhitomata
         private bool _isDraggingCamera;
         private Vector3 _dragStartWorldPos;
 
-        void Update()
-        {
+        void Update() {
             float scroll = Input.GetAxis("Mouse ScrollWheel") * (naturalScrolling ? 1f : -1f);
-            if (Mathf.Abs(scroll) > 0.01f)
-            {
-                if (scrollToCursor)
-                {
+            if (Mathf.Abs(scroll) > 0.01f) {
+                if (scrollToCursor) {
                     Vector3 screenPos = Input.mousePosition;
                     screenPos.z = -targetCamera.transform.position.z;
                     Vector3 worldBeforeZoom = targetCamera.ScreenToWorldPoint(screenPos);
@@ -37,33 +32,26 @@ namespace Rhitomata
 
                     Vector3 offset = worldBeforeZoom - worldAfterZoom;
                     transform.position += offset;
-                }
-                else
-                {
+                } else {
                     Vector3 position = transform.position;
                     position.z = Mathf.Clamp(position.z - scroll, zMin, zMax);
                     transform.position = position;
                 }
             }
 
-            if (_isDraggingCamera)
-            {
-                if (Input.GetMouseButton(1))
-                {
+            if (_isDraggingCamera) {
+                if (Input.GetMouseButton(1) || Input.GetMouseButton(2)) {
                     Vector3 screenPos = Input.mousePosition;
                     screenPos.z = -targetCamera.transform.position.z;
                     Vector3 currentWorldPos = targetCamera.ScreenToWorldPoint(screenPos);
 
                     Vector3 offset = _dragStartWorldPos - currentWorldPos;
                     transform.position += offset;
-                }
-                else
-                {
+                } else {
                     _isDraggingCamera = false;
                 }
 
-                if (Input.GetMouseButtonUp(1))
-                {
+                if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2)) {
                     _isDraggingCamera = false;
                 }
             }
@@ -71,8 +59,7 @@ namespace Rhitomata
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            if (Input.GetMouseButtonDown(1))
-            {
+            if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) {
                 Vector3 screenPos = Input.mousePosition;
                 screenPos.z = -targetCamera.transform.position.z; // Distance from camera to z=0
                 _dragStartWorldPos = targetCamera.ScreenToWorldPoint(screenPos);
@@ -80,8 +67,7 @@ namespace Rhitomata
             }
         }
 
-        void OnDisable()
-        {
+        void OnDisable() {
             _isDraggingCamera = false;
         }
     }
