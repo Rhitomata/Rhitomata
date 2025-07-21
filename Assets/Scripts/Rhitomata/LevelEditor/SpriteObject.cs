@@ -24,7 +24,6 @@ namespace Rhitomata
             var bounds = _spriteRenderer.sprite.bounds.size;
             bounds.z = 0.2f;
             boxCollider.size = bounds;
-            Debug.Log("Collider updated");
         }
 
         #region Selection

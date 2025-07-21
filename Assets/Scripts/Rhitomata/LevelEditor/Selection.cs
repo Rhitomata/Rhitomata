@@ -1,104 +1,116 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Rhitomata
 {
     public class Selection : MonoBehaviour
     {
         public bool enableSelecting = true;
-        private ISelectable currentHovered;
+        private ISelectable _currentHovered;
 
-        private bool isDragging = false;
-        private Vector3 dragStartWorldPoint;
-        private Plane dragPlane;
-        private Dictionary<ISelectable, Vector3> dragStartPositions = new();
+        private bool _isDragging = false;
+        private Vector3 _dragStartWorldPoint;
+        private Plane _dragPlane;
+        private readonly Dictionary<ISelectable, Vector3> _dragStartPositions = new();
+        private bool _wasOverUI;
 
         void Update()
         {
             if (!enableSelecting) return;
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            ISelectable hovered = null;
-
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            var isOverUI = EventSystem.current.IsPointerOverGameObject();
+            if (_wasOverUI != isOverUI)
             {
-                hovered = hit.collider.GetComponent<ISelectable>();
-            }
-
-            if (hovered != currentHovered)
-            {
-                if (currentHovered != null)
-                    currentHovered.OnExit();
-
-                if (hovered != null)
-                    hovered.OnEnter();
-
-                currentHovered = hovered;
-            }
-
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (hovered != null)
+                if (_currentHovered != null)
                 {
-                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                    _currentHovered?.OnExit();
+                    _currentHovered = null;
+                }
+                
+                _wasOverUI = isOverUI;
+            }
+
+            if (!Camera.main) return;
+            
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (!isOverUI)
+            {
+                ISelectable hovered = null;
+
+                if (Physics.Raycast(ray, out var hit))
+                    hovered = hit.collider.GetComponent<ISelectable>();
+
+                if (hovered != _currentHovered)
+                {
+                    _currentHovered?.OnExit();
+                    hovered?.OnEnter();
+                    _currentHovered = hovered;
+                }
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (hovered != null)
                     {
-                        if (SelectedObjects.Contains(hovered))
-                            RemoveSelection(hovered);
+                        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                        {
+                            if (SelectedObjects.Contains(hovered))
+                                RemoveSelection(hovered);
+                            else
+                                AddSelection(hovered);
+                        }
                         else
-                            AddSelection(hovered);
+                        {
+                            SelectSingle(hovered);
+                        }
+
+                        if (SelectedObjects.Count > 0)
+                        {
+                            var selected = SelectedObjectTransform();
+                            _dragPlane = new Plane(Vector3.back, selected.position);
+
+                            if (_dragPlane.Raycast(ray, out var enter))
+                            {
+                                _dragStartWorldPoint = ray.GetPoint(enter);
+                                _dragStartPositions.Clear();
+
+                                foreach (var obj in SelectedObjects)
+                                {
+                                    if (obj is MonoBehaviour mb)
+                                    {
+                                        _dragStartPositions[obj] = mb.transform.position;
+                                    }
+                                }
+
+                                _isDragging = true;
+                            }
+                        }
+
                     }
                     else
                     {
-                        SelectSingle(hovered);
+                        Clear();
                     }
-
-                    if (SelectedObjects.Count > 0)
-                    {
-                        var transform = SelectedObjectTransform();
-                        dragPlane = new Plane(Vector3.back, transform.position);
-
-                        if (dragPlane.Raycast(ray, out float enter))
-                        {
-                            dragStartWorldPoint = ray.GetPoint(enter);
-                            dragStartPositions.Clear();
-
-                            foreach (var obj in SelectedObjects)
-                            {
-                                if (obj is MonoBehaviour mb)
-                                {
-                                    dragStartPositions[obj] = mb.transform.position;
-                                }
-                            }
-
-                            isDragging = true;
-                        }
-                    }
-
-                }
-                else
-                {
-                    Clear(); 
                 }
             }
 
             if (Input.GetMouseButtonUp(0))
             {
-                isDragging = false;
-                dragStartPositions.Clear();
+                _isDragging = false;
+                _dragStartPositions.Clear();
             }
 
-            if (isDragging)
+            if (_isDragging)
             {
-                if (dragPlane.Raycast(ray, out float enter))
+                if (_dragPlane.Raycast(ray, out var enter))
                 {
-                    Vector3 currentWorldPoint = ray.GetPoint(enter);
-                    Vector3 delta = currentWorldPoint - dragStartWorldPoint;
+                    var currentWorldPoint = ray.GetPoint(enter);
+                    var delta = currentWorldPoint - _dragStartWorldPoint;
 
-                    foreach (var kvp in dragStartPositions)
+                    foreach (var kvp in _dragStartPositions)
                     {
-                        ISelectable obj = kvp.Key;
-                        Vector3 startPos = kvp.Value;
+                        var obj = kvp.Key;
+                        var startPos = kvp.Value;
 
                         if (obj is MonoBehaviour mb)
                         {

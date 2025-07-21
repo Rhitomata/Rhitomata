@@ -29,6 +29,8 @@ namespace Rhitomata
             dynamicSpritePanel.DockToRoot(Direction.Right);
             dynamicSpritePanelTab = PanelUtils.GetAssociatedTab(spritePanel);
             dynamicSpritePanelTab.MinSize = spriteMinSize;
+            dynamicSpritePanelTab.Icon = null;
+            dynamicSpritePanelTab.Label = "Sprites";
             
             // Timeline
             dynamicTimelinePanel = PanelUtils.CreatePanelFor(timelinePanel, dynamicCanvas);
@@ -36,6 +38,8 @@ namespace Rhitomata
             dynamicTimelinePanel.DockToRoot(Direction.Bottom);
             dynamicTimelinePanelTab = PanelUtils.GetAssociatedTab(timelinePanel);
             dynamicTimelinePanelTab.MinSize = timelineMinSize;
+            dynamicTimelinePanelTab.Icon = null;
+            dynamicTimelinePanelTab.Label = "Timeline";
         }
 
         private void OnTimelinePanelResized()
