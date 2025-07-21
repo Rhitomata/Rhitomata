@@ -242,8 +242,13 @@ namespace Rhitomata
             {
                 var spriteUI = t.GetComponent<SpriteUI>();
                 // Free up the memory used by the texture and sprites
-                Destroy(spriteUI.GetSprite().texture);
-                Destroy(spriteUI.GetSprite());
+                var sprite = spriteUI.GetSprite();
+                if (sprite)
+                {
+                    Destroy(spriteUI.GetSprite().texture);
+                    Destroy(spriteUI.GetSprite());
+                }
+
                 Destroy(t.gameObject);
             }
         }

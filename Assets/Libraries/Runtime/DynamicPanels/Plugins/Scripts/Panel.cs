@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -354,6 +355,7 @@ namespace DynamicPanels
 
 		private ScrollRect contentScrollRect;
 		private bool isQuitting = false;
+		public UnityEvent OnResized;
 
 		private void Awake()
 		{
@@ -781,6 +783,7 @@ namespace DynamicPanels
 
 				RectTransform.sizeDelta = sizeDelta;
 				RectTransform.anchoredPosition = anchoredPosition;
+				OnResized?.Invoke();
 			}
 			else
 			{
@@ -802,6 +805,7 @@ namespace DynamicPanels
 					if( surrounding != null )
 						surrounding.Group.Internal.TryChangeSizeOf( surrounding, direction.Opposite(), -deltaSize );
 				}
+				OnResized?.Invoke();
 			}
 		}
 

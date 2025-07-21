@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -0.000030517578, y: -5.000046}
+  m_AnchoredPosition: {x: 0, y: -5}
   m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &3411555911829450968
@@ -361,12 +361,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7732937044521522164, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732937044521522164, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 45
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 7732937044521522164, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.000030517578
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7802409715761455941, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
       propertyPath: m_text
@@ -377,12 +381,28 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7802409715761455941, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802409715761455941, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802409715761455941, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
       propertyPath: m_lineSpacing
       value: -35.9
       objectReference: {fileID: 0}
     - target: {fileID: 7802409715761455941, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
       propertyPath: m_fontSizeBase
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802409715761455941, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_overflowMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802409715761455941, guid: 880925abcdb201c46bd37d04b10a4a58, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
