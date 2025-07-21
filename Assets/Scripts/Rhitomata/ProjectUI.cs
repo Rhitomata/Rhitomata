@@ -1,9 +1,9 @@
+using Rhitomata.Data;
 using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Rhitomata.Data;
 
 public class ProjectUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
     [SerializeField] private TMP_Text projectNameText;
@@ -22,7 +22,7 @@ public class ProjectUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void Delete() {
         // TODO: Implement a custom storage system that's cross-platform and add this feature 
-        
+
         // i think deleting, should move the project to the recycling bin instead of deleting the project completely
         //FileSystem.DeleteFile(projectInfo.path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         Destroy(gameObject);

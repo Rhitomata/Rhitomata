@@ -1,10 +1,8 @@
 using UnityEngine;
 
-namespace Rhitomata
-{
+namespace Rhitomata {
     [RequireComponent(typeof(SpriteRenderer))]
-    public class SpriteObject : MonoBehaviour, ISelectable
-    {
+    public class SpriteObject : MonoBehaviour, ISelectable {
         public bool selected = false;
         public Color baseColor = Color.white;
 
@@ -13,8 +11,7 @@ namespace Rhitomata
         private SpriteRenderer _spriteRenderer;
         private bool _isHovered = false;
 
-        private void Awake()
-        {
+        private void Awake() {
             _spriteRenderer = GetComponent<SpriteRenderer>();
             ApplyColor();
         }
@@ -30,45 +27,35 @@ namespace Rhitomata
 
         public bool IsSelected() => selected;
 
-        public bool OnSelect()
-        {
+        public bool OnSelect() {
             selected = true;
             ApplyColor();
             return true;
         }
 
-        public bool OnDeselect()
-        {
+        public bool OnDeselect() {
             selected = false;
             ApplyColor();
             return true;
         }
 
-        public void OnEnter()
-        {
+        public void OnEnter() {
             _isHovered = true;
             ApplyColor();
         }
 
-        public void OnExit()
-        {
+        public void OnExit() {
             _isHovered = false;
             ApplyColor();
         }
 
-        private void ApplyColor()
-        {
-            if (selected)
-            {
+        private void ApplyColor() {
+            if (selected) {
                 _spriteRenderer.color = new Color(1f, 0.5f, 0f); // Orange
-            }
-            else if (_isHovered)
-            {
+            } else if (_isHovered) {
                 Color blueTint = Color.Lerp(baseColor, Color.cyan, 0.3f);
                 _spriteRenderer.color = blueTint;
-            }
-            else
-            {
+            } else {
                 _spriteRenderer.color = baseColor;
             }
         }

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static Useful;
 #if UNITY_EDITOR
@@ -49,7 +46,7 @@ namespace Rhitomata.Timeline {
             DeleteAllKeyframes();
 
             verticalScrollbar.onValueChanged.AddListener(OnVerticalChanged);
-            
+
             // TODO: Let's just change everything after any changed
             horizontalScrollbar.onAnyChanged.AddListener(OnAnyHorizontalChanged);
             currentTimeHandle.onDragDelta.AddListener(OnCurrentTimeDragged);
@@ -72,7 +69,7 @@ namespace Rhitomata.Timeline {
         private void CreateKeyframe(float toTime, int rowIndex) {
             var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<KeyframeUI>();
             keyframe.Initialize(toTime, rowIndex);
-            
+
             // TODO: Add to a list that hasn't been made yet
         }
 
@@ -111,11 +108,10 @@ namespace Rhitomata.Timeline {
             scrollingRect.anchoredPosition = pos;
         }
 
-        private void OnAnyHorizontalChanged()
-        {
+        private void OnAnyHorizontalChanged() {
             visibleRange.min = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.minRange);
             visibleRange.max = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.maxRange);
-            
+
             var keyframes = GetComponentsInChildren<KeyframeUI>();// TODO: Use lists instead of GetComponentsInChildren
             foreach (var keyframe in keyframes) {
                 var x = GetX(keyframe.time);
@@ -126,8 +122,7 @@ namespace Rhitomata.Timeline {
             UpdateKeyframeHolder();
         }
 
-        public void UpdateKeyframeHolder()
-        {
+        public void UpdateKeyframeHolder() {
             // Move keyframe holder (scrollingRect)
             var posSeconds = -visibleRange.min;
             var x = posSeconds * (viewportBounds.rect.width / visibleRange.length);

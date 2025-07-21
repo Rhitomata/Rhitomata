@@ -1,18 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Rhitomata.Assets
-{
-    public class SpriteManager : MonoBehaviour
-    {
+namespace Rhitomata.Assets {
+    public class SpriteManager : MonoBehaviour {
         public RectTransform spritePanel;
         public GridLayoutGroup spriteGridLayout;
         public float xMinSize = 100f;
 
         private Vector2 _previousPanelSize;
 
-        private void Update()
-        {
+        private void Update() {
             var currentSize = spritePanel.rect.size;
             if (currentSize == _previousPanelSize) return;
 
@@ -20,8 +17,7 @@ namespace Rhitomata.Assets
             _previousPanelSize = currentSize;
         }
 
-        private void AdjustCellSize(float panelWidth)
-        {
+        private void AdjustCellSize(float panelWidth) {
             var spacingX = spriteGridLayout.spacing.x;
             var padding = spriteGridLayout.padding.left + spriteGridLayout.padding.right;
 

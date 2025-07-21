@@ -1,5 +1,3 @@
-using System;
-
 namespace Rhitomata.Data {
     public class BPMInfo {
         public float time = 0f;

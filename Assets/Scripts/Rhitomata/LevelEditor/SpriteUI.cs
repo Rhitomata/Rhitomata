@@ -42,8 +42,7 @@ public class SpriteUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void Delete() {
         Destroy(gameObject);
-        if (_sprite)
-        {
+        if (_sprite) {
             Destroy(_sprite.texture);
             Destroy(_sprite);
         }

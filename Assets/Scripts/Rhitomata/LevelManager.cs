@@ -1,16 +1,14 @@
+using Rhitomata.Data;
+using SFB;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Rhitomata.Data;
-using SFB;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 using static Useful;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Rhitomata.Editor")]
-namespace Rhitomata
-{
+namespace Rhitomata {
     public class LevelManager : MonoBehaviour {
         [Header("References")]
         public References references;
@@ -154,28 +152,22 @@ namespace Rhitomata
             LoadProject(data.directoryPath);
         }
 
-        void LoadProject(string directoryPath)
-        {
+        void LoadProject(string directoryPath) {
             var content = File.ReadAllText(directoryPath);
-            if (string.IsNullOrWhiteSpace(content))
-            {
+            if (string.IsNullOrWhiteSpace(content)) {
                 Debug.LogWarning("The project file has no data, cancel loading the project");
                 return;
             }
 
-            try
-            {
+            try {
                 var projectData = RhitomataSerializer.Deserialize<ProjectData>(content);
-                if (projectData == null)
-                {
+                if (projectData == null) {
                     Debug.LogWarning("The project failed to load while reading the data, unspecified error.");
                     return;
                 }
 
                 project = projectData;
-            }
-            catch (System.Exception exception)
-            {
+            } catch (System.Exception exception) {
                 Debug.LogException(exception);
             }
         }
@@ -238,13 +230,11 @@ namespace Rhitomata
         }
 
         public void DeleteSpritesUI() {
-            foreach (Transform t in references.spriteUIHolder)
-            {
+            foreach (Transform t in references.spriteUIHolder) {
                 var spriteUI = t.GetComponent<SpriteUI>();
                 // Free up the memory used by the texture and sprites
                 var sprite = spriteUI.GetSprite();
-                if (sprite)
-                {
+                if (sprite) {
                     Destroy(sprite.texture);
                     Destroy(sprite);
                 }

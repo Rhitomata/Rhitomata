@@ -1,8 +1,6 @@
-using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Runtime2DTransformInteractor;
 
 namespace Rhitomata {
     public class InputManager : MonoBehaviour {
@@ -28,14 +26,13 @@ namespace Rhitomata {
             if (keyInt is >= 330 or <= 322) return false;
             return EventSystem.current.IsPointerOverGameObject();
         }
-        
+
         /// <summary>
         /// Checks if mouse is over UI
         /// </summary>
         /// <param name="keyInt">The key code</param>
         /// <returns>True if mouse is over UI</returns>
-        public static bool IsMouseOverUI(KeyCode key)
-        {
+        public static bool IsMouseOverUI(KeyCode key) {
             if (((int)key) is >= 330 or <= 322) return false;
             return EventSystem.current.IsPointerOverGameObject();
         }

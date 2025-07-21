@@ -49,7 +49,7 @@ public class LaneView : MonoBehaviour, IPointerClickHandler, IDragHandler, IScro
 
         var delta = eventData.scrollDelta.y * zoomLevel * zoomSensitivity;
         delta *= moreModifier ? 4 : lessModifier ? 0.25f : 1;// yes
-        timeline.horizontalScrollbar.OnStartRangeMoved(new Vector2(delta,0));
+        timeline.horizontalScrollbar.OnStartRangeMoved(new Vector2(delta, 0));
         timeline.horizontalScrollbar.OnEndRangeMoved(new Vector2(-delta, 0));
 
         // Laptop touchpad scrolling

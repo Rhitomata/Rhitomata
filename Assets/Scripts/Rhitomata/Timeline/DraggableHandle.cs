@@ -53,16 +53,13 @@ namespace Rhitomata {
             FinishDrag(eventData);
         }
 
-        public void OnPointerMove(PointerEventData eventData)
-        {
-            if (_isPressed)
-            {
+        public void OnPointerMove(PointerEventData eventData) {
+            if (_isPressed) {
                 onMoved?.Invoke(eventData);
             }
         }
 
-        public void OnBeginDrag(PointerEventData eventData)
-        {
+        public void OnBeginDrag(PointerEventData eventData) {
             _isDragging = true;
             onStartDrag?.Invoke(eventData);
         }
@@ -81,21 +78,17 @@ namespace Rhitomata {
             onEndDrag?.Invoke(eventData);
         }
 
-        private void UpdateColor(PointerEventData eventData)
-        {
-            if (eventData.dragging && eventData.pointerDrag != gameObject)
-            {
+        private void UpdateColor(PointerEventData eventData) {
+            if (eventData.dragging && eventData.pointerDrag != gameObject) {
                 image.color = normalColor;
                 return;
             }
 
             if (_isPressed) {
                 image.color = pressedColor;
-            }
-            else if (_isHovered) {
+            } else if (_isHovered) {
                 image.color = hoveredColor;
-            }
-            else {
+            } else {
                 image.color = normalColor;
             }
         }

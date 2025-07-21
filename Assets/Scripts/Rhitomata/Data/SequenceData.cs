@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using Newtonsoft.Json;
-using UnityEngine;
 using Rhitomata.Timeline;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Rhitomata.Data {
     public class SequenceData {
@@ -159,10 +159,8 @@ namespace Rhitomata.Data {
             return point;
         }
 
-        public void RemoveItem(ModifyPoint point)
-        {
-            if (point != null)
-            {
+        public void RemoveItem(ModifyPoint point) {
+            if (point != null) {
                 var time = point.time;
                 DestroyItem(point);
                 points.Remove(point);
@@ -171,11 +169,9 @@ namespace Rhitomata.Data {
                 AdjustAllPointFromIndex(adjustedPointIndex);
             }
         }
-        
-        public void DestroyItem(ModifyPoint point)
-        {
-            if (point != null)
-            {
+
+        public void DestroyItem(ModifyPoint point) {
+            if (point != null) {
                 Object.Destroy(point.item.gameObject);
                 Object.Destroy(point.indicator.gameObject);
                 Object.Destroy(point.tail.gameObject);
@@ -185,19 +181,16 @@ namespace Rhitomata.Data {
         /// <summary>
         /// Adjusts all points after the given index
         /// </summary>
-        public void AdjustAllPointFromIndex(int index)
-        {
+        public void AdjustAllPointFromIndex(int index) {
             if (points.Count == 0) return;
 
             var startIndex = index;
-            if (index == -1)
-            {
+            if (index == -1) {
                 AdjustAllPointFromIndex(0);
                 return;
             }
 
-            if (index == 0)
-            {
+            if (index == 0) {
                 var point = points[index];
                 var direction = GetDirectionAtTime(point.time);
                 point.rotation = direction.directions[1];
@@ -210,12 +203,9 @@ namespace Rhitomata.Data {
 
                 if (points.Count > 1)
                     AdjustAllPointFromIndex(1);
-            }
-            else
-            {
+            } else {
                 var previousPoint = points[startIndex - 1];
-                for (int i = startIndex; i < points.Count; i++)
-                {
+                for (int i = startIndex; i < points.Count; i++) {
                     var currentPoint = points[i];
                     var nextRotationIndex = previousPoint.rotationIndex + 1;
                     var currentDirection = GetDirectionAtTime(previousPoint.time);

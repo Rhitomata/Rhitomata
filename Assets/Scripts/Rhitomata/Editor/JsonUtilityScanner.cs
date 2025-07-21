@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
-using System.IO;
-using System.Collections.Generic;
 
 /// <summary>
 /// Scans all scripts and shows a warning if JsonUtility is used instead of RhitomataSerializer.

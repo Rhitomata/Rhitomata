@@ -27,7 +27,7 @@ namespace Rhitomata {
 
         public Transform gameHolder;
         public GameObject spriteObjectPrefab;
-        
+
         public Transform spriteUIHolder;
         public GameObject spriteUIPrefab;
     }

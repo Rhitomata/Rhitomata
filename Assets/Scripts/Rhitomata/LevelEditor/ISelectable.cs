@@ -1,7 +1,5 @@
-namespace Rhitomata
-{
-    public interface ISelectable
-    {
+namespace Rhitomata {
+    public interface ISelectable {
         /// <summary>
         /// A callback that is called when there's a request to select this object
         /// </summary>

@@ -1,6 +1,6 @@
+using Rhitomata;
 using Rhitomata.Data;
 using System.IO;
-using Rhitomata;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,11 +37,9 @@ public class ProjectList : MonoBehaviour {
 
         // TODO: Read project data from json file?
         var projectFilePaths = Directory.GetFiles(ProjectsDir);
-        foreach (var projectPath in projectFilePaths)
-        {
+        foreach (var projectPath in projectFilePaths) {
             var projectName = Path.GetFileName(projectPath);
-            var projectInfo = new ProjectData(projectName, "Unknown", "Unknown", "Untitled")
-            {
+            var projectInfo = new ProjectData(projectName, "Unknown", "Unknown", "Untitled") {
                 directoryPath = projectPath
             };
 
@@ -56,8 +54,7 @@ public class ProjectList : MonoBehaviour {
         var songArtist = "Unknown Artist";// TODO?
         var directoryPath = Path.Combine(ProjectsDir, pName);
 
-        var projectInfo = new ProjectData(pName, author, songArtist, "Untitled")
-        {
+        var projectInfo = new ProjectData(pName, author, songArtist, "Untitled") {
             directoryPath = directoryPath
         };
         levelManager.CreateProject(projectInfo);

@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(VerticalLayoutGroup))]
 [RequireComponent(typeof(RectTransform))]
-public class DropdownUI : MonoBehaviour, IDeselectHandler
-{
+public class DropdownUI : MonoBehaviour, IDeselectHandler {
     [SerializeField] private bool dynamicHeight;
     private const float transitionTime = 0.05f;
 
@@ -19,13 +18,11 @@ public class DropdownUI : MonoBehaviour, IDeselectHandler
     private ContentSizeFitter contentSizeFitter;
     private CanvasGroup canvasGroup;
 
-    private void Awake()
-    {
+    private void Awake() {
         if (!isInitialized) gameObject.SetActive(false);
     }
 
-    private void Initialize()
-    {
+    private void Initialize() {
         if (isInitialized) return;
 
         rectTransform = GetComponent<RectTransform>();
@@ -33,8 +30,7 @@ public class DropdownUI : MonoBehaviour, IDeselectHandler
         contentSizeFitter = GetComponent<ContentSizeFitter>();
         canvasGroup = GetComponent<CanvasGroup>();
 
-        if (!dynamicHeight)
-        {
+        if (!dynamicHeight) {
             contentSizeFitter.enabled = false;
             height = CalculateHeight();
         }
@@ -42,16 +38,14 @@ public class DropdownUI : MonoBehaviour, IDeselectHandler
         isInitialized = true;
     }
 
-    public void ToggleVisibility()
-    {
+    public void ToggleVisibility() {
         if (isShown)
             Hide();
         else
             Show();
     }
 
-    public void Show()
-    {
+    public void Show() {
         Initialize();
         isShown = true;
         canvasGroup.interactable = true;
@@ -66,8 +60,7 @@ public class DropdownUI : MonoBehaviour, IDeselectHandler
         rectTransform.DOSizeDelta(new Vector2(rectTransform.sizeDelta.x, height), transitionTime);
     }
 
-    public void HideInstant()
-    {
+    public void HideInstant() {
         Initialize();
         isShown = false;
         canvasGroup.interactable = false;
@@ -77,37 +70,31 @@ public class DropdownUI : MonoBehaviour, IDeselectHandler
         gameObject.SetActive(false);
     }
 
-    public void Hide()
-    {
+    public void Hide() {
         Initialize();
         isShown = false;
         canvasGroup.interactable = false;
 
         rectTransform.DOKill();
-        rectTransform.DOSizeDelta(new Vector2(rectTransform.sizeDelta.x, 0), transitionTime).onComplete += () =>
-        {
+        rectTransform.DOSizeDelta(new Vector2(rectTransform.sizeDelta.x, 0), transitionTime).onComplete += () => {
             gameObject.SetActive(false);
         };
     }
 
-    private float CalculateHeight()
-    {
+    private float CalculateHeight() {
         float height = 0;
-        foreach (RectTransform t in transform)
-        {
+        foreach (RectTransform t in transform) {
             height += t.sizeDelta.y + verticalLayoutGroup.spacing;
         }
         height -= verticalLayoutGroup.spacing;
         return height;
     }
 
-    public void OnDeselect(BaseEventData eventData)
-    {
+    public void OnDeselect(BaseEventData eventData) {
         StartCoroutine(OnDeselectIE());
     }
 
-    private IEnumerator OnDeselectIE()
-    {
+    private IEnumerator OnDeselectIE() {
         yield return new WaitForEndOfFrame();
 
         var selected = EventSystem.current.currentSelectedGameObject;
@@ -116,8 +103,7 @@ public class DropdownUI : MonoBehaviour, IDeselectHandler
         Hide();
     }
 
-    private void OnDisable()
-    {
+    private void OnDisable() {
         HideInstant();
     }
 }

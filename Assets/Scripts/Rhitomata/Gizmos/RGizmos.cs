@@ -1,12 +1,10 @@
 using UnityEngine;
 
-namespace Rhitomata
-{
+namespace Rhitomata {
     /// <summary>
     /// Custom gizmo drawing functions that works in runtime, should be used on <see cref="Camera.onPostRender"/>
     /// </summary>
-    public static class RGizmos
-    {
+    public static class RGizmos {
         private static Material _LineMaterial;
 
         public static Color Color = new Color(0.2f, 1f, 0.2f, 0.7f);
@@ -18,8 +16,7 @@ namespace Rhitomata
         /// <summary>
         /// Draws a wireframe representation of a mesh at the specified position, rotation, and scale.
         /// </summary>
-        public static void DrawWireMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale)
-        {
+        public static void DrawWireMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale) {
             if (!mesh) return;
 
             EnsureLineMaterial();
@@ -45,8 +42,7 @@ namespace Rhitomata
         /// <summary>
         /// Draws a 3D cube wireframe without diagonal vertex connections, with position, rotation, and scale.
         /// </summary>
-        public static void DrawCube(Vector3 position, Quaternion rotation, Vector3 scale)
-        {
+        public static void DrawCube(Vector3 position, Quaternion rotation, Vector3 scale) {
             EnsureLineMaterial();
             _LineMaterial.SetPass(0);
 
@@ -81,8 +77,7 @@ namespace Rhitomata
             };
 
             // Draw the edges
-            for (var i = 0; i < edges.GetLength(0); i++)
-            {
+            for (var i = 0; i < edges.GetLength(0); i++) {
                 DrawLine(corners[edges[i, 0]], corners[edges[i, 1]]);
             }
 
@@ -94,8 +89,7 @@ namespace Rhitomata
         /// Draws a sphere wireframe at the specified position, rotation, and scale.
         /// </summary>
         public static void DrawSphere(Vector3 position, Quaternion rotation, float radius,
-            int longitudeSegments = 12, int latitudeSegments = 8)
-        {
+            int longitudeSegments = 12, int latitudeSegments = 8) {
             EnsureLineMaterial();
             _LineMaterial.SetPass(0);
 
@@ -107,14 +101,12 @@ namespace Rhitomata
             GL.Color(Color);
 
             // Generate points and draw latitude and longitude lines
-            for (var lat = 0; lat <= latitudeSegments; lat++)
-            {
+            for (var lat = 0; lat <= latitudeSegments; lat++) {
                 var theta = Mathf.PI * lat / latitudeSegments; // Angle for latitude
                 var sinTheta = Mathf.Sin(theta);
                 var cosTheta = Mathf.Cos(theta);
 
-                for (var lon = 0; lon < longitudeSegments; lon++)
-                {
+                for (var lon = 0; lon < longitudeSegments; lon++) {
                     var phi = 2 * Mathf.PI * lon / longitudeSegments; // Angle for longitude
                     var nextPhi = 2 * Mathf.PI * (lon + 1) / longitudeSegments;
 
@@ -125,15 +117,13 @@ namespace Rhitomata
                     DrawLine(p1, p2); // Draw longitude line
                 }
             }
-            
-            for (var lon = 0; lon < longitudeSegments; lon++)
-            {
+
+            for (var lon = 0; lon < longitudeSegments; lon++) {
                 var phi = 2 * Mathf.PI * lon / longitudeSegments; // Angle for longitude
                 var sinPhi = Mathf.Sin(phi);
                 var cosPhi = Mathf.Cos(phi);
 
-                for (var lat = 0; lat < latitudeSegments; lat++)
-                {
+                for (var lat = 0; lat < latitudeSegments; lat++) {
                     var theta = Mathf.PI * lat / latitudeSegments; // Angle for latitude
                     var nextTheta = Mathf.PI * (lat + 1) / latitudeSegments;
 
@@ -149,13 +139,12 @@ namespace Rhitomata
             GL.End();
             GL.PopMatrix();
         }
-        
-        
+
+
         /// <summary>
         /// Draws a wireframe frustum using the given parameters.
         /// </summary>
-        public static void DrawFrustum(Vector3 position, Quaternion rotation, float fov, float aspect, float near, float far)
-        {
+        public static void DrawFrustum(Vector3 position, Quaternion rotation, float fov, float aspect, float near, float far) {
             EnsureLineMaterial();
             _LineMaterial.SetPass(0);
 
@@ -171,20 +160,17 @@ namespace Rhitomata
             var farCorners = CalculateFrustumCorners(fov, aspect, far);
 
             // Draw near plane
-            for (var i = 0; i < 4; i++)
-            {
+            for (var i = 0; i < 4; i++) {
                 DrawLine(nearCorners[i], nearCorners[(i + 1) % 4]);
             }
 
             // Draw far plane
-            for (var i = 0; i < 4; i++)
-            {
+            for (var i = 0; i < 4; i++) {
                 DrawLine(farCorners[i], farCorners[(i + 1) % 4]);
             }
 
             // Connect near plane to far plane
-            for (var i = 0; i < 4; i++)
-            {
+            for (var i = 0; i < 4; i++) {
                 DrawLine(nearCorners[i], farCorners[i]);
             }
 
@@ -195,8 +181,7 @@ namespace Rhitomata
         /// <summary>
         /// Computes the 4 corner points of a plane at a given distance for a perspective frustum.
         /// </summary>
-        private static Vector3[] CalculateFrustumCorners(float fov, float aspect, float distance)
-        {
+        private static Vector3[] CalculateFrustumCorners(float fov, float aspect, float distance) {
             var halfHeight = Mathf.Tan(fov * Mathf.Deg2Rad * 0.5f) * distance;
             var halfWidth = halfHeight * aspect;
 
@@ -212,13 +197,11 @@ namespace Rhitomata
         /// <summary>
         /// Ensures the line material is created and available for rendering.
         /// </summary>
-        private static void EnsureLineMaterial()
-        {
+        private static void EnsureLineMaterial() {
             if (_LineMaterial) return;
 
             var shader = Shader.Find("Hidden/Internal-Colored");
-            _LineMaterial = new Material(shader)
-            {
+            _LineMaterial = new Material(shader) {
                 hideFlags = HideFlags.HideAndDontSave
             };
             _LineMaterial.SetInt(srcBlend, (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
@@ -230,13 +213,11 @@ namespace Rhitomata
         /// <summary>
         /// Draws the edges of a mesh as lines.
         /// </summary>
-        private static void DrawMeshEdges(Mesh mesh)
-        {
+        private static void DrawMeshEdges(Mesh mesh) {
             var vertices = mesh.vertices;
             var indices = mesh.GetIndices(0);
 
-            for (var i = 0; i < indices.Length; i += 3)
-            {
+            for (var i = 0; i < indices.Length; i += 3) {
                 var index0 = indices[i];
                 var index1 = indices[i + 1];
                 var index2 = indices[i + 2];
@@ -250,8 +231,7 @@ namespace Rhitomata
         /// <summary>
         /// Draws a line between two points in world space.
         /// </summary>
-        private static void DrawLine(Vector3 start, Vector3 end)
-        {
+        private static void DrawLine(Vector3 start, Vector3 end) {
             GL.Vertex(start);
             GL.Vertex(end);
         }

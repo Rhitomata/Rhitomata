@@ -1,4 +1,3 @@
-using System;
 using Rhitomata;
 using Rhitomata.Timeline;
 using UnityEngine;

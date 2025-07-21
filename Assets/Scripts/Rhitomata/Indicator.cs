@@ -1,23 +1,21 @@
 using UnityEngine;
 
 [ExecuteInEditMode]
-public partial class Indicator : MonoBehaviour
-{
+public partial class Indicator : MonoBehaviour {
     public SpriteRenderer sprite1, sprite2, sprite3, sprite4;
     public float progress;
     public float multiplier = 5;
 
     [SerializeField]
     private bool _isVisible = true;
-    
+
     public void Adjust() {
         if (sprite1 == null || sprite2 == null || sprite3 == null || sprite4 == null)
             return;
 
         float clamped = Mathf.Clamp(progress, 0f, 1f);
         float eased = clamped * clamped * clamped;
-        if (eased == 1 || eased == 0)
-        {
+        if (eased == 1 || eased == 0) {
             /// The indicator is either hidden inside a tail 
             /// or it's not supposed to be visible yet
             SetVisible(false);
