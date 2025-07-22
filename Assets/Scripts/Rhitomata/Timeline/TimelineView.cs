@@ -104,6 +104,9 @@ namespace Rhitomata.Timeline {
             pos.y = Mathf.Lerp(0, laneHolder.rect.height - viewportBounds.rect.height, value);
             laneHolder.anchoredPosition = pos;
 
+            pos.x = headerHolder.anchoredPosition.x;
+            headerHolder.anchoredPosition = pos;
+
             pos.x = scrollingRect.anchoredPosition.x;
             scrollingRect.anchoredPosition = pos;
         }

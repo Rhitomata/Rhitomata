@@ -62,8 +62,9 @@ namespace Rhitomata.Timeline {
         }
 
         public void OnPointerDown(PointerEventData eventData) {
-            // This method is needed, even if its empty, otherwise LaneView handles it
-            // Why does it work like that   
+            // This method is needed, even if it's empty, otherwise LaneView handles it
+            // - Why does it work like that
+            // - because yes
         }
     }
 }
