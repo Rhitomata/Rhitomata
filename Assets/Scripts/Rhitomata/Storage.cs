@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using SimpleFileBrowser;
 using UnityEngine;
+using SimpleFileBrowser;
 
 namespace Rhitomata
 {
@@ -17,11 +17,11 @@ namespace Rhitomata
         /// <summary>
         /// Combines a path with another path
         /// </summary>
-        public static string Combine(this string root, string path) => Path.Combine(root, path);
+        public static string Combine(this string root, string path) => Path.Combine(root, path).Replace('/', '\\');
         /// <summary>
         /// Gets a path based on the specified dataPath or %ARPROOT
         /// </summary>
-        public static string GetPathLocal(this string path) => string.IsNullOrEmpty(path) ? path : Path.Combine(dataPath, path);
+        public static string GetPathLocal(this string path) => string.IsNullOrEmpty(path) ? path : Combine(dataPath, path);
 
         public static void CheckDirectoryLocal(string path) =>  CheckDirectory(GetPathLocal(path));
         /// <summary>
@@ -109,7 +109,7 @@ namespace Rhitomata
             try
             {
                 using (FileStream fs = File.Create(
-                    Path.Combine(
+                    Combine(
                         dirPath,
                         Path.GetRandomFileName()
                     ),

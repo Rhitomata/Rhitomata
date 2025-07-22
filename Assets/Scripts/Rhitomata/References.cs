@@ -25,5 +25,6 @@ namespace Rhitomata {
         public TimelineView timeline;
         public Canvas canvas;
         public Transform gameHolder;
+        public ProjectList projectList;
     }
 }

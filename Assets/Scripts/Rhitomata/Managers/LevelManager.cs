@@ -86,7 +86,17 @@ namespace Rhitomata {
 
         #region UI
 
-        private const string FILE_EXTENSION = "rhito";// maybe change this?
+        private const string FILE_EXTENSION = "rhito";// TODO: Use the file extensions below instead, once we have the storage/structure figured out
+
+        /// <summary>
+        /// This file format is just a renamed .zip and contains all the files needed to be able to play a level.
+        /// </summary>
+        private const string FILE_EXTENSION_EDIT = "rhitomata";
+
+        /// <summary>
+        /// This file format includes compressed data to play a level.
+        /// </summary>
+        private const string FILE_EXTENSION_PLAY = "rhitoplay";
 
         public void BrowseToSaveProject() {
             var extensions = new[]
@@ -161,7 +171,7 @@ namespace Rhitomata {
             // TODO: Load objects, music, etc. Use UniTask instead of Coroutines because I like async
             var content = Storage.ReadAllText(directoryPath.Combine("project.json"));
             if (string.IsNullOrWhiteSpace(content)) {
-                Debug.LogWarning("The project file has no data, cancel loading the project");
+                Debug.LogWarning("The project file has no data, cancel loading the project.");
                 return;
             }
 
@@ -173,7 +183,8 @@ namespace Rhitomata {
                 }
 
                 project = projectData;
-                
+                print($"Loaded project {project.name} by {project.author}");
+
                 // TODO: Load data in these orders: song, beatmap, timeline items & indicators, assets, objects
             } catch (System.Exception exception) {
                 Debug.LogException(exception);
@@ -181,6 +192,7 @@ namespace Rhitomata {
         }
 
         public void SaveProject(string directoryPath) {
+
         }
         #endregion Project
 
@@ -212,8 +224,7 @@ namespace Rhitomata {
                 yield break;
             }
 
-            if (!string.IsNullOrEmpty(project.directoryPath))// HACK
-                project.musicPath = GetRelativePath(path, project.directoryPath);
+            project.musicPath = GetRelativePath(path, project.directoryPath);
             references.music.clip = myClip;
             Debug.Log("Loaded song!");
         }

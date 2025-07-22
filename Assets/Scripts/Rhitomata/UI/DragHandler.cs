@@ -9,7 +9,7 @@ namespace Rhitomata.UI
         private RectTransform panelRectTransform;
 
         [SerializeField]
-        private bool goAsTopOnDrag = true;
+        private bool goOnTopWhenDragged = true;
 
         private Vector2 _pointerOffset;
         private RectTransform _canvasRectTransform;
@@ -18,8 +18,11 @@ namespace Rhitomata.UI
         private bool _clampedToTop;
         private bool _clampedToBottom;
 
-        public void Start()
+        private Window _window;
+
+        private void Start()
         {
+            _window = GetComponentInParent<Window>();
             var canvas = GetComponentInParent<Canvas>();
             if (canvas != null)
             {
@@ -34,30 +37,30 @@ namespace Rhitomata.UI
 
         public void SetAsFront()
         {
-            if (goAsTopOnDrag)
+            if (goOnTopWhenDragged)
                 panelRectTransform.SetAsLastSibling();
         }
 
-        #region IBeginDragHandler implementation
+        #region IBeginDragHandler Implementation
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (goAsTopOnDrag)
+            if (!_window.isShown) return;
+
+            if (goOnTopWhenDragged)
                 panelRectTransform.SetAsLastSibling();
             RectTransformUtility.ScreenPointToLocalPointInRectangle(panelRectTransform, eventData.position, eventData.pressEventCamera, out _pointerOffset);
 
         }
 
-        #endregion
+        #endregion IBeginDragHandler Implementation
 
-        #region IDragHandler implementation
+        #region IDragHandler Implementation
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (panelRectTransform == null)
-            {
-                return;
-            }
+            if (!_window.isShown || panelRectTransform == null) return;
+            
             Vector2 localPointerPosition;
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRectTransform, eventData.position, eventData.pressEventCamera, out localPointerPosition))
             {
@@ -85,16 +88,16 @@ namespace Rhitomata.UI
             }
         }
 
-        #endregion
+        #endregion IDragHandler Implementation
 
-        #region IEndDragHandler implementation
+        #region IEndDragHandler Implementation
 
         public void OnEndDrag(PointerEventData eventData)
         {
-
+            if (!_window.isShown) return;
         }
 
-        #endregion
+        #endregion IEndDragHandler Implementation
 
         private void ClampToWindow()
         {

@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using System.IO;
-using Rhitomata.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Rhitomata.Data;
 
 namespace Rhitomata {
     public class ProjectList : MonoBehaviour {
@@ -44,9 +43,12 @@ namespace Rhitomata {
                 var data = RhitomataSerializer.Deserialize<ProjectData>(contents);
                 if (data == null) continue;
 
-                // TODO: Make these clickable to open the project
+                data.filePath = projectFilePath;
+                data.directoryPath = dir;
+
                 var projectUI = Instantiate(projectUIPrefab, projectUIHolder).GetComponent<ProjectItem>();
                 projectUI.Initialize(data);
+                items.Add(projectUI);
             }
         }
 
