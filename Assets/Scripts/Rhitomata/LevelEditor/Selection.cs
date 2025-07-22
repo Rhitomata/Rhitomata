@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Riten.Native.Cursors;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -21,6 +22,7 @@ namespace Rhitomata {
                 if (_currentHovered != null) {
                     _currentHovered?.OnExit();
                     _currentHovered = null;
+                    UpdateCursor();
                 }
 
                 _wasOverUI = isOverUI;
@@ -39,6 +41,7 @@ namespace Rhitomata {
                     _currentHovered?.OnExit();
                     hovered?.OnEnter();
                     _currentHovered = hovered;
+                    UpdateCursor();
                 }
 
                 if (Input.GetMouseButtonDown(0)) {
@@ -69,16 +72,19 @@ namespace Rhitomata {
                                 _isDragging = true;
                             }
                         }
-
                     } else {
                         Clear();
                     }
+                    UpdateCursor();
                 }
             }
 
+            // REMINDER TODO: If someone deletes an object while we're dragging, it will bug out
             if (Input.GetMouseButtonUp(0)) {
                 _isDragging = false;
                 _dragStartPositions.Clear();
+                
+                UpdateCursor();
             }
 
             if (_isDragging) {
@@ -94,6 +100,22 @@ namespace Rhitomata {
                             mb.transform.position = startPos + delta;
                         }
                     }
+                    
+                    UpdateCursor();
+                }
+            }
+        }
+
+        public void UpdateCursor() {
+            if (_isDragging) {
+                NativeCursor.SetCursor(NTCursors.ClosedHand);
+            } else {
+                if (_currentHovered != null) {
+                    NativeCursor.SetCursor(SelectedObjects.Contains(_currentHovered)
+                        ? NTCursors.OpenHand
+                        : NTCursors.Crosshair);
+                } else {
+                    NativeCursor.ResetCursor();
                 }
             }
         }
