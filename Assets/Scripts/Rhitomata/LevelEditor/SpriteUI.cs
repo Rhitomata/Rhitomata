@@ -52,6 +52,7 @@ public class SpriteUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             Destroy(_sprite);
         }
         Destroy(gameObject);
+        InstanceManager<SpriteUI>.Remove(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
