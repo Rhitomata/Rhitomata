@@ -13,7 +13,7 @@ namespace Rhitomata {
         private readonly Dictionary<ISelectable, Vector3> _dragStartPositions = new();
         private bool _wasOverUI;
 
-        void Update() {
+        private void Update() {
             if (!enableSelecting) return;
 
             var isOverUI = EventSystem.current.IsPointerOverGameObject();

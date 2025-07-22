@@ -8,35 +8,36 @@ using UnityEngine;
 /// Requires Clear on Recompiple to be disabled in the Console settings, otherwise the warning won't show up!
 /// </summary>
 public class JsonUtilityScanner : AssetPostprocessor {
-    static List<string> forbiddenCodes = new() {
+    private static readonly List<string> _forbiddenCodes = new() {
         "JsonUtility.ToJson",
         "JsonUtility.FromJson"
     };
 
-    static readonly string[] ignorePaths = new[] {
-        "JsonUtilityScanner.cs"
+    private static readonly string[] _ignorePaths = {
+        "JsonUtilityScanner.cs",
+        "Packages/com.unity"
     };
 
-    static void OnPostprocessAllAssets(string[] importedAssets, string[] _, string[] __, string[] ___) {
-        foreach (string path in importedAssets) {
+    private static void OnPostprocessAllAssets(string[] importedAssets, string[] _, string[] __, string[] ___) {
+        foreach (var path in importedAssets) {
             if (!path.EndsWith(".cs"))
                 continue;
 
             if (IsIgnored(path))
                 continue;
 
-            string contents = File.ReadAllText(path);
-            foreach (var match in forbiddenCodes) {
-                if (contents.Contains(match)) {
-                    Debug.LogWarning($"JsonUtility usage detected in: {path}\nConsider using RhitomataSerializer instead.");
-                    break;
-                }
+            var contents = File.ReadAllText(path);
+            foreach (var match in _forbiddenCodes) {
+                if (!contents.Contains(match)) continue;
+                
+                Debug.LogWarning($"JsonUtility usage detected in: {path}\nConsider using RhitomataSerializer instead.");
+                break;
             }
         }
     }
 
-    static bool IsIgnored(string path) {
-        foreach (var ignore in ignorePaths) {
+    private static bool IsIgnored(string path) {
+        foreach (var ignore in _ignorePaths) {
             if (path.Contains(ignore))
                 return true;
         }

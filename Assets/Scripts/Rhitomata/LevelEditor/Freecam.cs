@@ -15,37 +15,14 @@ namespace Rhitomata {
         private bool _isDraggingCamera;
         private Vector3 _dragStartWorldPos;
 
-        void Update() {
-            float scroll = Input.GetAxis("Mouse ScrollWheel") * (naturalScrolling ? 1f : -1f);
-            if (Mathf.Abs(scroll) > 0.01f) {
-                if (scrollToCursor) {
-                    Vector3 screenPos = Input.mousePosition;
-                    screenPos.z = -targetCamera.transform.position.z;
-                    Vector3 worldBeforeZoom = targetCamera.ScreenToWorldPoint(screenPos);
-
-                    Vector3 camPos = transform.position;
-                    camPos.z = Mathf.Clamp(camPos.z - scroll * scrollIntensity, zMin, zMax);
-                    transform.position = camPos;
-
-                    screenPos.z = -targetCamera.transform.position.z;
-                    Vector3 worldAfterZoom = targetCamera.ScreenToWorldPoint(screenPos);
-
-                    Vector3 offset = worldBeforeZoom - worldAfterZoom;
-                    transform.position += offset;
-                } else {
-                    Vector3 position = transform.position;
-                    position.z = Mathf.Clamp(position.z - scroll, zMin, zMax);
-                    transform.position = position;
-                }
-            }
-
+        private void Update() {
             if (_isDraggingCamera) {
                 if (Input.GetMouseButton(1) || Input.GetMouseButton(2)) {
-                    Vector3 screenPos = Input.mousePosition;
+                    var screenPos = Input.mousePosition;
                     screenPos.z = -targetCamera.transform.position.z;
-                    Vector3 currentWorldPos = targetCamera.ScreenToWorldPoint(screenPos);
+                    var currentWorldPos = targetCamera.ScreenToWorldPoint(screenPos);
 
-                    Vector3 offset = _dragStartWorldPos - currentWorldPos;
+                    var offset = _dragStartWorldPos - currentWorldPos;
                     transform.position += offset;
                 } else {
                     _isDraggingCamera = false;
@@ -56,18 +33,41 @@ namespace Rhitomata {
                 }
             }
 
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            if (EventSystem.current && EventSystem.current.IsPointerOverGameObject())
                 return;
 
             if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) {
-                Vector3 screenPos = Input.mousePosition;
+                var screenPos = Input.mousePosition;
                 screenPos.z = -targetCamera.transform.position.z; // Distance from camera to z=0
                 _dragStartWorldPos = targetCamera.ScreenToWorldPoint(screenPos);
                 _isDraggingCamera = true;
             }
+            
+            var scroll = Input.GetAxis("Mouse ScrollWheel") * (naturalScrolling ? 1f : -1f);
+            if (!(Mathf.Abs(scroll) > 0.01f)) return;
+            
+            if (scrollToCursor) {
+                var screenPos = Input.mousePosition;
+                screenPos.z = -targetCamera.transform.position.z;
+                var worldBeforeZoom = targetCamera.ScreenToWorldPoint(screenPos);
+
+                var camPos = transform.position;
+                camPos.z = Mathf.Clamp(camPos.z - scroll * scrollIntensity, zMin, zMax);
+                transform.position = camPos;
+
+                screenPos.z = -targetCamera.transform.position.z;
+                var worldAfterZoom = targetCamera.ScreenToWorldPoint(screenPos);
+
+                var offset = worldBeforeZoom - worldAfterZoom;
+                transform.position += offset;
+            } else {
+                var position = transform.position;
+                position.z = Mathf.Clamp(position.z - scroll, zMin, zMax);
+                transform.position = position;
+            }
         }
 
-        void OnDisable() {
+        void OnDisable() {   
             _isDraggingCamera = false;
         }
     }
