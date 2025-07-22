@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Rhitomata {
     [RequireComponent(typeof(SpriteRenderer))]
-    public class SpriteObject : MonoBehaviour, ISelectable {
+    public class SpriteObject : MonoBehaviour, ISelectable, InstanceableObject {
         public bool selected = false;
         public Color baseColor = Color.white;
 
@@ -11,16 +11,25 @@ namespace Rhitomata {
         private SpriteRenderer _spriteRenderer;
         private bool _isHovered = false;
 
+        private int id;
+
         private void Awake() {
             _spriteRenderer = GetComponent<SpriteRenderer>();
             ApplyColor();
         }
 
-        public void Initialize(SpriteUI spriteUI) {
+        public void Initialize(SpriteUI spriteUI, int id = -1) {
             _spriteRenderer.sprite = spriteUI.GetSprite();
             var bounds = _spriteRenderer.sprite.bounds.size;
             bounds.z = 0.2f;
             boxCollider.size = bounds;
+
+            InstanceManager<SpriteObject>.Register(id, this);
+        }
+
+        public void Delete() {
+            InstanceManager<SpriteObject>.Remove(this);
+            Destroy(gameObject);
         }
 
         #region Selection
@@ -61,5 +70,21 @@ namespace Rhitomata {
         }
 
         #endregion Selection
+
+        #region Instanceable Object
+
+        public int GetId() {
+            return id;
+        }
+
+        public void SetId(int id) {
+            this.id = id;
+        }
+
+        public void OnIdRedirected(int previousId, int newId) {
+
+        }
+
+        #endregion Instanceable Object
     }
 }

@@ -27,6 +27,12 @@ namespace Rhitomata {
         public float time;
 
         private void Start() {
+            // Not sure how to do this properly since it's a generic MonoBehaviour...
+            //var spriteObject_InstanceManager = new InstanceManager<SpriteObject>();
+            //var spriteUI_InstanceManager = new InstanceManager<SpriteUI>();
+            //new GameObject("Sprite Object Instance Manager", typeof(InstanceManager<SpriteObject>));
+            //new GameObject("Sprite UI Instance Manager", typeof(InstanceManager<SpriteUI>));
+
             // TODO: We'll make a Window class for showing and hiding these properly
             projectList.gameObject.SetActive(false);
             ChangeState(State.Edit);
@@ -225,30 +231,23 @@ namespace Rhitomata {
             if (result == null || result.Length == 0) return; // Cancelled
 
             foreach (var path in result) {
-                CreateSpriteObject(path);
+                CreateSpriteUI(path);
             }
         }
 
         public void DeleteSpritesUI() {
             foreach (Transform t in references.spriteUIHolder) {
                 var spriteUI = t.GetComponent<SpriteUI>();
-                // Free up the memory used by the texture and sprites
-                var sprite = spriteUI.GetSprite();
-                if (sprite) {
-                    Destroy(sprite.texture);
-                    Destroy(sprite);
-                }
-
-                Destroy(t.gameObject);
+                spriteUI.Delete();
             }
         }
 
-        public void CreateSpriteObject(string texturePath) {
+        public void CreateSpriteUI(string texturePath) {
             var sprite = CreateSpriteFromPath(texturePath);
-            CreateSpriteObject(sprite, Path.GetFileNameWithoutExtension(texturePath));
+            CreateSpriteUI(sprite, Path.GetFileNameWithoutExtension(texturePath));
         }
 
-        public void CreateSpriteObject(Sprite sprite, string spriteName) {
+        public void CreateSpriteUI(Sprite sprite, string spriteName) {
             var spriteUI = Instantiate(references.spriteUIPrefab, references.spriteUIHolder).GetComponent<SpriteUI>();
             spriteUI.Initialize(sprite, spriteName);
             sprites.Add(spriteUI);

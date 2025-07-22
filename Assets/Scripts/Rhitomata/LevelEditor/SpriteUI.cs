@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SpriteUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+public class SpriteUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, InstanceableObject {
     [SerializeField] private TMP_Text spriteNameText;
     [SerializeField] private Image spriteImage;
     [SerializeField] private Button deleteButton;
@@ -12,13 +12,17 @@ public class SpriteUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private Sprite _sprite;
     private string _spriteName;
 
-    public void Initialize(Sprite targetSprite, string targetName) {
+    private int id;
+
+    public void Initialize(Sprite targetSprite, string targetName, int id = -1) {
         _sprite = targetSprite;
         _spriteName = targetName;
         spriteNameText.text = targetName;
         spriteImage.sprite = targetSprite;
 
         deleteButton.gameObject.SetActive(false);
+
+        InstanceManager<SpriteUI>.Register(id, this);
     }
 
     public Sprite GetSprite() {
@@ -41,12 +45,13 @@ public class SpriteUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
 
     public void Delete() {
-        Destroy(gameObject);
+        References.Instance.manager.sprites.Remove(this);
+        // Free up the memory used by the texture and sprites
         if (_sprite) {
             Destroy(_sprite.texture);
             Destroy(_sprite);
         }
-        References.Instance.manager.sprites.Remove(this);
+        Destroy(gameObject);
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
@@ -55,5 +60,17 @@ public class SpriteUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerExit(PointerEventData eventData) {
         deleteButton.gameObject.SetActive(false);
+    }
+
+    public int GetId() {
+        return id;
+    }
+
+    public void SetId(int id) {
+        this.id = id;
+    }
+
+    public void OnIdRedirected(int previousId, int newId) {
+
     }
 }
