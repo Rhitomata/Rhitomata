@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Rhitomata.Assets {
-    public class SpriteManager : MonoBehaviour {
+    public class SpriteManager : InstanceManager<SpriteUI> {
         public RectTransform spritePanel;
         public GridLayoutGroup spriteGridLayout;
         public float xMinSize = 100f;

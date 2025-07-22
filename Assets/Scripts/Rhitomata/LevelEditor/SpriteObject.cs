@@ -1,8 +1,9 @@
+using Rhitomata;
 using UnityEngine;
 
 namespace Rhitomata {
     [RequireComponent(typeof(SpriteRenderer))]
-    public class SpriteObject : MonoBehaviour, ISelectable, InstanceableObject {
+    public class SpriteObject : ObjectSerializer, ISelectable {
         public bool selected = false;
         public Color baseColor = Color.white;
 

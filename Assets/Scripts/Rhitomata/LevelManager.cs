@@ -3,13 +3,14 @@ using SFB;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Rhitomata;
 using UnityEngine;
 using UnityEngine.Networking;
 using static Rhitomata.Useful;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Rhitomata.Editor")]
 namespace Rhitomata {
-    public class LevelManager : MonoBehaviour {
+    public class LevelManager : InstanceManager<ObjectSerializer> {
         [Header("References")]
         public References references;
         [SerializeField] private KeyCode switchStateKey = KeyCode.Tab;
