@@ -1,40 +1,61 @@
-using Rhitomata;
+using Rhitomata.Data;
 using UnityEngine;
 
 namespace Rhitomata {
     [RequireComponent(typeof(SpriteRenderer))]
-    public class SpriteObject : ObjectSerializer, ISelectable {
+    public class SpriteObject : ObjectSerializer<SpriteData>, ISelectable {
         public bool selected = false;
         public Color baseColor = Color.white;
 
-        private BoxCollider m_boxCollider;
-        private BoxCollider boxCollider => m_boxCollider ?? GetComponent<BoxCollider>();
+        private BoxCollider _boxCollider;
+        private BoxCollider boxCollider => _boxCollider ?? GetComponent<BoxCollider>();
         private SpriteRenderer _spriteRenderer;
+        private SpriteRenderer spriteRenderer => _spriteRenderer ?? GetComponent<SpriteRenderer>();
         private bool _isHovered = false;
 
-        private int id;
-
         private void Awake() {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
             ApplyColor();
         }
 
-        public void Initialize(SpriteUI spriteUI, int id = -1) {
-            _spriteRenderer.sprite = spriteUI.GetSprite();
-            var bounds = _spriteRenderer.sprite.bounds.size;
+        public void Initialize(Sprite sprite, int id = -1) {
+            spriteRenderer.sprite = sprite;
+            var bounds = spriteRenderer.sprite.bounds.size;
             bounds.z = 0.2f;
             boxCollider.size = bounds;
 
-            InstanceManager<SpriteObject>.Register(id, this);
+            LevelManager.Register(id, this);
         }
 
         public void Delete() {
-            InstanceManager<SpriteObject>.Remove(this);
+            LevelManager.Remove(this);
             Destroy(gameObject);
         }
 
-        #region Selection
+        protected override void Deserialize(SpriteData data) {
+            var sprite = SpriteManager.GetSprite(data.spriteId);
+            transform.localPosition = data.position;
+            transform.eulerAngles = data.eulerAngles;
+            transform.localScale = data.scale;
+            spriteRenderer.color = data.color;
+            spriteRenderer.sortingOrder = data.sortingOrder;
+            
+            Initialize(sprite, data.id);
+        }
 
+        protected override SpriteData Serialize() {
+            return new() {
+                id = instanceId,
+                name = name,
+                position = transform.localPosition,
+                eulerAngles = transform.eulerAngles,
+                scale = transform.localScale,
+                color = spriteRenderer.color,
+                spriteId = SpriteManager.GetIndex(spriteRenderer.sprite),
+                sortingOrder = spriteRenderer.sortingOrder
+            };
+        }
+
+        #region Selection
         public bool IsSelected() => selected;
 
         public bool OnSelect() {
@@ -61,31 +82,15 @@ namespace Rhitomata {
 
         private void ApplyColor() {
             if (selected) {
-                _spriteRenderer.color = new Color(1f, 0.5f, 0f); // Orange
+                spriteRenderer.color = new Color(1f, 0.5f, 0f); // Orange
             } else if (_isHovered) {
-                Color blueTint = Color.Lerp(baseColor, Color.cyan, 0.3f);
-                _spriteRenderer.color = blueTint;
+                var blueTint = Color.Lerp(baseColor, Color.cyan, 0.3f);
+                spriteRenderer.color = blueTint;
             } else {
-                _spriteRenderer.color = baseColor;
+                spriteRenderer.color = baseColor;
             }
         }
 
         #endregion Selection
-
-        #region Instanceable Object
-
-        public int GetId() {
-            return id;
-        }
-
-        public void SetId(int id) {
-            this.id = id;
-        }
-
-        public void OnIdRedirected(int previousId, int newId) {
-
-        }
-
-        #endregion Instanceable Object
     }
 }

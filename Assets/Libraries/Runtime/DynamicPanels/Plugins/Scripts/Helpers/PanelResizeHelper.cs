@@ -49,13 +49,11 @@ namespace DynamicPanels
 #if ENABLE_CURSOR_MANAGEMENT
 		public void OnPointerEnter( PointerEventData eventData )
 		{
-			Debug.Log("Pointer entered resize handler");
 			PanelCursorHandler.OnPointerEnter( this, eventData );
 		}
 
 		public void OnPointerExit( PointerEventData eventData )
 		{
-			Debug.Log("Pointer exited resize handler");
 			PanelCursorHandler.OnPointerExit( this );
 		}
 #endif

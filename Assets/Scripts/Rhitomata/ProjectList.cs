@@ -1,62 +1,73 @@
-using Rhitomata;
-using Rhitomata.Data;
+using System.Collections.Generic;
 using System.IO;
+using Rhitomata.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ProjectList : MonoBehaviour {
-    public static string ProjectsDir => Path.Combine(Application.persistentDataPath, @"Projects");
+namespace Rhitomata {
+    public class ProjectList : MonoBehaviour {
+        public static string projectsDir => "Projects".GetPathLocal();
 
-    [SerializeField] private LevelManager levelManager;
+        // New project
+        [SerializeField] private TMP_InputField projectNameInputField;
+        [SerializeField] private TMP_InputField authorInputField;
+        [SerializeField] private Button createButton;
 
-    // New project
-    [SerializeField] private TMP_InputField projectNameInputField;
-    [SerializeField] private TMP_InputField authorInputField;
-    [SerializeField] private Button createButton;
+        [SerializeField] private Transform projectUIHolder;
+        [SerializeField] private GameObject projectUIPrefab;
 
-    [SerializeField] private Transform projectUIHolder;
-    [SerializeField] private GameObject projectUIPrefab;
+        public List<ProjectItem> items = new();
 
-    private void Awake() {
-        projectNameInputField.text = "Untitled";
-        authorInputField.text = "Unknown";
-        //authorInputField.text = Environment.UserName;
-    }
-
-    private void OnEnable() {
-        UpdateProjectListUI();
-    }
-
-    private void UpdateProjectListUI() {
-        if (!Directory.Exists(ProjectsDir)) Directory.CreateDirectory(ProjectsDir);
-
-        foreach (Transform t in projectUIHolder) {
-            Destroy(t.gameObject);
+        private void Awake() {
+            projectNameInputField.text = "Untitled";
+            authorInputField.text = System.Environment.UserName;
         }
 
-        // TODO: Read project data from json file?
-        var projectFilePaths = Directory.GetFiles(ProjectsDir);
-        foreach (var projectPath in projectFilePaths) {
-            var projectName = Path.GetFileName(projectPath);
-            var projectInfo = new ProjectData(projectName, "Unknown", "Unknown", "Untitled") {
-                directoryPath = projectPath
+        private void OnEnable() {
+            UpdateProjectListUI();
+        }
+
+        private void UpdateProjectListUI() {
+            Storage.CheckDirectory(projectsDir);
+
+            Clear();
+
+            var directories = Storage.GetDirectories(projectsDir);
+            foreach (var dir in directories) {
+                var projectFilePath = dir.Combine("project.json");
+                if (!Storage.FileExists(projectFilePath)) continue;
+
+                var contents = Storage.ReadAllText(projectFilePath);
+                if (string.IsNullOrWhiteSpace(contents)) continue;
+                
+                var data = RhitomataSerializer.Deserialize<ProjectData>(contents);
+                if (data == null) continue;
+
+                // TODO: Make these clickable to open the project
+                var projectUI = Instantiate(projectUIPrefab, projectUIHolder).GetComponent<ProjectItem>();
+                projectUI.Initialize(data);
+            }
+        }
+
+        public void CreateProject() {
+            // TODO: Make it spawn a whole new window to input all the necessary info
+            var projectName = projectNameInputField.text;
+            var projectAuthor = authorInputField.text;
+            var directoryPath = projectsDir.Combine(projectName);
+
+            var projectInfo = new ProjectData(projectName, projectAuthor, "Unknown Artist", "Untitled") {
+                directoryPath = directoryPath,
+                filePath = directoryPath.Combine("project.json")
             };
-
-            var projectUI = Instantiate(projectUIPrefab, projectUIHolder).GetComponent<ProjectUI>();
-            projectUI.Initialize(projectInfo);
+            References.Instance.manager.CreateProject(projectInfo);
         }
-    }
-
-    public void CreateProject() {
-        var pName = projectNameInputField.text;
-        var author = authorInputField.text;
-        var songArtist = "Unknown Artist";// TODO?
-        var directoryPath = Path.Combine(ProjectsDir, pName);
-
-        var projectInfo = new ProjectData(pName, author, songArtist, "Untitled") {
-            directoryPath = directoryPath
-        };
-        levelManager.CreateProject(projectInfo);
+        
+        public void Clear() {
+            foreach (var item in items) {
+                Destroy(item.gameObject);
+            }
+            items.Clear();
+        }
     }
 }

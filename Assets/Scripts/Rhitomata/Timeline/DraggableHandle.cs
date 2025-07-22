@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static Rhitomata.Useful;
 
-namespace Rhitomata {
+namespace Rhitomata.Timeline {
     public class DraggableHandle : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
         public Image image;
         public bool changeBasedOnMaterial = true;

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 4a786918eed748d48bde11937ab4c7e1
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - resizeImage: {instanceID: 0}
+  - resizeButton: {instanceID: 0}
+  - minimizeButton: {instanceID: 0}
+  - windowedSprite: {fileID: 21300000, guid: e9ec0f2e3311f64408ba0cfc601ca767, type: 3}
+  - maximizeSprite: {fileID: 21300000, guid: f7a9ad41d3ca3db4a855549d9c17218d, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

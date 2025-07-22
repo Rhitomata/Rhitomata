@@ -310,23 +310,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3806937573665260111, guid: 0c4ac36a86e74eb42a46d5eaec9ec658, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3806937573665260111, guid: 0c4ac36a86e74eb42a46d5eaec9ec658, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1687540119489237054}
+      objectReference: {fileID: 4839291766595795487}
     - target: {fileID: 3806937573665260111, guid: 0c4ac36a86e74eb42a46d5eaec9ec658, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3806937573665260111, guid: 0c4ac36a86e74eb42a46d5eaec9ec658, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SetActive
+      value: Hide
       objectReference: {fileID: 0}
     - target: {fileID: 3806937573665260111, guid: 0c4ac36a86e74eb42a46d5eaec9ec658, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
+      value: Rhitomata.UI.Window, Rhitomata.Runtime
       objectReference: {fileID: 0}
     - target: {fileID: 3806937573665260111, guid: 0c4ac36a86e74eb42a46d5eaec9ec658, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -427,13 +427,34 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6664917937346432819, guid: 29e7c8246d8e11545a819d27b65bc3bd, type: 3}
       insertIndex: 1
       addedObject: {fileID: 6070184429254891982}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8594902620489654547, guid: 29e7c8246d8e11545a819d27b65bc3bd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4839291766595795487}
   m_SourcePrefab: {fileID: 100100000, guid: 29e7c8246d8e11545a819d27b65bc3bd, type: 3}
 --- !u!1 &1687540119489237054 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8594902620489654547, guid: 29e7c8246d8e11545a819d27b65bc3bd, type: 3}
   m_PrefabInstance: {fileID: 6930022406538686765}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4839291766595795487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687540119489237054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a786918eed748d48bde11937ab4c7e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  disallowOnPlaymode: 0
+  hideOnStart: 0
+  centerOnShow: 0
+  beforeHideOnStart:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!224 &4346792932059495966 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6664917937346432819, guid: 29e7c8246d8e11545a819d27b65bc3bd, type: 3}
@@ -540,8 +561,30 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6664917937346432819, guid: 29e7c8246d8e11545a819d27b65bc3bd, type: 3}
       insertIndex: 1
       addedObject: {fileID: 8515175391771322895}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8594902620489654547, guid: 29e7c8246d8e11545a819d27b65bc3bd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3678916493857397793}
   m_SourcePrefab: {fileID: 100100000, guid: 29e7c8246d8e11545a819d27b65bc3bd, type: 3}
+--- !u!1 &1655734094867788476 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8594902620489654547, guid: 29e7c8246d8e11545a819d27b65bc3bd, type: 3}
+  m_PrefabInstance: {fileID: 7042894270810084271}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3678916493857397793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1655734094867788476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135f306f576c2a44c92459ba0412240d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 4346792932059495966}
+  goAsTopOnDrag: 1
 --- !u!224 &4450656540519373980 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6664917937346432819, guid: 29e7c8246d8e11545a819d27b65bc3bd, type: 3}

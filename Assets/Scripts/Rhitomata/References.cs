@@ -24,11 +24,6 @@ namespace Rhitomata {
         public AudioSource music;
         public TimelineView timeline;
         public Canvas canvas;
-
         public Transform gameHolder;
-        public GameObject spriteObjectPrefab;
-
-        public Transform spriteUIHolder;
-        public GameObject spriteUIPrefab;
     }
 }

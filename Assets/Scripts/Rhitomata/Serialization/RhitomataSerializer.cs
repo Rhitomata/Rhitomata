@@ -1,7 +1,7 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Rhitomata {
@@ -27,7 +27,7 @@ namespace Rhitomata {
         }
 
         public static T Deserialize<T>(string json) =>
-            JsonConvert.DeserializeObject<T>(json);
+            JsonConvert.DeserializeObject<T>(json, Settings);
 
         private class Vector2Converter : JsonConverter<Vector2> {
             public override void WriteJson(JsonWriter writer, Vector2 value, JsonSerializer serializer) {

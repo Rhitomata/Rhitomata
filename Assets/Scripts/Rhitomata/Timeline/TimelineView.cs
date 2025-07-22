@@ -67,7 +67,7 @@ namespace Rhitomata.Timeline {
         }
 
         private void CreateKeyframe(float toTime, int rowIndex) {
-            var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<KeyframeUI>();
+            var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<KeyframeItem>();
             keyframe.Initialize(toTime, rowIndex);
 
             // TODO: Add to a list that hasn't been made yet
@@ -115,7 +115,7 @@ namespace Rhitomata.Timeline {
             visibleRange.min = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.minRange);
             visibleRange.max = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.maxRange);
 
-            var keyframes = GetComponentsInChildren<KeyframeUI>();// TODO: Use lists instead of GetComponentsInChildren
+            var keyframes = GetComponentsInChildren<KeyframeItem>();// TODO: Use lists instead of GetComponentsInChildren
             foreach (var keyframe in keyframes) {
                 var x = GetX(keyframe.time);
                 keyframe.SetX(x);
