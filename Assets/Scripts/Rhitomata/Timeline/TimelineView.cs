@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-using static Useful;
+using static Rhitomata.Useful;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

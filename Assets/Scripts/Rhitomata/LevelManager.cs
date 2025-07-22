@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
-using static Useful;
+using static Rhitomata.Useful;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Rhitomata.Editor")]
 namespace Rhitomata {

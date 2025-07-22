@@ -2,7 +2,7 @@ using Rhitomata;
 using Rhitomata.Timeline;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static Useful;
+using static Rhitomata.Useful;
 
 public class LaneView : MonoBehaviour, IPointerClickHandler, IDragHandler, IScrollHandler, IPointerDownHandler {
     private TimelineView timeline => References.Instance.timeline;
