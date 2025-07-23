@@ -27,7 +27,8 @@ namespace Rhitomata.Timeline {
         public RectTransform scrollingRect; // Holds keyframes & stuff
         public LaneView laneView;
 
-        [Header("Lanes")] public List<TimelineLane> lanes = new();
+        [Header("Lanes")] 
+        public List<TimelineLane> lanes = new();
         
         [Header("Keyframes")]
         public GameObject keyframePrefab;
@@ -71,11 +72,15 @@ namespace Rhitomata.Timeline {
             var rowIndex = (int)(-mousePosRelative.y / LANE_HEIGHT);
             var time = GetTime(mousePosRelative.x);
 
-            CreateKeyframe(time, rowIndex);
+            CreateKeyframe(time, lanes[rowIndex]);
         }
 
+        private Keyframe CreateKeyframe(float toTime, TimelineLane lane) {
+            return lane.CreateKeyframe(toTime);
+        }
+        
         private Keyframe CreateKeyframe(float toTime, int rowIndex) {
-            var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<Keyframe>();
+            var keyframe = Instantiate(keyframePrefab, scrollingRect).AddComponent<Keyframe>();
             keyframe.Initialize(toTime, rowIndex);
             return keyframe;
 
@@ -83,7 +88,15 @@ namespace Rhitomata.Timeline {
         }
         
         public Keyframe CreatePredefinedKeyframe(float toTime, TimelineLane lane) {
-            var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<Keyframe>();
+            var keyframe = Instantiate(keyframePrefab, scrollingRect).AddComponent<Keyframe>();
+            keyframe.lane = lane;
+            keyframe.Initialize(toTime, lane.centerHeight);
+            return keyframe;
+        }
+        
+        public T CreatePredefinedKeyframe<T, T1>(float toTime, T1 lane) where T : Keyframe where T1 : TimelineLane {
+            var keyframe = Instantiate(keyframePrefab, scrollingRect).AddComponent<T>();
+            keyframe.lane = lane;
             keyframe.Initialize(toTime, lane.centerHeight);
             return keyframe;
         }

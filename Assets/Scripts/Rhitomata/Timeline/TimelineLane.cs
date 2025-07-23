@@ -17,6 +17,7 @@ namespace Rhitomata.Timeline {
         public T CreateKeyframe<T>(float time) where T : Keyframe {
             var obj = Instantiate(timeline.keyframePrefab, timeline.scrollingRect);
             var keyframe = obj.AddComponent<T>();
+            keyframe.lane = this;
             keyframe.Initialize(time, centerHeight);
             
             var index = GetKeyframeIndexAtTime(time);

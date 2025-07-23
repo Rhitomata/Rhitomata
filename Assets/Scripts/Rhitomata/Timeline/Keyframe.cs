@@ -6,6 +6,7 @@ namespace Rhitomata.Timeline {
     [RequireComponent(typeof(RectTransform))]
     public class Keyframe : MonoBehaviour, IPointerClickHandler, IDragHandler, IScrollHandler, IPointerDownHandler {
         public float time;
+        public TimelineLane lane;
 
         private TimelineView timeline => References.Instance.timeline;
         private RectTransform rectTransform => transform as RectTransform;
@@ -35,9 +36,8 @@ namespace Rhitomata.Timeline {
             rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, -(rowIndex * TimelineView.LANE_HEIGHT) - (TimelineView.LANE_HEIGHT / 2f));
         }
 
-        public void Delete() {
-            // TODO: Remove from a list that hasn't been made yet
-            Destroy(gameObject);
+        public virtual void Delete() {
+           lane?.DestroyKeyframe(this);
         }
 
         public void OnPointerClick(PointerEventData eventData) {

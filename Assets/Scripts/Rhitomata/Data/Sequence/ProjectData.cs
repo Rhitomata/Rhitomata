@@ -164,7 +164,7 @@ namespace Rhitomata.Data {
                     nextRotationIndex = 0;
                 point.eulerAngles = currentDirection.directions[nextRotationIndex];
                 point.rotationIndex = nextRotationIndex;
-                point.position = previousPoint.position + (GetTranslationAroundTime(previousPoint.time, time) * previousPoint.forward);
+                point.position = previousPoint.position + (GetTranslationAroundTime(previousPoint.time, time) * previousPoint.up);
             } else {
                 var direction = GetDirectionAtTime(time);
                 point.eulerAngles = direction.directions[1];
@@ -229,7 +229,7 @@ namespace Rhitomata.Data {
                         nextRotationIndex = 0;
                     currentPoint.eulerAngles = currentDirection.directions[nextRotationIndex];
                     currentPoint.rotationIndex = nextRotationIndex;
-                    currentPoint.position = previousPoint.position + (GetTranslationAroundTime(previousPoint.time, currentPoint.time) * previousPoint.forward);
+                    currentPoint.position = previousPoint.position + (GetTranslationAroundTime(previousPoint.time, currentPoint.time) * previousPoint.up);
                     currentPoint.tail.transform.localPosition = currentPoint.position;
                     currentPoint.indicator.transform.localPosition = currentPoint.position;
                     if (previousPoint.hasPassed)
@@ -248,7 +248,7 @@ namespace Rhitomata.Data {
             var point = GetModifyPointAtTime(time);
             if (point == null)
                 return GetTranslationAroundTime(0, time) * ModifyPoint.EulerDegreesToForward(directions[0].directions[0]);
-            return point.position + (GetTranslationAroundTime(point.time, time) * point.forward);
+            return point.position + (GetTranslationAroundTime(point.time, time) * point.up);
         }
         #endregion
     }
@@ -265,21 +265,21 @@ namespace Rhitomata.Data {
             get => _rotation;
             set {
                 _rotation = value;
-                forward = EulerDegreesToForward(_rotation);
+                up = EulerDegreesToForward(_rotation);
             }
         }
 
         public int rotationIndex;
 
         [JsonIgnore] public Keyframe keyframe;
-        [JsonIgnore] public Vector3 forward { get; private set; } = new Vector3(0, 0, 1f);
+        [JsonIgnore] public Vector3 up { get; private set; } = new Vector3(0, 1f, 0);
         [JsonIgnore] public Tail tail { get; set; }
         [JsonIgnore] public Indicator indicator { get; set; }
         [JsonIgnore] public bool isInstantiated;
         [JsonIgnore] public bool hasPassed;
 
         public static Vector3 EulerDegreesToForward(Vector3 rotation) {
-            return Quaternion.Euler(rotation) * Vector3.forward;
+            return Quaternion.Euler(rotation) * Vector3.up;
         }
     }
 }

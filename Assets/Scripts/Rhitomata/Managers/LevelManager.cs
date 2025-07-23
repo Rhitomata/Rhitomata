@@ -18,7 +18,7 @@ namespace Rhitomata {
         public References references;
         [SerializeField] private KeyCode switchStateKey = KeyCode.Tab;
         [SerializeField] private CanvasGroup editorUI;
-        public TimelineLane pointLane;
+        public PointLane pointLane;
         public AudioClip defaultMusic;
 
         [Header("Data")]
@@ -101,7 +101,11 @@ namespace Rhitomata {
             if (point.isInstantiated) return point;
             
             point.indicator = Instantiate(indicatorPrefab, indicatorsParent).GetComponent<Indicator>();
-            point.keyframe = references.timeline.CreatePredefinedKeyframe(point.time, pointLane);
+            point.indicator.transform.localPosition = point.position;
+            point.indicator.transform.localEulerAngles = point.eulerAngles;
+            var keyframe = references.timeline.CreatePredefinedKeyframe<PointKeyframe, PointLane>(point.time, pointLane);
+            keyframe.modifyPoint = point;
+            point.keyframe = keyframe;
             point.tail = references.player.CreateAdjustableTail(point.position, point.eulerAngles);
             point.isInstantiated = true;
             return point;

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8585473439408745252}
   - component: {fileID: 5464256670680259655}
   - component: {fileID: 7196488979027303565}
-  - component: {fileID: 7974678285287832630}
   m_Layer: 5
   m_Name: Keyframe
   m_TagString: Untagged
@@ -76,16 +75,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7974678285287832630
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8532247237486288871}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e06c144c16db2e744b8417025e0f2251, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  time: 0
