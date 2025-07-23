@@ -8,12 +8,11 @@ namespace Rhitomata.Timeline {
             references.manager.SpawnModifyPoint(modifyPoint);
             // TODO: Test if this adjust works
             references.manager.project.AdjustAllPointFromPoint(modifyPoint);
-            
+
             var keyframe = modifyPoint.keyframe as PointKeyframe;
-            if (keyframe) {
+            if (keyframe)
                 return keyframe;
-            }
-            
+
             // TODO: Read debug log error
             Debug.LogError("TODO: Fix spawning modify point doesn't correctly spawn the keyframe as well");
             return null;

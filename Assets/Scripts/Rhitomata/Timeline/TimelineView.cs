@@ -174,6 +174,9 @@ namespace Rhitomata.Timeline {
             var posSeconds = cursorTime - visibleRange.min;
             pos.x = posSeconds * (laneHolder.rect.width / visibleRange.length);
 
+            // probably shouldnt be setting it here actually
+            references.manager.time = cursorTime;
+
             ChangeCursorsX(pos.x);
         }
 

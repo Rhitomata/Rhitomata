@@ -1,3 +1,4 @@
+using Rhitomata.Data;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -5,7 +6,8 @@ using UnityEngine.EventSystems;
 namespace Rhitomata {
     public class PlayerMovement : ObjectSerializer {
         [Header("References")]
-        public References references;
+        private References references => References.Instance;
+        private ProjectData project => references.manager.project;
 
         [SerializeField] private GameObject tailPrefab;
         [SerializeField] private Transform tailParent;
@@ -33,8 +35,16 @@ namespace Rhitomata {
         private GameObject currentTail;
         private readonly List<GameObject> tails = new();
 
+        private int pointIndex = -1;
+        private int _interpolatedIndex = -1;
+        private Tail startTail;
+
+        private void Awake() {
+            startTail = CreateAdjustableTail(transform.position, rotations[0]);
+        }
+
         void Update() {
-            if (references.manager.state != State.Play) return;
+            /*if (references.manager.state != State.Play) return;
 
             UpdateInputQueue();
             InputUpdate();
@@ -47,6 +57,43 @@ namespace Rhitomata {
                 if (currentTail != null) {
                     currentTail.transform.localPosition += translation / 2f;
                     currentTail.transform.localScale += Vector3.up * velocity;
+                }
+            }*/
+
+            print(references.manager.time);
+
+            pointIndex = project.GetModifyPointIndexAtTime(references.manager.time);
+            while (pointIndex != _interpolatedIndex) {
+                if (_interpolatedIndex < pointIndex) {
+                    // Move forward
+                    var nextPoint = project.points[_interpolatedIndex + 1];
+                    if (_interpolatedIndex == -1) {
+                        startTail.gameObject.SetActive(true);
+                        startTail.AdjustStretch(Vector3.zero, nextPoint.position);
+                    } else {
+                        var currentPoint = project.points[_interpolatedIndex];
+                        currentPoint.tail.AdjustStretch(currentPoint.position, nextPoint.position);
+                        currentPoint.tail.gameObject.SetActive(true);
+                        currentPoint.hasPassed = true;
+                    }
+                    //references.manager.Judge(JudgementType.Perfect, 0f);
+                    _interpolatedIndex++;
+                } else {
+                    if (_interpolatedIndex >= project.points.Count) {
+                        //references.manager.RemoveJudgement(JudgementType.Perfect);
+                        _interpolatedIndex--;
+                        // TODO: The point is deleted
+                    } else {
+                        // Move backwards
+                        var currentPoint = project.points[_interpolatedIndex];
+                        currentPoint.tail.gameObject.SetActive(false);
+                        currentPoint.hasPassed = false;
+                        _interpolatedIndex--;
+                        if (references.manager.state == State.Play && references.music.time != 0)
+                            Debug.LogWarning($"The player somehow went back in points during play mode! Index: {_interpolatedIndex}");
+
+                        //references.manager.RemoveJudgement(JudgementType.Perfect);
+                    }
                 }
             }
         }
