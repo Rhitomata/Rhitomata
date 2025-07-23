@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Rhitomata {
-    public class PlayerMovement : MonoBehaviour {
+    public class PlayerMovement : ObjectSerializer {
         [Header("References")]
         public References references;
 
@@ -64,7 +64,7 @@ namespace Rhitomata {
             } else {
                 foreach (var key in tapKeys) {
                     if (Input.GetKeyDown(key))
-                        if (!InputManager.IsMouseOverUI((int)key))
+                        if (!InputManager.IsKeyCodeOverUI((int)key))
                             inputQueue++;
                 }
             }
@@ -112,6 +112,19 @@ namespace Rhitomata {
             currentTail.transform.localEulerAngles = transform.localEulerAngles;
             tails.Add(currentTail);
             return currentTail;
+        }
+        
+        /// <summary>
+        /// Creates a tail with the same position and rotation as the player,
+        /// this also registers the tail on the tail list
+        /// </summary>
+        /// <returns>The produced tail</returns>
+        public Tail CreateAdjustableTail(Vector3 position, Vector3 eulerAngles) {
+            var tail = Instantiate(tailPrefab, tailParent).AddComponent<Tail>();
+            tail.transform.localPosition = transform.localPosition;
+            tail.transform.localEulerAngles = transform.localEulerAngles;
+            tails.Add(tail.gameObject);
+            return tail;
         }
 
         /// <summary>

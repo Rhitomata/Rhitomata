@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 230127a5c84bc9440a98b1fbe4e4154a
+guid: f9c2cbdd24a5e8344ae002db79214490
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4553513727227366106
-    second: semi-circle_0
+      213: -3615885536489504094
+    second: Indicator Small_0
+  - first:
+      213: 7741145349616542386
+    second: Indicator Small_1
+  - first:
+      213: 4164921208240908732
+    second: Indicator Small_2
+  - first:
+      213: -1728505947924896515
+    second: Indicator Small_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,12 +55,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 431
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -100,13 +109,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: semi-circle_0
+      name: Indicator Small_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 167
-        height: 333
+        y: 460
+        width: 431
+        height: 431
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +124,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6257fb0046baec0c0800000000000000
-      internalID: -4553513727227366106
+      spriteID: 2a20219234bc1ddc0800000000000000
+      internalID: -3615885536489504094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Indicator Small_1
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 460
+        width: 431
+        height: 431
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b2af8e5ea21e6b60800000000000000
+      internalID: 7741145349616542386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Indicator Small_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 431
+        height: 431
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb9a0bea5c5ccc930800000000000000
+      internalID: 4164921208240908732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Indicator Small_3
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 0
+        width: 431
+        height: 431
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df469c59ffc1308e0800000000000000
+      internalID: -1728505947924896515
       vertices: []
       indices: 
       edges: []
@@ -125,7 +200,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +210,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      semi-circle_0: -4553513727227366106
+      Indicator Small_0: -3615885536489504094
+      Indicator Small_1: 7741145349616542386
+      Indicator Small_2: 4164921208240908732
+      Indicator Small_3: -1728505947924896515
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -29,17 +29,15 @@ namespace Rhitomata {
             dynamicSpritePanelTab.Label = "Sprites";
 
             // Timeline
+            var previousTimelineSize = timelinePanel.rect.size;
             dynamicTimelinePanel = PanelUtils.CreatePanelFor(timelinePanel, dynamicCanvas);
-            dynamicTimelinePanel.OnResized.AddListener(OnTimelinePanelResized);
             dynamicTimelinePanel.DockToRoot(Direction.Bottom);
             dynamicTimelinePanelTab = PanelUtils.GetAssociatedTab(timelinePanel);
             dynamicTimelinePanelTab.MinSize = timelineMinSize;
             dynamicTimelinePanelTab.Icon = null;
             dynamicTimelinePanelTab.Label = "Timeline";
-        }
-
-        private void OnTimelinePanelResized() {
-            // TODO: Put the actual timeline view here and also adjust all the UI elements when resizing
+            dynamicTimelinePanel.ResizeTo(previousTimelineSize);
+            dynamicTimelinePanel.OnResized.AddListener(references.timeline.OnResized);
         }
     }
 }

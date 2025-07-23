@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Rhitomata {
@@ -10,15 +11,19 @@ namespace Rhitomata {
         [SerializeField]
         private bool _isVisible = true;
 
+        private void Update() {
+            Adjust();
+        }
+
         public void Adjust() {
-            if (sprite1 == null || sprite2 == null || sprite3 == null || sprite4 == null)
+            if (!sprite1 || !sprite2 || !sprite3 || !sprite4)
                 return;
 
-            float clamped = Mathf.Clamp(progress, 0f, 1f);
-            float eased = clamped * clamped * clamped;
-            if (eased == 1 || eased == 0) {
-                /// The indicator is either hidden inside a tail 
-                /// or it's not supposed to be visible yet
+            var clamped = Mathf.Clamp(progress, 0f, 1f);
+            var eased = clamped * clamped * clamped;
+            if (eased is 1 or 0) {
+                // The indicator is either hidden inside a tail 
+                // or it's not supposed to be visible yet
                 SetVisible(false);
                 return;
             }
@@ -27,10 +32,10 @@ namespace Rhitomata {
 
             float distance = multiplier * (1f - eased);
 
-            sprite1.transform.localPosition = new Vector3(1, 0, 1) * distance;
-            sprite2.transform.localPosition = new Vector3(-1, 0, 1) * distance;
-            sprite3.transform.localPosition = new Vector3(1, 0, -1) * distance;
-            sprite4.transform.localPosition = new Vector3(-1, 0, -1) * distance;
+            sprite1.transform.localPosition = new Vector3(-1, 1, 0) * distance;
+            sprite2.transform.localPosition = new Vector3(1, 1, 0) * distance;
+            sprite3.transform.localPosition = new Vector3(-1, -1, 0) * distance;
+            sprite4.transform.localPosition = new Vector3(1, -1, 0) * distance;
 
             Color modulation = sprite1.color;
             modulation.a = eased;

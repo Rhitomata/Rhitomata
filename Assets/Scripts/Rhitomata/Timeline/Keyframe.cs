@@ -4,7 +4,7 @@ using static Rhitomata.Useful;
     
 namespace Rhitomata.Timeline {
     [RequireComponent(typeof(RectTransform))]
-    public class KeyframeItem : MonoBehaviour, IPointerClickHandler, IDragHandler, IScrollHandler, IPointerDownHandler {
+    public class Keyframe : MonoBehaviour, IPointerClickHandler, IDragHandler, IScrollHandler, IPointerDownHandler {
         public float time;
 
         private TimelineView timeline => References.Instance.timeline;
@@ -13,6 +13,11 @@ namespace Rhitomata.Timeline {
         public void Initialize(float targetTime, int rowIndex) {
             time = targetTime;
             Set(targetTime, rowIndex);
+        }
+        
+        public void Initialize(float targetTime, float yPosition) {
+            time = targetTime;
+            rectTransform.anchoredPosition = new Vector2(timeline.GetX(targetTime), yPosition);
         }
 
         public void Set(float targetTime, int rowIndex) {

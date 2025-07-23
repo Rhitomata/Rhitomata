@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Rhitomata.Timeline;
 using UnityEngine;
+using Keyframe = Rhitomata.Timeline.Keyframe;
 
 namespace Rhitomata.Data {
     public class ProjectData {
@@ -161,12 +162,12 @@ namespace Rhitomata.Data {
                 var currentDirection = GetDirectionAtTime(previousPoint.time);
                 if (nextRotationIndex >= currentDirection.directions.Count)
                     nextRotationIndex = 0;
-                point.rotation = currentDirection.directions[nextRotationIndex];
+                point.eulerAngles = currentDirection.directions[nextRotationIndex];
                 point.rotationIndex = nextRotationIndex;
                 point.position = previousPoint.position + (GetTranslationAroundTime(previousPoint.time, time) * previousPoint.forward);
             } else {
                 var direction = GetDirectionAtTime(time);
-                point.rotation = direction.directions[1];
+                point.eulerAngles = direction.directions[1];
                 point.rotationIndex = 1;
                 point.position = GetTranslationAroundTime(0, time) * ModifyPoint.EulerDegreesToForward(directions[0].directions[0]);
             }
@@ -187,7 +188,7 @@ namespace Rhitomata.Data {
 
         public void DestroyItem(ModifyPoint point) {
             if (point != null) {
-                Object.Destroy(point.item.gameObject);
+                Object.Destroy(point.keyframe.gameObject);
                 Object.Destroy(point.indicator.gameObject);
                 Object.Destroy(point.tail.gameObject);
             }
@@ -208,7 +209,7 @@ namespace Rhitomata.Data {
             if (index == 0) {
                 var point = points[index];
                 var direction = GetDirectionAtTime(point.time);
-                point.rotation = direction.directions[1];
+                point.eulerAngles = direction.directions[1];
                 point.rotationIndex = 1;
                 point.position = GetTranslationAroundTime(0, point.time) * ModifyPoint.EulerDegreesToForward(directions[0].directions[0]);
                 point.tail.transform.localPosition = point.position;
@@ -226,7 +227,7 @@ namespace Rhitomata.Data {
                     var currentDirection = GetDirectionAtTime(previousPoint.time);
                     if (nextRotationIndex >= currentDirection.directions.Count)
                         nextRotationIndex = 0;
-                    currentPoint.rotation = currentDirection.directions[nextRotationIndex];
+                    currentPoint.eulerAngles = currentDirection.directions[nextRotationIndex];
                     currentPoint.rotationIndex = nextRotationIndex;
                     currentPoint.position = previousPoint.position + (GetTranslationAroundTime(previousPoint.time, currentPoint.time) * previousPoint.forward);
                     currentPoint.tail.transform.localPosition = currentPoint.position;
@@ -260,7 +261,7 @@ namespace Rhitomata.Data {
         [JsonIgnore]
         private Vector3 _rotation { get; set; } = new Vector3(0, 0, 0);
         [JsonProperty("rotation")]
-        public Vector3 rotation {
+        public Vector3 eulerAngles {
             get => _rotation;
             set {
                 _rotation = value;
@@ -270,10 +271,11 @@ namespace Rhitomata.Data {
 
         public int rotationIndex;
 
-        [JsonIgnore] public TimelineItem item;
+        [JsonIgnore] public Keyframe keyframe;
         [JsonIgnore] public Vector3 forward { get; private set; } = new Vector3(0, 0, 1f);
         [JsonIgnore] public Tail tail { get; set; }
         [JsonIgnore] public Indicator indicator { get; set; }
+        [JsonIgnore] public bool isInstantiated;
         [JsonIgnore] public bool hasPassed;
 
         public static Vector3 EulerDegreesToForward(Vector3 rotation) {

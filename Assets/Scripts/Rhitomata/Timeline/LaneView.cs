@@ -51,7 +51,7 @@ namespace Rhitomata.Timeline {
             timeline.horizontalScrollbar.OnStartRangeMoved(new Vector2(delta, 0));
             timeline.horizontalScrollbar.OnEndRangeMoved(new Vector2(-delta, 0));
 
-            // Laptop touchpad scrolling
+            // Laptop touchpad scrolling (goddayum you thought about this too Sylva?)
             var deltaPan = eventData.scrollDelta.x * zoomLevel * panSensitivity * 10f;
             timeline.horizontalScrollbar.OnRangeMoved(new Vector2(deltaPan, 0));
             //timeline.horizontalScrollbar.OnRangeMoved(eventData.scrollDelta);

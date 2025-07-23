@@ -1,10 +1,14 @@
 using System.IO;
 using System.Collections;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using Rhitomata.Data;
+using Rhitomata.Timeline;
+using Rhitomata.UI;
 using SFB;
+using UnityEngine.Events;
 using static Rhitomata.Useful;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Rhitomata.Editor")]
@@ -14,9 +18,14 @@ namespace Rhitomata {
         public References references;
         [SerializeField] private KeyCode switchStateKey = KeyCode.Tab;
         [SerializeField] private CanvasGroup editorUI;
+        public TimelineLane pointLane;
+        public AudioClip defaultMusic;
 
         [Header("Data")]
         public ProjectData project = new();
+
+        private string _directory;
+        public string directory => project != null ? project.directoryPath : _directory;
 
         [Header("States")]
         public State state;
@@ -24,10 +33,15 @@ namespace Rhitomata {
 
         [Header("Prefabs & Environments")] 
         public Transform game;
+
+        public Transform indicatorsParent;
         public GameObject spritePrefab;
+        public GameObject indicatorPrefab;
 
         private float desyncThreshold = 0.3f;// TODO: Make customizable from UI maybe?
+        private CancellationTokenSource _projectLoadCts;
         public float time;
+        public UnityEvent onProjectLoaded;
 
         private void Start() {
             ChangeState(State.Edit);
@@ -82,10 +96,19 @@ namespace Rhitomata {
             spriteObject.Initialize(sprite, lastInstanceId + 1);
             return spriteObject;
         }
+
+        public ModifyPoint SpawnModifyPoint(ModifyPoint point) {
+            if (point.isInstantiated) return point;
+            
+            point.indicator = Instantiate(indicatorPrefab, indicatorsParent).GetComponent<Indicator>();
+            point.keyframe = references.timeline.CreatePredefinedKeyframe(point.time, pointLane);
+            point.tail = references.player.CreateAdjustableTail(point.position, point.eulerAngles);
+            point.isInstantiated = true;
+            return point;
+        }
         #endregion
 
         #region UI
-
         private const string FILE_EXTENSION = "rhito";// TODO: Use the file extensions below instead, once we have the storage/structure figured out
 
         /// <summary>
@@ -134,8 +157,7 @@ namespace Rhitomata {
             if (result == null || result.Length == 0) return; // Cancelled
 
             var path = result[0];
-
-            StartCoroutine(ImportSong(path));
+            _ = ImportSongAsync(path);
         }
 
         public void BrowseForBeatmap() {
@@ -182,46 +204,101 @@ namespace Rhitomata {
                     return;
                 }
 
-                project = projectData;
-                print($"Loaded project {project.name} by {project.author}");
+                projectData.directoryPath = directoryPath;
+                projectData.filePath = directoryPath.Combine("project.json");
 
-                // TODO: Load data in these orders: song, beatmap, timeline items & indicators, assets, objects
+                _directory = directoryPath;
+                project = projectData;
+
+                LoadProject();
             } catch (System.Exception exception) {
                 Debug.LogException(exception);
             }
         }
+        
+        /// <summary>
+        /// Set <see cref="directory"/> and <see cref="project"/> first before using this function to load asynchonously
+        /// </summary>
+        private async void LoadProject() {
+            _projectLoadCts = new CancellationTokenSource();
+            var token = _projectLoadCts.Token;
+            
+            // TODO: Make a custom loading screen for projects
+            var cancelButton = new MessageBoxButton("Cancel", () => _projectLoadCts.Cancel(), close: true);
+            var messageBox = MessageBox.Show(
+                "Loading project...",
+                "Loading",
+                null,
+                new[] { cancelButton }
+            );
+
+            try {
+                if (!string.IsNullOrWhiteSpace(project.musicPath) && Storage.FileExists(directory.Combine(project.musicPath))) {
+                    await ImportSongAsync(directory.Combine(project.musicPath), token);
+                } else {
+                    references.music.clip = defaultMusic;
+                }
+                
+                token.ThrowIfCancellationRequested();
+
+                messageBox.message = "Adjusting all points";
+                await UniTask.WaitForEndOfFrame(token);
+                project.AdjustAllPointFromIndex(0); // Recalculate all points after the first one
+
+                messageBox.message = $"Spawning {project.points.Count} points";
+                await UniTask.WaitForEndOfFrame(token);
+                await RandomIterator.LoopAsync(2, 20, project.points.Count, i => {
+                    var point = project.points[i];
+                    SpawnModifyPoint(point);
+                    
+                    token.ThrowIfCancellationRequested();
+                }, () => UniTask.WaitForEndOfFrame(token));
+
+                messageBox.message = $"Attaching additional keyframes...";
+                await UniTask.WaitForEndOfFrame(token);
+                // TODO: Load data in these orders: beatmap, timeline items & indicators, assets, objects
+                messageBox.Close();
+            } catch (System.OperationCanceledException) {
+                MessageBox.ShowError("Project loading was cancelled!");
+                messageBox.Close();
+            } catch (System.Exception ex) {
+                MessageBox.ShowError("An error encountered while loading the project! " + ex.Message);
+                Debug.LogException(ex);
+                messageBox.Close();
+            } finally {
+                _projectLoadCts?.Dispose();
+                _projectLoadCts = null;
+            }
+        }
 
         public void SaveProject(string directoryPath) {
-
+            
         }
         #endregion Project
-
-        /// <summary>
-        /// This does not copy the song to the proper path
-        /// </summary>
-        /// <param name="path">Absolute path of the song</param>
-        private IEnumerator ImportSong(string path) {
+        private async UniTask ImportSongAsync(string path, CancellationToken token = default) {
             if (project == null) {
                 Debug.LogWarning("There's no project open yet, but a song is trying to be imported anyway!");
-                yield break;
+                return;
             }
+
             if (string.IsNullOrEmpty(path)) {
                 Debug.LogWarning("An error occurred while importing the song: Empty path");
-                yield break;
+                return;
             }
 
-            using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.UNKNOWN);
+            using var www = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.UNKNOWN);
+            await www.SendWebRequest().WithCancellation(token);
+            token.ThrowIfCancellationRequested();
 
-            yield return www.SendWebRequest();
             if (www.result != UnityWebRequest.Result.Success) {
                 Debug.LogWarning($"An error occurred while importing the song: {www.error}");
-                yield break;
+                return;
             }
 
             var myClip = DownloadHandlerAudioClip.GetContent(www);
-            if (myClip == null) {
-                Debug.LogWarning($"An error occurred while importing the song: Unknown file type?");
-                yield break;
+            if (!myClip) {
+                Debug.LogWarning("An error occurred while importing the song: Unknown file type?");
+                return;
             }
 
             project.musicPath = GetRelativePath(path, project.directoryPath);

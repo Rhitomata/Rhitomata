@@ -451,7 +451,14 @@ namespace DynamicPanels
 				{
 					Vector2 initialSize;
 					if( initialSizes.TryGetValue( panel, out initialSize ) )
+					{
+						if( initialSize.x <= Mathf.Epsilon )
+							initialSize.x = panel.Size.x;
+						if( initialSize.y <= Mathf.Epsilon )
+							initialSize.y = panel.Size.y;
+
 						panel.ResizeTo( initialSize, Direction.Right, Direction.Top );
+					}
 				}
 				else
 					ResizeAnchoredPanelsRecursively( group[i] as PanelGroup, initialSizes );

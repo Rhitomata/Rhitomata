@@ -52,18 +52,18 @@ namespace Rhitomata.UI
         {
             var messageBox = Instantiate(messageBoxPrefab, messageBoxParent);
             var window = messageBox.GetComponent<Window>();
-            var topBar = messageBox.transform.Find("TopBar");
-            topBar.Find("TitleText").GetComponent<TMP_Text>().text = title;
-            topBar.Find("CloseButton").GetComponent<Button>().onClick.AddListener(() => {
+            var topBar = messageBox.transform.Find("Top");
+            topBar.Find("Title").GetComponent<TMP_Text>().text = title;
+            topBar.Find("Close").GetComponent<Button>().onClick.AddListener(() => {
                 window.onPostHide += () => Destroy(messageBox);
                 window.Hide();
             });
-            topBar.Find("CloseButton").gameObject.SetActive(showCloseButton);
+            topBar.Find("Close").gameObject.SetActive(showCloseButton);
 
-            var content = messageBox.transform.Find("Content");
-            content.Find("MessageText").GetComponent<TMP_Text>().text = message;
+            var content = messageBox.transform.Find("Content").Find("Content Wrapper");
+            content.Find("Text").GetComponent<TMP_Text>().text = message;
 
-            var buttonContainer = messageBox.transform.Find("Buttons");
+            var buttonContainer = messageBox.transform.Find("Content").Find("Buttons");
 
             if (buttons == null && showCloseButton)
                 buttons = new[] { new MessageBoxButton("OK", null, true) };
@@ -167,15 +167,15 @@ namespace Rhitomata.UI
         public MessageBoxInstance(GameObject gameObject)
         {
             this.gameObject = gameObject;
-            _topBar = gameObject.transform.Find("TopBar");
+            _topBar = gameObject.transform.Find("Top");
             _window = gameObject.GetComponent<Window>();
-            _titleText = _topBar.Find("TitleText").GetComponent<TextMeshProUGUI>();
+            _titleText = _topBar.Find("Title").GetComponent<TextMeshProUGUI>();
             _title = _titleText.text;
-            _closeButton = _topBar.Find("CloseButton").GetComponent<Button>();
-            _content = gameObject.transform.Find("Content");
-            _messageText = _content.Find("MessageText").GetComponent<TextMeshProUGUI>();
+            _closeButton = _topBar.Find("Close").GetComponent<Button>();
+            _content = gameObject.transform.Find("Content").Find("Content Wrapper");
+            _messageText = _content.Find("Text").GetComponent<TextMeshProUGUI>();
             _message = _messageText.text;
-            _buttonContainer = gameObject.transform.Find("ButtonContainer");
+            _buttonContainer = gameObject.transform.Find("Content").Find("Buttons");
 
             _window.onHide += () => MessageBoxManager.self.RemoveInstance(this);
             _window.onDestroy += () =>

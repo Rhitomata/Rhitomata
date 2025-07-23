@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace Rhitomata {
-    public class CameraMovement : MonoBehaviour {
+    public class CameraMovement : ObjectSerializer {
         public Transform target;
         public float followSpeed = 3f;
 

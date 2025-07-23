@@ -26,5 +26,6 @@ namespace Rhitomata {
         public Canvas canvas;
         public Transform gameHolder;
         public ProjectList projectList;
+        public GameUI gameUI;
     }
 }

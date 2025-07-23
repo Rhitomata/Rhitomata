@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static Rhitomata.Useful;
@@ -8,8 +9,7 @@ using UnityEditor;
 
 namespace Rhitomata.Timeline {
     public class TimelineView : MonoBehaviour {
-        [Header("Audio")]
-        public AudioSource source;
+        public References references;
 
         [Header("Peek")]
         public float cursorTime;
@@ -27,6 +27,8 @@ namespace Rhitomata.Timeline {
         public RectTransform scrollingRect; // Holds keyframes & stuff
         public LaneView laneView;
 
+        [Header("Lanes")] public List<TimelineLane> lanes = new();
+        
         [Header("Keyframes")]
         public GameObject keyframePrefab;
 
@@ -46,11 +48,17 @@ namespace Rhitomata.Timeline {
             DeleteAllKeyframes();
 
             verticalScrollbar.onValueChanged.AddListener(OnVerticalChanged);
-
-            // TODO: Let's just change everything after any changed
             horizontalScrollbar.onAnyChanged.AddListener(OnAnyHorizontalChanged);
             currentTimeHandle.onDragDelta.AddListener(OnCurrentTimeDragged);
+            
+            UpdatePeekLimit();
+            UpdateVerticalSlider();
+            OnAnyHorizontalChanged();
 
+            UpdateCurrentTimeCursor();
+        }
+
+        public void OnResized() {
             UpdatePeekLimit();
             UpdateVerticalSlider();
             OnAnyHorizontalChanged();
@@ -66,11 +74,18 @@ namespace Rhitomata.Timeline {
             CreateKeyframe(time, rowIndex);
         }
 
-        private void CreateKeyframe(float toTime, int rowIndex) {
-            var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<KeyframeItem>();
+        private Keyframe CreateKeyframe(float toTime, int rowIndex) {
+            var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<Keyframe>();
             keyframe.Initialize(toTime, rowIndex);
+            return keyframe;
 
             // TODO: Add to a list that hasn't been made yet
+        }
+        
+        public Keyframe CreatePredefinedKeyframe(float toTime, TimelineLane lane) {
+            var keyframe = Instantiate(keyframePrefab, scrollingRect).GetComponent<Keyframe>();
+            keyframe.Initialize(toTime, lane.centerHeight);
+            return keyframe;
         }
 
         private void DeleteAllKeyframes() {
@@ -80,6 +95,8 @@ namespace Rhitomata.Timeline {
         }
 
         private void Update() {
+            if (InputManager.IsEditingOnInputField()) return;
+            
             if (Input.GetKeyDown(KeyCode.R)) DeleteAllKeyframes();
             if (Input.GetKeyDown(KeyCode.I)) CreateKeyframeAtCursor();
         }
@@ -115,7 +132,7 @@ namespace Rhitomata.Timeline {
             visibleRange.min = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.minRange);
             visibleRange.max = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.maxRange);
 
-            var keyframes = GetComponentsInChildren<KeyframeItem>();// TODO: Use lists instead of GetComponentsInChildren
+            var keyframes = GetComponentsInChildren<Keyframe>();// TODO: Use lists instead of GetComponentsInChildren
             foreach (var keyframe in keyframes) {
                 var x = GetX(keyframe.time);
                 keyframe.SetX(x);
@@ -169,7 +186,7 @@ namespace Rhitomata.Timeline {
 
         public void UpdatePeekLimit() {
             peekLimit.min = -5f;
-            peekLimit.max = source.clip.length + 5f;
+            peekLimit.max = references.music.clip.length + 5f;
         }
     }
 
