@@ -78,6 +78,11 @@ namespace Rhitomata.Timeline {
             onValueChanged?.Invoke(_value);
             onAnyChanged?.Invoke();
         }
+        
+        public void SetValueWithoutNotify(float value) {
+            _value = value;
+            UpdateValue();
+        }
 
         #region New Coordinate Implementation
         // --- INITIAL STATE ---

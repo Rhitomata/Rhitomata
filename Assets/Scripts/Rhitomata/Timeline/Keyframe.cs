@@ -25,15 +25,11 @@ namespace Rhitomata.Timeline {
             SetRowIndex(rowIndex);
         }
 
-        public void SetTime(float targetTime) {
-            time = targetTime;// Only place where time should be set
+        public virtual void SetTime(float targetTime) {
+            time = targetTime;
 
             var x = timeline.GetX(targetTime);
             SetX(x);
-
-            // Probably not the best way to get the point?
-            var modifyPoint = References.Instance.manager.project.GetModifyPointAtTime(time);
-            modifyPoint.time = targetTime;
         }
 
         public void SetRowIndex(int rowIndex) {

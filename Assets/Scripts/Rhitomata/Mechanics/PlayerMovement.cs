@@ -7,6 +7,7 @@ namespace Rhitomata {
     public class PlayerMovement : ObjectSerializer {
         [Header("References")]
         private References references => References.Instance;
+        public bool isInterpolating = true;
         private ProjectData project => references.manager.project;
 
         [SerializeField] private GameObject tailPrefab;
@@ -31,70 +32,97 @@ namespace Rhitomata {
         public int rotationIndex;
         public bool isStarted;
 
-        private int inputQueue;
-        private GameObject currentTail;
-        private readonly List<GameObject> tails = new();
+        [Header("Approach Rates")]
+        public int minIndicatorRange;
+        public int maxIndicatorRange;
+        public float indicatorAppearTime;
 
-        private int pointIndex = -1;
+        private int _inputQueue;
+        private GameObject _currentTail;
+        private readonly List<GameObject> _tails = new();
+
+        private int _pointIndex = -1;
         private int _interpolatedIndex = -1;
-        private Tail startTail;
+        private Tail _startTail;
+        private float time => references.timeline.cursorTime;
+        private double _audioStartDspTime;
 
         private void Awake() {
-            startTail = CreateAdjustableTail(transform.position, rotations[0]);
+            _startTail = CreateAdjustableTail(transform.position, rotations[0]);
+            _audioStartDspTime = AudioSettings.dspTime;
         }
 
         void Update() {
-            /*if (references.manager.state != State.Play) return;
+            if (!isInterpolating)
+                return;
 
-            UpdateInputQueue();
-            InputUpdate();
+            var dspTimeSinceStart = AudioSettings.dspTime - _audioStartDspTime;
+            if (references.manager.state == State.Play) {
+                references.timeline.Seek(references.music.time, true);
+            }
 
-            if (isStarted) {
-                var velocity = speed * Time.deltaTime;
-                var translation = transform.up * velocity;
-                transform.localPosition += translation;
-
-                if (currentTail != null) {
-                    currentTail.transform.localPosition += translation / 2f;
-                    currentTail.transform.localScale += Vector3.up * velocity;
-                }
-            }*/
-
-            print(references.manager.time);
-
-            pointIndex = project.GetModifyPointIndexAtTime(references.manager.time);
-            while (pointIndex != _interpolatedIndex) {
-                if (_interpolatedIndex < pointIndex) {
+            _pointIndex = references.manager.project.GetModifyPointIndexAtTime(time);
+            while (_pointIndex != _interpolatedIndex) {
+                if (_interpolatedIndex < _pointIndex) {
                     // Move forward
-                    var nextPoint = project.points[_interpolatedIndex + 1];
-                    if (_interpolatedIndex == -1) {
-                        startTail.gameObject.SetActive(true);
-                        startTail.AdjustStretch(Vector3.zero, nextPoint.position);
-                    } else {
-                        var currentPoint = project.points[_interpolatedIndex];
+                    var nextPoint = references.manager.project.points[_interpolatedIndex + 1];
+                    if (_interpolatedIndex == -1)
+                    {
+                        _startTail.gameObject.SetActive(true);
+                        _startTail.AdjustStretch(Vector3.zero, nextPoint.position);
+                    }
+                    else
+                    {
+                        var currentPoint = references.manager.project.points[_interpolatedIndex];
                         currentPoint.tail.AdjustStretch(currentPoint.position, nextPoint.position);
                         currentPoint.tail.gameObject.SetActive(true);
                         currentPoint.hasPassed = true;
                     }
-                    //references.manager.Judge(JudgementType.Perfect, 0f);
+                    references.manager.Judge(JudgementType.Perfect, 0f);
                     _interpolatedIndex++;
-                } else {
-                    if (_interpolatedIndex >= project.points.Count) {
-                        //references.manager.RemoveJudgement(JudgementType.Perfect);
+                }
+                else {
+                    if (_interpolatedIndex >= references.manager.project.points.Count)
+                    {
+                        references.manager.RemoveJudgement(JudgementType.Perfect);
                         _interpolatedIndex--;
                         // TODO: The point is deleted
-                    } else {
+                    }
+                    else
+                    {
                         // Move backwards
-                        var currentPoint = project.points[_interpolatedIndex];
+                        var currentPoint = references.manager.project.points[_interpolatedIndex];
                         currentPoint.tail.gameObject.SetActive(false);
                         currentPoint.hasPassed = false;
                         _interpolatedIndex--;
-                        if (references.manager.state == State.Play && references.music.time != 0)
-                            Debug.LogWarning($"The player somehow went back in points during play mode! Index: {_interpolatedIndex}");
-
-                        //references.manager.RemoveJudgement(JudgementType.Perfect);
+                        if (references.manager.state == State.Play && references.music.isPlaying)
+                        {
+                            Debug.LogWarning("The player somehow go back in points while playmode on index " + _interpolatedIndex);
+                        }
+                        references.manager.RemoveJudgement(JudgementType.Perfect);
                     }
                 }
+            }
+
+            transform.localPosition = references.manager.project.GetPositionForTime(time);
+            if (_interpolatedIndex > -1) {
+                references.manager.project.points[_interpolatedIndex].tail.AdjustStretch(references.manager.project.points[_interpolatedIndex].position, transform.localPosition);
+                references.manager.project.points[_interpolatedIndex].tail.gameObject.SetActive(true);
+            } else {
+                if (time > 0) {
+                    _startTail.AdjustStretch(Vector3.zero, transform.localPosition);
+                    _startTail.gameObject.SetActive(true);
+                } else {
+                    _startTail.gameObject.SetActive(false);
+                }
+            }
+
+            var start = Mathf.Max(0, _pointIndex - minIndicatorRange);
+            var end = Mathf.Min(references.manager.project.points.Count - 1, _pointIndex + maxIndicatorRange);
+
+            for (var i = start; i <= end; i++) {
+                var point = references.manager.project.points[i];
+                point.indicator.progress = Mathf.Clamp((time - (point.time - indicatorAppearTime)) / indicatorAppearTime, 0f, 1f);
             }
         }
 
@@ -106,13 +134,13 @@ namespace Rhitomata {
                 foreach (var touch in Input.touches) {
                     if (touch.phase == TouchPhase.Began)
                         if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId))
-                            inputQueue++;
+                            _inputQueue++;
                 }
             } else {
                 foreach (var key in tapKeys) {
                     if (Input.GetKeyDown(key))
                         if (!InputManager.IsKeyCodeOverUI((int)key))
-                            inputQueue++;
+                            _inputQueue++;
                 }
             }
         }
@@ -122,7 +150,7 @@ namespace Rhitomata {
         /// all the inputs in one frame or just one queue each frame
         /// </summary>
         public void InputUpdate() {
-            if (inputQueue > 0) {
+            if (_inputQueue > 0) {
                 if (!isStarted) {
                     references.music.Play();
                     isStarted = true;
@@ -131,14 +159,14 @@ namespace Rhitomata {
                 } else {
                     Turn();
                 }
-                inputQueue--;
+                _inputQueue--;
             }
         }
 
         /// <summary>
         /// Not sure why we need a function for this, might be removed soon
         /// </summary>
-        public void ResetInputQueue() => inputQueue = 0;
+        public void ResetInputQueue() => _inputQueue = 0;
 
         /// <summary>
         /// Rotates the player and creates a tail along with it
@@ -154,11 +182,11 @@ namespace Rhitomata {
         /// </summary>
         /// <returns>The produced tail</returns>
         private GameObject CreateTail() {
-            currentTail = Instantiate(tailPrefab, tailParent);
-            currentTail.transform.localPosition = transform.localPosition;
-            currentTail.transform.localEulerAngles = transform.localEulerAngles;
-            tails.Add(currentTail);
-            return currentTail;
+            _currentTail = Instantiate(tailPrefab, tailParent);
+            _currentTail.transform.localPosition = transform.localPosition;
+            _currentTail.transform.localEulerAngles = transform.localEulerAngles;
+            _tails.Add(_currentTail);
+            return _currentTail;
         }
         
         /// <summary>
@@ -170,7 +198,7 @@ namespace Rhitomata {
             var tail = Instantiate(tailPrefab, tailParent).AddComponent<Tail>();
             tail.transform.localPosition = transform.localPosition;
             tail.transform.localEulerAngles = transform.localEulerAngles;
-            tails.Add(tail.gameObject);
+            _tails.Add(tail.gameObject);
             return tail;
         }
 
@@ -178,10 +206,10 @@ namespace Rhitomata {
         /// Clear the tail list and destroys them
         /// </summary>
         void ClearTails() {
-            currentTail = null;
-            foreach (var tail in tails)
+            _currentTail = null;
+            foreach (var tail in _tails)
                 Destroy(tail);
-            tails.Clear();
+            _tails.Clear();
         }
 
         /// <summary>

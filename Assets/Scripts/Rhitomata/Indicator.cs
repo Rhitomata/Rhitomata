@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 
 namespace Rhitomata {
-    [ExecuteInEditMode]
     public partial class Indicator : MonoBehaviour {
         public SpriteRenderer sprite1, sprite2, sprite3, sprite4;
         public float progress;
@@ -10,10 +9,6 @@ namespace Rhitomata {
 
         [SerializeField]
         private bool _isVisible = true;
-
-        private void Update() {
-            Adjust();
-        }
 
         public void Adjust() {
             if (!sprite1 || !sprite2 || !sprite3 || !sprite4)
@@ -30,7 +25,7 @@ namespace Rhitomata {
 
             SetVisible(true);
 
-            float distance = multiplier * (1f - eased);
+            var distance = multiplier * (1f - eased);
 
             sprite1.transform.localPosition = new Vector3(-1, 1, 0) * distance;
             sprite2.transform.localPosition = new Vector3(1, 1, 0) * distance;

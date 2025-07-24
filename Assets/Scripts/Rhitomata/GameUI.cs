@@ -1,4 +1,5 @@
 using DynamicPanels;
+using TMPro;
 using UnityEngine;
 
 namespace Rhitomata {
@@ -6,6 +7,13 @@ namespace Rhitomata {
         [Header("References")]
         public References references;
         public DynamicPanelsCanvas dynamicCanvas;
+        
+        [Header("Playmode")]
+        public GameObject playmodePanel;
+        public TMP_Text scoreLabel;
+        public TMP_Text judgementLabel;
+        public TMP_Text comboLabel;
+        public Panel timingWindowPanel;
 
         [Header("Timeline")]
         public RectTransform timelinePanel;

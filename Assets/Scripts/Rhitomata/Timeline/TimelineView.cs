@@ -59,6 +59,18 @@ namespace Rhitomata.Timeline {
             UpdateCurrentTimeCursor();
         }
 
+        public void Seek(float time, bool stuckCursorToCenter = false) {
+            cursorTime = time;
+            UpdateCurrentTimeCursor();
+            if (stuckCursorToCenter) {
+                CenterViewToCursor();
+            }
+        }
+
+        public void CenterViewToCursor() {
+            horizontalScrollbar.value = (cursorTime - peekLimit.min - (visibleRange.length / 2f)) / (peekLimit.length - visibleRange.length);
+        }
+
         public void OnResized() {
             UpdatePeekLimit();
             UpdateVerticalSlider();
@@ -115,16 +127,15 @@ namespace Rhitomata.Timeline {
         }
 
         /// <summary>
-        /// Get the X position of a time based on the current zoom level.
+        /// Get the X in pixels based on time
         /// </summary>
         public float GetX(float time) {
             return time * (laneHolder.rect.width / visibleRange.length);
         }
 
         /// <summary>
-        /// Get the time of an X position based on the current zoom level.
+        /// Get time based on pixels
         /// </summary>
-        /// <param name="x"></param>
         public float GetTime(float x) {
             return x * visibleRange.length / laneHolder.rect.width;
         }
@@ -156,7 +167,6 @@ namespace Rhitomata.Timeline {
         }
 
         public void UpdateKeyframeHolder() {
-            // Move keyframe holder (scrollingRect)
             var posSeconds = -visibleRange.min;
             var x = posSeconds * (viewportBounds.rect.width / visibleRange.length);
             scrollingRect.anchoredPosition = new Vector2(x, scrollingRect.anchoredPosition.y);
@@ -173,9 +183,6 @@ namespace Rhitomata.Timeline {
             var pos = currentTimeHandle.rectTransform.anchoredPosition;
             var posSeconds = cursorTime - visibleRange.min;
             pos.x = posSeconds * (laneHolder.rect.width / visibleRange.length);
-
-            // probably shouldnt be setting it here actually
-            references.manager.time = cursorTime;
 
             ChangeCursorsX(pos.x);
         }

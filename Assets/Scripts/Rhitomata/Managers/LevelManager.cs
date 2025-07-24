@@ -20,6 +20,8 @@ namespace Rhitomata {
         [SerializeField] private CanvasGroup editorUI;
         public PointLane pointLane;
         public AudioClip defaultMusic;
+        public Freecam freecam;
+        public CameraMovement cameraMovement;
 
         [Header("Data")]
         public ProjectData project = new();
@@ -37,10 +39,30 @@ namespace Rhitomata {
         public Transform indicatorsParent;
         public GameObject spritePrefab;
         public GameObject indicatorPrefab;
+        
+        [Header("Judgement")]
+        public Color perfectColor = Color.green;
+        public float perfectThreshold = 0.08f;
+        public Color goodColor = Color.blue;
+        public float goodThreshold = 0.16f;
+        public Color missColor = Color.red;
+
+        [Header("Scores")]
+        public int perfectJudgement;
+        public int goodJudgement;
+        public int missJudgement;
+        public int maxCombo;
+        public int combo;
+        public float score;
+
+        private float _animationTimer;
+        private float _visibleScore;
+        private Vector2 _initialLabelScale;
 
         private float desyncThreshold = 0.3f;// TODO: Make customizable from UI maybe?
         private CancellationTokenSource _projectLoadCts;
-        public float time;
+        
+        [Header("Scores")]
         public UnityEvent onProjectLoaded;
 
         private void Start() {
@@ -48,16 +70,6 @@ namespace Rhitomata {
         }
 
         private void Update() {
-            if (references.manager.state == State.Play) {
-                if (!references.music.isPlaying) references.music.Play();
-                time += Time.deltaTime;
-
-                var musicPlayer = references.music;
-                if (musicPlayer.clip && (musicPlayer.time > time + desyncThreshold || musicPlayer.time < time - desyncThreshold)) musicPlayer.time = Mathf.Clamp(time, 0, musicPlayer.clip.length);
-            } else {
-                if (references.music.isPlaying) references.music.Stop();
-            }
-
             if (debug) {
                 if (Input.GetKeyDown(KeyCode.R))
                     Restart();
@@ -68,10 +80,9 @@ namespace Rhitomata {
         }
 
         public void Restart() {
-            time = 0;
+            ChangeState(State.Edit);
             references.cameraMovement.transform.localPosition = new Vector3(0, 0, -10);
             references.player.ResetAll();
-            ChangeState(State.Edit);
 
             // TODO: Reset decorations as well, probably only possible when we have a proper serialization system
         }
@@ -80,11 +91,17 @@ namespace Rhitomata {
             state = newState;
             switch (newState) {
                 case State.Play:
-                    editorUI.gameObject.SetActive(false);
+                    freecam.enabled = false;
+                    cameraMovement.enabled = true;
+                    if (!references.music.isPlaying) references.music.Play();
+                    // editorUI.gameObject.SetActive(false);
                     break;
 
                 case State.Edit:
-                    editorUI.gameObject.SetActive(true);
+                    freecam.enabled = true;
+                    cameraMovement.enabled = false;
+                    if (references.music.isPlaying) references.music.Stop();
+                    // editorUI.gameObject.SetActive(true);
                     break;
             }
         }
@@ -279,6 +296,8 @@ namespace Rhitomata {
             
         }
         #endregion Project
+        
+        #region Import
         private async UniTask ImportSongAsync(string path, CancellationToken token = default) {
             if (project == null) {
                 Debug.LogWarning("There's no project open yet, but a song is trying to be imported anyway!");
@@ -309,6 +328,88 @@ namespace Rhitomata {
             references.music.clip = myClip;
             Debug.Log("Loaded song!");
         }
+        #endregion
+        
+        #region Judgement
+	    public void Judge(JudgementType type, float offset) {
+		    switch (type) {
+			    case JudgementType.Perfect:
+				    perfectJudgement++;
+                    combo++;
+				    references.gameUI.judgementLabel.color = perfectColor;
+                    break;
+			    case JudgementType.Good:
+				    goodJudgement++;
+				    combo++;
+                    references.gameUI.judgementLabel.color = goodColor;
+                    break;
+			    case JudgementType.Miss:
+				    missJudgement++;
+                    references.gameUI.judgementLabel.color = missColor;
+				    combo = 0;
+                    break;
+		    }
+
+            references.gameUI.judgementLabel.transform.localScale = Vector3.one * 1.2f;
+            if (combo > maxCombo)
+			    maxCombo = combo;
+
+            var accuracy = (perfectJudgement + (goodJudgement * 0.65f)) / (float)project.points.Count;
+            var comboPercentage = FloatDivide(maxCombo, project.points.Count);
+            score = (900000 * accuracy) + (100000 * comboPercentage);
+            references.gameUI.comboLabel.text = $"{combo}x/{project.points.Count}";
+		    references.gameUI.comboLabel.transform.localScale = Vector3.one * 1.2f;
+            _animationTimer = 1f;
+        }
+
+        public void RemoveJudgement(JudgementType type) {
+            switch (type) {
+                case JudgementType.Perfect:
+                    perfectJudgement--;
+                    combo--;
+                    break;
+                case JudgementType.Good:
+                    goodJudgement--;
+                    combo--;
+                    break;
+                case JudgementType.Miss:
+                    missJudgement--;
+                    break;
+            }
+
+		    if (perfectJudgement < 0) perfectJudgement = 0;
+            if (goodJudgement < 0) goodJudgement = 0;
+            if (missJudgement < 0) missJudgement = 0;
+            if (combo < 0) combo = 0;
+
+            var accuracy = (perfectJudgement + (goodJudgement * 0.65f)) / (float)project.points.Count;
+            var comboPercentage = FloatDivide(maxCombo, project.points.Count);
+            score = (900000 * accuracy) + (100000 * comboPercentage);
+            references.gameUI.comboLabel.text = $"{combo}x/{project.points.Count}";
+            references.gameUI.comboLabel.transform.localScale = Vector3.one * 1.2f;
+
+		    _visibleScore = score;
+        }
+
+	    public void ResetJudgement() {
+		    perfectJudgement = 0;
+		    goodJudgement = 0;
+		    missJudgement = 0;
+            combo = 0;
+		    maxCombo = 0;
+		    score = 0;
+            references.gameUI.comboLabel.text = $"{combo}x/{project.points.Count}";
+		    _animationTimer = 1f;
+        }
+        #endregion
+
+	    public float FloatDivide(float n, float d) => n / d;
+    }
+
+    public enum JudgementType {
+	    Perfect,
+	    Good,
+	    Miss
     }
     
     public enum State {
