@@ -7,8 +7,8 @@ namespace Rhitomata.Timeline {
         private TimelineView timeline => References.Instance.timeline;
         private float zoomLevel => timeline.visibleRange.length;
 
-        public float panSensitivity = 0.5f;
-        public float zoomSensitivity = 0.5f;
+        public Vector2 panSensitivity;
+        public float zoomSensitivity;
 
         public void OnPointerClick(PointerEventData eventData) {
             if (eventData.button != PointerEventData.InputButton.Left) return;
@@ -36,8 +36,8 @@ namespace Rhitomata.Timeline {
 
                     var delta = GetLocalDelta(timeline.scrollingRect, eventData);
                     delta *= moreModifier ? 4f : 1f;
-                    timeline.horizontalScrollbar.OnRangeMoved((reverseModifier ? delta : -delta) * panSensitivity * zoomLevel);
-                    timeline.verticalScrollbar.value = Mathf.Clamp01(timeline.verticalScrollbar.value + ((reverseModifier ? -delta.y : delta.y) / 6f));
+                    timeline.horizontalScrollbar.OnRangeMoved((reverseModifier ? delta : -delta) * panSensitivity.x * zoomLevel);
+                    timeline.verticalScrollbar.value = Mathf.Clamp01(timeline.verticalScrollbar.value + ((reverseModifier ? -delta.y : delta.y) * panSensitivity.y));
                     break;
             }
         }
@@ -52,7 +52,8 @@ namespace Rhitomata.Timeline {
             timeline.horizontalScrollbar.OnEndRangeMoved(new Vector2(-delta, 0));
 
             // Laptop touchpad scrolling (goddayum you thought about this too Sylva?)
-            var deltaPan = eventData.scrollDelta.x * zoomLevel * panSensitivity * 10f;
+            // - lol yeah, since scrollDelta.x exists, why not?
+            var deltaPan = eventData.scrollDelta.x * zoomLevel * panSensitivity.x * 10f;
             timeline.horizontalScrollbar.OnRangeMoved(new Vector2(deltaPan, 0));
             //timeline.horizontalScrollbar.OnRangeMoved(eventData.scrollDelta);
         }
