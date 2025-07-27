@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Rhitomata.Timeline;
 using UnityEngine;
@@ -200,11 +201,8 @@ namespace Rhitomata.Data {
         public void AdjustAllPointFromIndex(int index) {
             if (points.Count == 0) return;
 
-            var startIndex = index;
-            if (index == -1) {
-                AdjustAllPointFromIndex(0);
-                return;
-            }
+            points = points.OrderBy(point => point.time).ToList();
+            index = Mathf.Clamp(index, 0, points.Count - 1);
 
             if (index == 0) {
                 var point = points[index];
@@ -217,25 +215,26 @@ namespace Rhitomata.Data {
                 if (point.hasPassed)
                     point.tail.AdjustStretch(Vector3.zero, point.position);
 
-                if (points.Count > 1)
-                    AdjustAllPointFromIndex(1);
-            } else {
-                var previousPoint = points[startIndex - 1];
-                for (int i = startIndex; i < points.Count; i++) {
-                    var currentPoint = points[i];
-                    var nextRotationIndex = previousPoint.rotationIndex + 1;
-                    var currentDirection = GetDirectionAtTime(previousPoint.time);
-                    if (nextRotationIndex >= currentDirection.directions.Count)
-                        nextRotationIndex = 0;
-                    currentPoint.eulerAngles = currentDirection.directions[nextRotationIndex];
-                    currentPoint.rotationIndex = nextRotationIndex;
-                    currentPoint.position = previousPoint.position + (GetTranslationAroundTime(previousPoint.time, currentPoint.time) * previousPoint.up);
-                    currentPoint.tail.transform.localPosition = currentPoint.position;
-                    currentPoint.indicator.transform.localPosition = currentPoint.position;
-                    if (previousPoint.hasPassed)
-                        currentPoint.tail.AdjustStretch(previousPoint.position, currentPoint.position);
-                    previousPoint = currentPoint;
-                }
+                index++;
+            }
+
+            var previousPoint = points[index - 1];
+            for (int i = index; i < points.Count; i++) {
+                var currentPoint = points[i];
+
+                var currentDirection = GetDirectionAtTime(previousPoint.time);
+                var nextRotationIndex = (previousPoint.rotationIndex + 1) % currentDirection.directions.Count;
+
+                currentPoint.eulerAngles = currentDirection.directions[nextRotationIndex];
+                currentPoint.rotationIndex = nextRotationIndex;
+                currentPoint.position = previousPoint.position + (GetTranslationAroundTime(previousPoint.time, currentPoint.time) * previousPoint.up);
+                currentPoint.tail.transform.localPosition = currentPoint.position;
+                currentPoint.indicator.transform.localPosition = currentPoint.position;
+
+                if (previousPoint.hasPassed)
+                    currentPoint.tail.AdjustStretch(previousPoint.position, currentPoint.position);
+
+                previousPoint = currentPoint;
             }
         }
 

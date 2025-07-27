@@ -6,8 +6,12 @@ namespace Rhitomata.Timeline {
         public ModifyPoint modifyPoint;
 
         public override void SetTime(float targetTime) {
-            if (modifyPoint == null) return;
-            modifyPoint.time = targetTime;
+            base.SetTime(targetTime);
+
+            if (modifyPoint != null)
+                modifyPoint.time = targetTime;
+
+            References.Instance.manager.project.AdjustAllPointFromPoint(modifyPoint);
         }
     }
 }

@@ -120,11 +120,16 @@ namespace Rhitomata {
             point.indicator = Instantiate(indicatorPrefab, indicatorsParent).GetComponent<Indicator>();
             point.indicator.transform.localPosition = point.position;
             point.indicator.transform.localEulerAngles = point.eulerAngles;
+
+            point.tail = references.player.CreateAdjustableTail(point.position, point.eulerAngles);
+            point.tail.gameObject.SetActive(point.time < references.timeline.cursorTime);
+
             var keyframe = references.timeline.CreatePredefinedKeyframe<PointKeyframe, PointLane>(point.time, pointLane);
             keyframe.modifyPoint = point;
             point.keyframe = keyframe;
-            point.tail = references.player.CreateAdjustableTail(point.position, point.eulerAngles);
+
             point.isInstantiated = true;
+
             return point;
         }
         #endregion
