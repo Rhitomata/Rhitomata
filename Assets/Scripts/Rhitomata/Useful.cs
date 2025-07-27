@@ -38,9 +38,14 @@ namespace Rhitomata {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(rt, eventData.pressPosition, eventData.pressEventCamera, out pos);
 
         public static string FormatTime(float time) {
+            bool isNegative = time < 0;
+
+            time = Math.Abs(time);
             int minutes = (int)(time / 60f);
             float seconds = time % 60f;
-            return $"{minutes:00}:{seconds:00.00}";
+
+            string formatted = $"{minutes:00}:{seconds:00.00}";
+            return isNegative ? $"-{formatted}" : formatted;
         }
     }
 }
