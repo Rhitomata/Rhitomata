@@ -36,5 +36,11 @@ namespace Rhitomata {
 
         public static bool ToLocalPos(this RectTransform rt, PointerEventData eventData, out Vector2 pos) =>
             RectTransformUtility.ScreenPointToLocalPointInRectangle(rt, eventData.pressPosition, eventData.pressEventCamera, out pos);
+
+        public static string FormatTime(float time) {
+            int minutes = (int)(time / 60f);
+            float seconds = time % 60f;
+            return $"{minutes:00}:{seconds:00.00}";
+        }
     }
 }

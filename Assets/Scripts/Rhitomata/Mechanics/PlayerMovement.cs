@@ -97,7 +97,7 @@ namespace Rhitomata {
                         _interpolatedIndex--;
                         if (references.manager.state == State.Play && references.music.isPlaying)
                         {
-                            Debug.LogWarning("The player somehow go back in points while playmode on index " + _interpolatedIndex);
+                            Debug.LogWarning("The player somehow went back in points while playmode on index " + _interpolatedIndex);
                         }
                         references.manager.RemoveJudgement(JudgementType.Perfect);
                     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static Rhitomata.Useful;
+using TMPro;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -19,6 +20,7 @@ namespace Rhitomata.Timeline {
         /// Limit on how far the user is supposed to be able to view in the timeline (in seconds)
         /// </summary>
         public Limit peekLimit = new(-5f, 5f);
+        public TMP_Text timeText;
 
         [Header("Viewport")]
         public RectTransform viewportBounds;
@@ -120,6 +122,9 @@ namespace Rhitomata.Timeline {
         }
 
         private void Update() {
+            // would preferably like this to update ONLY when the time is changed, not every frame right
+            timeText.text = FormatTime(cursorTime);
+
             if (InputManager.IsEditingOnInputField()) return;
             
             if (Input.GetKeyDown(KeyCode.R)) DeleteAllKeyframes();
