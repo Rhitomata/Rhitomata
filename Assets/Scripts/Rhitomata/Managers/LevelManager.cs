@@ -246,7 +246,7 @@ namespace Rhitomata {
         /// Set <see cref="directory"/> and <see cref="project"/> first before using this function to load asynchonously
         /// </summary>
         private async void LoadProject() {
-            _projectLoadCts = new CancellationTokenSource();
+            _projectLoadCts = new();
             var token = _projectLoadCts.Token;
             
             // TODO: Make a custom loading screen for projects
@@ -259,6 +259,8 @@ namespace Rhitomata {
             );
 
             try {
+                references.timeline.DeleteAllKeyframes();
+                
                 if (!string.IsNullOrWhiteSpace(project.musicPath) && Storage.FileExists(directory.Combine(project.musicPath))) {
                     await ImportSongAsync(directory.Combine(project.musicPath), token);
                 } else {
@@ -270,6 +272,11 @@ namespace Rhitomata {
                 messageBox.message = "Adjusting all points";
                 await UniTask.WaitForEndOfFrame(token);
                 project.AdjustPoints(0); // Recalculate all points after the first one
+
+                for (var i = 0; i < project.bpms.Count; i++) {
+                    var bpm = project.bpms[i];
+                    
+                }
 
                 messageBox.message = $"Spawning {project.points.Count} points";
                 await UniTask.WaitForEndOfFrame(token);

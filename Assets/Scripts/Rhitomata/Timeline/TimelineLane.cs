@@ -9,16 +9,17 @@ namespace Rhitomata.Timeline {
         
         public float centerHeight;
         public List<Keyframe> keyframes = new();
+        public Transform keyframesParent;
 
         /// <summary>
         /// This is called when a keyframe is created manually when left clicked on the timeline
         /// </summary>
         public virtual Keyframe CreateKeyframe(float time) => CreateKeyframe<Keyframe>(time);
         public T CreateKeyframe<T>(float time) where T : Keyframe {
-            var obj = Instantiate(timeline.keyframePrefab, timeline.scrollingRect);
+            var obj = Instantiate(timeline.keyframePrefab, keyframesParent);
             var keyframe = obj.AddComponent<T>();
             keyframe.lane = this;
-            keyframe.Initialize(time, centerHeight);
+            keyframe.SetTime(time);
             
             var index = GetKeyframeIndexAtTime(time);
             keyframes.Insert(index + 1, keyframe);
@@ -67,8 +68,10 @@ namespace Rhitomata.Timeline {
             if (index + 1 < keyframes.Count)
                 next = keyframes[index + 1] as T;
         }
-        // TODO: Add functions to call when time is changed and interpolate or interpret the keyframes
         
+        public void SortKeyframes() => keyframes.Sort((a, b) => a.time.CompareTo(b.time));
+        
+        // TODO: Add functions to call when time is changed and interpolate or interpret the keyframes
         
         // Just in case we want to use a faster search algorithm
         // public Keyframe GetKeyframeAtTimeBinarySearch(float time)

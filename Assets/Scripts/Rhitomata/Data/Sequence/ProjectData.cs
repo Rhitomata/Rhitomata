@@ -78,9 +78,23 @@ namespace Rhitomata.Data {
         }
 
         public int GetBPMIndexAtTime(float time) {
+            for (var i = 0; i < bpms.Count; i++) {
+                if (time >= bpms[i].time) continue;
+                
+                if (i == 0) return 0;
+                return i - 1;
+            }
+            return bpms.Count - 1;
+        }
+        
+        /// <summary>
+        /// <para>Actually returns -1 if there are no BPMs.</para>
+        /// </summary>
+        public int GetTrueBPMIndexAtTime(float time) {
+            if (bpms.Count == 0) return -1;
             for (int i = 0; i < bpms.Count; i++) {
                 if (time < bpms[i].time) {
-                    if (i == 0) return 0;
+                    if (i == 0) return -1;
                     return i - 1;
                 }
             }

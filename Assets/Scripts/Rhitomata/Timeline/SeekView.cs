@@ -9,14 +9,14 @@ namespace Rhitomata.Timeline {
         public void OnPointerDown(PointerEventData eventData) {
             if (eventData.button != PointerEventData.InputButton.Left && eventData.button != PointerEventData.InputButton.Right) return;
 
-            timeline.cursorTime = Mathf.Clamp(timeline.GetTime(GetLocalPoint(timeline.scrollingRect, eventData.position).x), timeline.peekLimit.min, timeline.peekLimit.max);
+            timeline.Seek(Mathf.Clamp(timeline.GetTime(GetLocalPoint(transform, eventData.position).x), timeline.peekLimit.min, timeline.peekLimit.max));
             timeline.UpdateCurrentTimeCursor();
         }
 
         public void OnDrag(PointerEventData eventData) {
             if (eventData.button != PointerEventData.InputButton.Left && eventData.button != PointerEventData.InputButton.Right) return;
 
-            timeline.cursorTime = Mathf.Clamp(timeline.GetTime(GetLocalPoint(timeline.scrollingRect, eventData.position).x), timeline.peekLimit.min, timeline.peekLimit.max);
+            timeline.Seek(Mathf.Clamp(timeline.GetTime(GetLocalPoint(transform, eventData.position).x), timeline.peekLimit.min, timeline.peekLimit.max));
             timeline.UpdateCurrentTimeCursor();
         }
     }

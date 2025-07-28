@@ -4,37 +4,18 @@ using static Rhitomata.Useful;
     
 namespace Rhitomata.Timeline {
     [RequireComponent(typeof(RectTransform))]
-    public class Keyframe : MonoBehaviour, IPointerClickHandler, IDragHandler, IScrollHandler, IPointerDownHandler {
-        public float time {  get; private set; }
+    public class Keyframe : MonoBehaviour, IPointerClickHandler, IDragHandler, IScrollHandler {
+        public virtual float time {  get; private set; }
         public TimelineLane lane;
 
         private TimelineView timeline => References.Instance.timeline;
         private RectTransform rectTransform => transform as RectTransform;
-
-        public void Initialize(float targetTime, int rowIndex) {
-            Set(targetTime, rowIndex);
-        }
-        
-        public void Initialize(float targetTime, float yPosition) {
-            SetTime(targetTime);
-            rectTransform.anchoredPosition = new Vector2(timeline.GetX(targetTime), yPosition);
-        }
-
-        public void Set(float targetTime, int rowIndex) {
-            SetTime(targetTime);
-            SetRowIndex(rowIndex);
-        }
 
         public virtual void SetTime(float targetTime) {
             time = targetTime;
 
             var x = timeline.GetX(targetTime);
             SetX(x);
-        }
-
-        public void SetRowIndex(int rowIndex) {
-            rowIndex = Mathf.Clamp(rowIndex, 0, timeline.laneHolder.childCount - 1);
-            rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, -(rowIndex * TimelineView.LANE_HEIGHT) - (TimelineView.LANE_HEIGHT / 2f));
         }
 
         public void SetX(float x) {
@@ -62,19 +43,13 @@ namespace Rhitomata.Timeline {
                 return;
             }
 
-            var localDelta = GetLocalDelta(timeline.scrollingRect, eventData);
+            var localDelta = GetLocalDelta(timeline.laneView.transform, eventData);
             rectTransform.anchoredPosition += new Vector2(localDelta.x, 0);
             SetTime(timeline.GetTime(rectTransform.anchoredPosition.x));
         }
 
         public void OnScroll(PointerEventData eventData) {
-            timeline.laneView.OnScroll(eventData);// Passthrough
-        }
-
-        public void OnPointerDown(PointerEventData eventData) {
-            // This method is needed, even if it's empty, otherwise LaneView handles it
-            // - Why does it work like that
-            // - because yes
+            timeline.laneView.OnScroll(eventData);
         }
     }
 }

@@ -4,20 +4,22 @@ using UnityEngine;
 using UnityEngine.UI;
 using static Rhitomata.Useful;
 using TMPro;
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace Rhitomata.Timeline {
     public class TimelineView : MonoBehaviour {
+        #region Variables
         public References references;
 
         [Header("Peek")]
-        public float cursorTime;
+        public float cursorTime { get; private set; }
         public DraggableHandle currentTimeHandle;
         public RectTransform[] currentTimeCursors;
         /// <summary>
-        /// Limit on how far the user is supposed to be able to view in the timeline (in seconds)
+        /// <para>Limit on how far the user is supposed to be able to view in the timeline (in seconds)</para>
         /// </summary>
         public Limit peekLimit = new(-5f, 5f);
         public TMP_Text timeText;
@@ -25,9 +27,8 @@ namespace Rhitomata.Timeline {
 
         [Header("Viewport")]
         public RectTransform viewportBounds;
-        public RectTransform headerHolder;
-        public RectTransform laneHolder;
-        public RectTransform scrollingRect; // Holds keyframes & stuff
+        public RectTransform headersParent;
+        public RectTransform lanesParent;
         public LaneView laneView;
 
         [Header("Lanes")] 
@@ -41,109 +42,30 @@ namespace Rhitomata.Timeline {
         public HorizontalAdjustableScrollbar horizontalScrollbar;
 
         /// <summary>
-        /// Limit on the current scrollbar range of what's on the screen (in seconds)
+        /// <para>Limit on the current scrollbar range of what's on the screen (in seconds)</para>
         /// </summary>
         [Header("Debug")]
         public Limit visibleRange;
 
         public const float LANE_HEIGHT = 50f;
+        #endregion
 
         private void Start() {
             DeleteAllKeyframes();
 
-            verticalScrollbar.onValueChanged.AddListener(OnVerticalChanged);
-            horizontalScrollbar.onAnyChanged.AddListener(OnAnyHorizontalChanged);
+            verticalScrollbar.onValueChanged.AddListener(SetVertical);
+            horizontalScrollbar.onAnyChanged.AddListener(OnHorizontalChanged);
             currentTimeHandle.onDragDelta.AddListener(OnCurrentTimeDragged);
             
             UpdatePeekLimit();
             UpdateVerticalSlider();
-            OnAnyHorizontalChanged();
+            OnHorizontalChanged();
 
             UpdateCurrentTimeCursor();
-        }
-
-        public void Seek(float time, bool stuckCursorToCenter = false) {
-            cursorTime = time;
-            UpdateCurrentTimeCursor();
-            if (stuckCursorToCenter) {
-                CenterViewToCursor();
-            }
-        }
-
-        public void CenterViewToCursor() {
-            horizontalScrollbar.value = (cursorTime - peekLimit.min - (visibleRange.length / 2f)) / (peekLimit.length - visibleRange.length);
-        }
-
-        /// <summary>
-        /// Gets called when the dynamic panel is resized OR from Update when the RectTransform changes size (eg. when the window resolution changes)
-        /// </summary>
-        public void OnResized() {
-            UpdatePeekLimit();
-            UpdateVerticalSlider();
-            OnAnyHorizontalChanged();
-
-            UpdateCurrentTimeCursor();
-        }
-
-        public void CreateKeyframeAtCursor() {
-            var mousePosRelative = GetLocalPoint(scrollingRect, Input.mousePosition);
-            var rowIndex = Mathf.Clamp((int)(-mousePosRelative.y / LANE_HEIGHT), 0, lanes.Count - 1);
-            var time = GetTime(mousePosRelative.x);
-
-            CreateKeyframe(time, lanes[rowIndex]);
-        }
-
-        private Keyframe CreateKeyframe(float toTime, TimelineLane lane) {
-            return lane.CreateKeyframe(toTime);
-        }
-        
-        private Keyframe CreateKeyframe(float toTime, int rowIndex) {
-            var keyframe = Instantiate(keyframePrefab, scrollingRect).AddComponent<Keyframe>();
-            keyframe.Initialize(toTime, rowIndex);
-            return keyframe;
-
-            // TODO: Add to a list that hasn't been made yet
-        }
-        
-        public Keyframe CreatePredefinedKeyframe(float toTime, TimelineLane lane) {
-            var keyframe = Instantiate(keyframePrefab, scrollingRect).AddComponent<Keyframe>();
-            keyframe.lane = lane;
-            keyframe.Initialize(toTime, lane.centerHeight);
-            return keyframe;
-        }
-        
-        public T CreatePredefinedKeyframe<T, T1>(float toTime, T1 lane) where T : Keyframe where T1 : TimelineLane {
-            var keyframe = Instantiate(keyframePrefab, scrollingRect).AddComponent<T>();
-            keyframe.lane = lane;
-            keyframe.Initialize(toTime, lane.centerHeight);
-            return keyframe;
-        }
-
-        private void DeleteAllKeyframes() {
-            foreach (Transform t in scrollingRect) {
-                Destroy(t.gameObject);
-            }
         }
 
         private void Update() {
-            // would preferably like these to update ONLY when the time is changed, not every frame right
-            var time = cursorTime;// is cursorTime really the primary time holder??
-            timeText.text = FormatTime(time);
-
-            // TODO: handle negative time better
-            var bpmInfo = references.manager.project.GetBPMAtTime(time);
-            var timeSinceBPMChange = time - bpmInfo.time;
-            var bpm = bpmInfo.bpm;
-            var beat = (int)((bpm * timeSinceBPMChange) / 60f);
-            var localBeat = (int)(beat % bpmInfo.divisionNumerator) + 1;
-            var bar = (int)(beat / bpmInfo.divisionNumerator) + 1;
-
-            barBeatText.text = $"{bar}│{localBeat}";
-
             if (InputManager.IsEditingOnInputField()) return;
-            
-            if (Input.GetKeyDown(KeyCode.R)) DeleteAllKeyframes();
-            if (Input.GetKeyDown(KeyCode.I)) CreateKeyframeAtCursor();
 
             if (transform.hasChanged) {
                 transform.hasChanged = false;
@@ -152,32 +74,66 @@ namespace Rhitomata.Timeline {
         }
 
         /// <summary>
-        /// Get the X in pixels based on time
+        /// Call this whenever you want to seek to a specific time
         /// </summary>
-        public float GetX(float time) {
-            return time * (laneHolder.rect.width / visibleRange.length);
+        public void Seek(float time, bool stuckCursorToCenter = false) {
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (time == cursorTime) return;
+
+            cursorTime = time;
+
+            // TODO: handle negative time better
+            var bpmInfo = references.manager.project.GetBPMAtTime(time);
+            var timeSinceBpmChange = time - bpmInfo.time;
+            var bpm = bpmInfo.bpm;
+            var beat = (int)((bpm * timeSinceBpmChange) / 60f);
+            var localBeat = (int)(beat % bpmInfo.divisionNumerator) + 1;
+            var bar = (int)(beat / bpmInfo.divisionNumerator) + 1;
+
+            barBeatText.text = $"{bar}│{localBeat}";
+
+            timeText.text = FormatTime(time);
+            UpdateCurrentTimeCursor();
+            if (stuckCursorToCenter) {
+                CenterViewToCursor();
+            }
         }
 
+        private void CenterViewToCursor() {
+            horizontalScrollbar.value = (cursorTime - peekLimit.min - (visibleRange.length / 2f)) / (peekLimit.length - visibleRange.length);
+        }
+        
+        #region Keyframes
+        public T CreatePredefinedKeyframe<T, T1>(float toTime, T1 lane) where T : Keyframe where T1 : TimelineLane {
+            var keyframe = Instantiate(keyframePrefab, lane.keyframesParent).AddComponent<T>();
+            keyframe.lane = lane;
+            keyframe.SetTime(toTime);
+            return keyframe;
+        }
+
+        // TODO: Call this before loading a new project
+        public void DeleteAllKeyframes() {
+            foreach (var lane in lanes) {
+                foreach (var keyframe in lane.keyframes) {
+                    Destroy(keyframe.gameObject);
+                }
+                lane.keyframes.Clear();
+            }
+        }
+        #endregion
+
+        #region Event Handlers
         /// <summary>
-        /// Get time based on pixels
+        /// Gets called when the dynamic panel is resized OR from Update when the RectTransform changes size (eg. when the window resolution changes)
         /// </summary>
-        public float GetTime(float x) {
-            return x * visibleRange.length / laneHolder.rect.width;
+        public void OnResized() {
+            UpdateVerticalSlider();
+            OnHorizontalChanged();
+
+            UpdateCurrentTimeCursor();
         }
-
-        private void OnVerticalChanged(float value) {
-            var pos = laneHolder.anchoredPosition;
-            pos.y = Mathf.Lerp(0, laneHolder.rect.height - viewportBounds.rect.height, value);
-            laneHolder.anchoredPosition = pos;
-
-            pos.x = headerHolder.anchoredPosition.x;
-            headerHolder.anchoredPosition = pos;
-
-            pos.x = scrollingRect.anchoredPosition.x;
-            scrollingRect.anchoredPosition = pos;
-        }
-
-        private void OnAnyHorizontalChanged() {
+        
+        private void OnHorizontalChanged() {
             visibleRange.min = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.minRange);
             visibleRange.max = Mathf.Lerp(peekLimit.min, peekLimit.max, horizontalScrollbar.maxRange);
 
@@ -188,13 +144,7 @@ namespace Rhitomata.Timeline {
             }
 
             UpdateCurrentTimeCursor();
-            UpdateKeyframeHolder();
-        }
-
-        public void UpdateKeyframeHolder() {
-            var posSeconds = -visibleRange.min;
-            var x = posSeconds * (viewportBounds.rect.width / visibleRange.length);
-            scrollingRect.anchoredPosition = new Vector2(x, scrollingRect.anchoredPosition.y);
+            //UpdateLanesParent();
         }
 
         private void OnCurrentTimeDragged(Vector2 delta) {
@@ -203,39 +153,77 @@ namespace Rhitomata.Timeline {
             cursorTime = Mathf.Clamp(cursorTime, peekLimit.min, peekLimit.max);
             UpdateCurrentTimeCursor();
         }
+        #endregion
+
+        #region Updates
+        public void UpdateLanesParent() {
+            // My brain isn't mathing btw
+            var posSeconds = -visibleRange.min;
+            var x = posSeconds * (viewportBounds.rect.width / visibleRange.length);
+            lanesParent.anchoredPosition = new Vector2(x, lanesParent.anchoredPosition.y);
+            
+            // I'm sure this will cause problems.. uhm
+        }
 
         public void UpdateCurrentTimeCursor() {
             var pos = currentTimeHandle.rectTransform.anchoredPosition;
             var posSeconds = cursorTime - visibleRange.min;
-            pos.x = posSeconds * (laneHolder.rect.width / visibleRange.length);
+            pos.x = posSeconds * (lanesParent.rect.width / visibleRange.length);
 
-            ChangeCursorsX(pos.x);
+            SetCursorsX(pos.x);
         }
 
-        public void ChangeCursorsX(float to) {
-            foreach (var cursor in currentTimeCursors) {
-                var pos = cursor.anchoredPosition;
-                pos.x = to;
-                cursor.anchoredPosition = pos;
-            }
-        }
-
-        public void UpdateVerticalSlider() {
-            if (laneHolder.rect.height < viewportBounds.rect.height) {
+        private void UpdateVerticalSlider() {
+            if (lanesParent.rect.height < viewportBounds.rect.height) {
                 verticalScrollbar.size = 1f;
                 verticalScrollbar.SetValueWithoutNotify(0);
 
                 return;
             }
 
-            verticalScrollbar.size = viewportBounds.rect.height / laneHolder.rect.height;
-            verticalScrollbar.SetValueWithoutNotify(Mathf.InverseLerp(0, laneHolder.rect.height - viewportBounds.rect.height, laneHolder.anchoredPosition.y));
+            verticalScrollbar.size = viewportBounds.rect.height / lanesParent.rect.height;
+            verticalScrollbar.SetValueWithoutNotify(Mathf.InverseLerp(0, lanesParent.rect.height - viewportBounds.rect.height, lanesParent.anchoredPosition.y));
         }
 
+        // TODO: This will probably be called whenever a music is loaded
         public void UpdatePeekLimit() {
             peekLimit.min = -5f;
             peekLimit.max = references.music.clip.length + 5f;
         }
+        #endregion
+
+        #region Accessors
+        /// <summary>
+        /// Get the X in pixels based on time
+        /// </summary>
+        public float GetX(float time) {
+            return time * (lanesParent.rect.width / visibleRange.length);
+        }
+
+        /// <summary>
+        /// Get time based on pixels
+        /// </summary>
+        public float GetTime(float x) {
+            return x * visibleRange.length / lanesParent.rect.width;
+        }
+
+        private void SetVertical(float value) {
+            var pos = lanesParent.anchoredPosition;
+            pos.y = Mathf.Lerp(0, lanesParent.rect.height - viewportBounds.rect.height, value);
+            lanesParent.anchoredPosition = pos;
+
+            pos.x = headersParent.anchoredPosition.x;
+            headersParent.anchoredPosition = pos;
+        }
+
+        private void SetCursorsX(float to) {
+            foreach (var cursor in currentTimeCursors) {
+                var pos = cursor.anchoredPosition;
+                pos.x = to;
+                cursor.anchoredPosition = pos;
+            }
+        }
+        #endregion
     }
 
     [Serializable]
