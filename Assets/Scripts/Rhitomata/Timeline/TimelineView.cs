@@ -73,6 +73,9 @@ namespace Rhitomata.Timeline {
             horizontalScrollbar.value = (cursorTime - peekLimit.min - (visibleRange.length / 2f)) / (peekLimit.length - visibleRange.length);
         }
 
+        /// <summary>
+        /// Gets called when the dynamic panel is resized OR from Update when the RectTransform changes size (eg. when the window resolution changes)
+        /// </summary>
         public void OnResized() {
             UpdatePeekLimit();
             UpdateVerticalSlider();
@@ -129,6 +132,11 @@ namespace Rhitomata.Timeline {
             
             if (Input.GetKeyDown(KeyCode.R)) DeleteAllKeyframes();
             if (Input.GetKeyDown(KeyCode.I)) CreateKeyframeAtCursor();
+
+            if (transform.hasChanged) {
+                transform.hasChanged = false;
+                OnResized();
+            }
         }
 
         /// <summary>
