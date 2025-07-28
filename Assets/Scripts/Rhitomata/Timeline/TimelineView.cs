@@ -21,6 +21,7 @@ namespace Rhitomata.Timeline {
         /// </summary>
         public Limit peekLimit = new(-5f, 5f);
         public TMP_Text timeText;
+        public TMP_Text barBeatText;
 
         [Header("Viewport")]
         public RectTransform viewportBounds;
@@ -125,8 +126,19 @@ namespace Rhitomata.Timeline {
         }
 
         private void Update() {
-            // would preferably like this to update ONLY when the time is changed, not every frame right
-            timeText.text = FormatTime(cursorTime);
+            // would preferably like these to update ONLY when the time is changed, not every frame right
+            var time = cursorTime;// is cursorTime really the primary time holder??
+            timeText.text = FormatTime(time);
+
+            // TODO: handle negative time better
+            var bpmInfo = references.manager.project.GetBPMAtTime(time);
+            var timeSinceBPMChange = time - bpmInfo.time;
+            var bpm = bpmInfo.bpm;
+            var beat = (int)((bpm * timeSinceBPMChange) / 60f);
+            var localBeat = (int)(beat % bpmInfo.divisionNumerator) + 1;
+            var bar = (int)(beat / bpmInfo.divisionNumerator) + 1;
+
+            barBeatText.text = $"{bar}│{localBeat}";
 
             if (InputManager.IsEditingOnInputField()) return;
             
