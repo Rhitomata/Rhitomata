@@ -172,7 +172,12 @@ namespace Rhitomata.Data {
                 point.rotationIndex = 1;
                 point.position = GetTranslationAroundTime(0, time) * ModifyPoint.EulerDegreesToForward(directions[0].directions[0]);
             }
-            points.Insert(points.IndexOf(previousPoint) + 1, point);
+
+            var previousPointIndex = points.IndexOf(previousPoint);
+            points.Insert(previousPointIndex + 1, point);
+            References.Instance.manager.SpawnModifyPoint(point);
+            AdjustPoints(previousPointIndex);
+
             return point;
         }
 
@@ -183,7 +188,7 @@ namespace Rhitomata.Data {
                 points.Remove(point);
 
                 var adjustedPointIndex = GetModifyPointIndexAtTime(time);
-                AdjustAllPointFromIndex(adjustedPointIndex);
+                AdjustPoints(adjustedPointIndex);
             }
         }
 
@@ -196,13 +201,20 @@ namespace Rhitomata.Data {
         }
 
         /// <summary>
+        /// Adjusts all points after the given point
+        /// </summary>
+        public void AdjustPoints(ModifyPoint point, bool fromBeforePoint = false) => AdjustPoints(points.IndexOf(point) - (fromBeforePoint ? -1 : 0));
+
+        /// <summary>
         /// Adjusts all points after the given index
         /// </summary>
-        public void AdjustAllPointFromIndex(int index) {
+        public void AdjustPoints(int startIndex) {
             if (points.Count == 0) return;
 
             points = points.OrderBy(point => point.time).ToList();
-            index = Mathf.Clamp(index, 0, points.Count - 1);
+            var index = startIndex = Mathf.Clamp(startIndex, 0, points.Count - 1);
+
+            //Debug.Log($"Adjusting points from {startIndex}");
 
             if (index == 0) {
                 var point = points[index];
@@ -236,12 +248,9 @@ namespace Rhitomata.Data {
 
                 previousPoint = currentPoint;
             }
-        }
 
-        /// <summary>
-        /// Adjusts all points after the given point
-        /// </summary>
-        public void AdjustAllPointFromPoint(ModifyPoint point) => AdjustAllPointFromIndex(points.IndexOf(point));
+            References.Instance.player.InvalidateTailCache(startIndex);
+        }
 
         public Vector3 GetPositionForTime(float time) {
             var point = GetModifyPointAtTime(time);

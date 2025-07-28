@@ -269,7 +269,7 @@ namespace Rhitomata {
 
                 messageBox.message = "Adjusting all points";
                 await UniTask.WaitForEndOfFrame(token);
-                project.AdjustAllPointFromIndex(0); // Recalculate all points after the first one
+                project.AdjustPoints(0); // Recalculate all points after the first one
 
                 messageBox.message = $"Spawning {project.points.Count} points";
                 await UniTask.WaitForEndOfFrame(token);

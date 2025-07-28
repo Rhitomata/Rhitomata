@@ -83,7 +83,7 @@ namespace Rhitomata.Timeline {
 
         public void CreateKeyframeAtCursor() {
             var mousePosRelative = GetLocalPoint(scrollingRect, Input.mousePosition);
-            var rowIndex = (int)(-mousePosRelative.y / LANE_HEIGHT);
+            var rowIndex = Mathf.Clamp((int)(-mousePosRelative.y / LANE_HEIGHT), 0, lanes.Count - 1);
             var time = GetTime(mousePosRelative.x);
 
             CreateKeyframe(time, lanes[rowIndex]);

@@ -52,6 +52,11 @@ namespace Rhitomata {
             _audioStartDspTime = AudioSettings.dspTime;
         }
 
+        public void InvalidateTailCache(int fromIndex) {
+            if (fromIndex <= _pointIndex)
+                _interpolatedIndex = Mathf.Clamp(fromIndex - 1, -1, references.manager.project.points.Count - 1);
+        }
+
         void Update() {
             if (!isInterpolating)
                 return;
@@ -62,17 +67,14 @@ namespace Rhitomata {
             }
 
             _pointIndex = references.manager.project.GetModifyPointIndexAtTime(time);
-            while (_pointIndex != _interpolatedIndex) {
-                if (_interpolatedIndex < _pointIndex) {
+            while (_interpolatedIndex != _pointIndex) {
+                if (_interpolatedIndex < _pointIndex) {// If this tail is BEFORE the player's position
                     // Move forward
                     var nextPoint = references.manager.project.points[_interpolatedIndex + 1];
-                    if (_interpolatedIndex == -1)
-                    {
+                    if (_interpolatedIndex == -1) {
                         _startTail.gameObject.SetActive(true);
                         _startTail.AdjustStretch(Vector3.zero, nextPoint.position);
-                    }
-                    else
-                    {
+                    } else {
                         var currentPoint = references.manager.project.points[_interpolatedIndex];
                         currentPoint.tail.AdjustStretch(currentPoint.position, nextPoint.position);
                         currentPoint.tail.gameObject.SetActive(true);
@@ -80,25 +82,19 @@ namespace Rhitomata {
                     }
                     references.manager.Judge(JudgementType.Perfect, 0f);
                     _interpolatedIndex++;
-                }
-                else {
-                    if (_interpolatedIndex >= references.manager.project.points.Count)
-                    {
+                } else {// If this tail is AFTER the player's position
+                    if (_interpolatedIndex >= references.manager.project.points.Count) {
                         references.manager.RemoveJudgement(JudgementType.Perfect);
                         _interpolatedIndex--;
                         // TODO: The point is deleted
-                    }
-                    else
-                    {
+                    } else {
                         // Move backwards
                         var currentPoint = references.manager.project.points[_interpolatedIndex];
                         currentPoint.tail.gameObject.SetActive(false);
                         currentPoint.hasPassed = false;
                         _interpolatedIndex--;
                         if (references.manager.state == State.Play && references.music.isPlaying)
-                        {
                             Debug.LogWarning("The player somehow went back in points while playmode on index " + _interpolatedIndex);
-                        }
                         references.manager.RemoveJudgement(JudgementType.Perfect);
                     }
                 }

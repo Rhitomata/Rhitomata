@@ -8,10 +8,10 @@ namespace Rhitomata.Timeline {
         public override void SetTime(float targetTime) {
             base.SetTime(targetTime);
 
-            if (modifyPoint != null)
-                modifyPoint.time = targetTime;
+            if (modifyPoint == null) return;
 
-            References.Instance.manager.project.AdjustAllPointFromPoint(modifyPoint);
+            modifyPoint.time = targetTime;
+            References.Instance.manager.project.AdjustPoints(modifyPoint);
         }
     }
 }
