@@ -16,6 +16,7 @@ namespace Rhitomata.Timeline {
 
             var x = timeline.GetX(targetTime);
             SetX(x);
+            lane.Sort(this);
         }
 
         public void SetX(float x) {

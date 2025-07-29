@@ -201,10 +201,15 @@ namespace Rhitomata.Timeline {
         }
 
         /// <summary>
-        /// Get time based on pixels
+        /// Get time based on pixels of the visible viewport, not the whole timeline
         /// </summary>
         public float GetTime(float x) {
             return x * visibleRange.length / lanesParent.rect.width;
+        }
+
+        public float GetTimeFromMousePosition() {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(viewportBounds, Input.mousePosition, null, out var mousePosRelative);
+            return GetTime(mousePosRelative.x);
         }
 
         private void SetVertical(float value) {
