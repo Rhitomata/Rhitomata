@@ -55,11 +55,8 @@ namespace Rhitomata {
         public int combo;
         public float score;
 
-        private float _animationTimer;
         private float _visibleScore;
         private Vector2 _initialLabelScale;
-
-        private float desyncThreshold = 0.3f;// TODO: Make customizable from UI maybe?
         private CancellationTokenSource _projectLoadCts;
         
         [Header("Scores")]
@@ -70,6 +67,7 @@ namespace Rhitomata {
         }
 
         private void Update() {
+            Debug.Log(AudioSettings.dspTime);
             if (debug) {
                 if (Input.GetKeyDown(KeyCode.R))
                     Restart();
@@ -371,7 +369,6 @@ namespace Rhitomata {
             score = (900000 * accuracy) + (100000 * comboPercentage);
             references.gameUI.comboLabel.text = $"{combo}x/{project.points.Count}";
 		    references.gameUI.comboLabel.transform.localScale = Vector3.one * 1.2f;
-            _animationTimer = 1f;
         }
 
         public void RemoveJudgement(JudgementType type) {
@@ -411,7 +408,6 @@ namespace Rhitomata {
 		    maxCombo = 0;
 		    score = 0;
             references.gameUI.comboLabel.text = $"{combo}x/{project.points.Count}";
-		    _animationTimer = 1f;
         }
         #endregion
 
