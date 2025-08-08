@@ -67,7 +67,6 @@ namespace Rhitomata {
         }
 
         private void Update() {
-            Debug.Log(AudioSettings.dspTime);
             if (debug) {
                 if (Input.GetKeyDown(KeyCode.R))
                     Restart();
