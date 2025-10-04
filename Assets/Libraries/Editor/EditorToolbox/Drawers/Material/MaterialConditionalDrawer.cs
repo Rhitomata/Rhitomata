@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Toolbox.Editor.Drawers
 {
@@ -48,7 +49,7 @@ namespace Toolbox.Editor.Drawers
         {
             var targets = prop.targets;
             var toggle = MaterialEditor.GetMaterialProperty(targets, togglePropertyName);
-            return toggle != null && toggle.type == MaterialProperty.PropType.Float || toggle.type == MaterialProperty.PropType.Range;
+            return toggle != null && toggle.propertyType == ShaderPropertyType.Float || toggle.propertyType == ShaderPropertyType.Range;
         }
 
         protected virtual bool? GetValue(MaterialProperty prop)

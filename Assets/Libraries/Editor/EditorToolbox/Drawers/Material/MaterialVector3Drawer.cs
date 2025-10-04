@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Toolbox.Editor.Drawers
 {
@@ -30,7 +31,7 @@ namespace Toolbox.Editor.Drawers
 
         protected override bool IsPropertyValid(MaterialProperty prop)
         {
-            return prop.type == MaterialProperty.PropType.Vector;
+            return prop.propertyType == ShaderPropertyType.Vector;
         }
     }
 }
