@@ -31,12 +31,6 @@ You are **not permitted** to:
 - Use this code to create derivative games or projects outside of the official repository, small parts are fine as long as you credited this repository
 
 ### 🔓 License Change
-
-The project will become open-source under the following conditions:
-
-- **If Rhitomata development is inactive for 2 consecutive years**, **or**
-- **If total lifetime revenue exceeds $1000 USD** and the project continues to receive active support for at least 6 months thereafter
-
 When this happens, the code will be **relicensed**:
 
 - **By default, under the [MIT License](https://opensource.org/licenses/MIT)**
